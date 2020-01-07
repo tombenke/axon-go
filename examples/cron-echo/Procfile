@@ -1,0 +1,5 @@
+# Procfile to build up a simple producer-consumer network
+
+debug: axon-debug -u demo.nats.io:4222 -s "${AXON_ID}.watch"
+cron: axon-cron -u demo.nats.io:4222 -s "${AXON_ID}.watch" -t "heartbeat" -cron "@every 1s"
+
