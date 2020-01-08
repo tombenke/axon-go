@@ -57,7 +57,7 @@ The [`examples`](examples/) demonstrates how to run complete networks of agents,
 
 ### The `cron-echo` flow
 
-The [`cron-echo/`](cron-echo/) folder contains the configuration and start script,
+The [`cron-echo/`](examples/cron-echo/) folder contains the configuration and start script,
 that demonstrates the most primitive working example of an axon flow,
 that is made of a producer agent, called `axon-cron`, which produces a message every 1 seconds and sends it
 into the `axon.test42.watch` subject. Another agent, called `axon-debug` subscribes to the same topic,
