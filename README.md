@@ -19,13 +19,16 @@ The [Event Driven System Design](http://www.allitebooks.org/event-processing-in-
 
 Axon follows the philosophy of distributed system architectures to integrate hardware and software components, that are running on a wide range of hardware and OS platforms, and are written in several languages. It is also an important part of the philosophy to use as many existing components that are available, as possible, and implement only the missing ones.
 
-_Important NOTE:_ __Axon is not a framework, neither a single monolithic application. It is rather a concept of how to do message-based system integration.__
+_Important NOTE:_
+
+__Axon is not a framework, neither a single monolithic application. \
+__It is rather a concept of how to do message-based system integration.__
 
 ## The axon-go project
 
 This project holds event-driven agents implemented in [Go](https://golang.org/), that are communicating via [NATS ](https://nats.io/) channels with each other.
 
-Axon is a set of independent components, that can be written in any programming languages, which has a library to access [NATS](https://nats.io/). The components are event driven agents that either consume and/or produce messages through NATS. These agents use NATS subjects for communicating with each others.
+Axon is a set of independent components, that can be written in any programming languages, which has a library to access [NATS](https://nats.io/). The components are event driven agents that either consume and/or produce messages through [NATS](https://nats.io/). These agents use [NATS](https://nats.io/) subjects for communicating with each others.
 
 _Why [NATS](https://nats.io/)? Why not [MQTT](http://mqtt.org/)?_
 
@@ -103,11 +106,13 @@ From a given perspective, axon is similar to the [Node-RED](https://nodered.org/
 in the meaning that its agents work similarly like the [Node-RED](https://nodered.org/) components.
 There are three fundamental differences relative to [Node-RED](https://nodered.org/):
 
-1. the axon agents' inputs and outputs are NATS subjects, or channels,
+1. the axon agents' inputs and outputs are [NATS](https://nats.io/) subjects, or channels,
 
 2. the agents can be written in any language,
 
 3. the agents can run on different machines and in any number of instances.
+
+On the other hand it is quite easy to integrate [Node-RED](https://nodered.org/) flows into the axon-go flows, since [Node-RED](https://nodered.org/) offers [NATS](https://nats.io/) consumer and producer nodes.
 
 This project currently provides only a handful of agents:
 
@@ -124,7 +129,7 @@ that you find under the `dist/` folder.
 
 Select the platform you want to use, download the binaries into a folder of your preference, and make sure that folder is set into the `PATH`.
 
-If you want to start the agents of the flows under one parent process, like if it were a single application, then you also need to install a foreman-like process manager, e.g. [foreman](https://nodered.org/), [forego](https://github.com/ddollar/forego), [node-foreman](https://github.com/strongloop/node-foreman), etc.
+If you want to start the agents of the flows under one parent process, like if it were a single application, then you also need to install a foreman-like process manager, e.g. [foreman](https://github.com/ddollar/foreman/), [forego](https://github.com/ddollar/forego), [node-foreman](https://github.com/strongloop/node-foreman), etc.
 
 ### For development
 
@@ -139,7 +144,7 @@ Then you need to build the common module, and install the agents one-by-one.
 To build the agents to several platforms, run the `build.sh` script from the root of the project folder.
 
 The axon package contains a `common` module, that provides generic functions for the agents,
-e.g. connecting to the NATS server, etc.
+e.g. connecting to the [NATS](https://nats.io/) server, etc.
 
 ## Examples
 
