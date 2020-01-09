@@ -1,5 +1,5 @@
-axon
-====
+axon-go
+=======
 
 ## About
 
@@ -7,7 +7,7 @@ The main motivation behind the creation of this project was to have a generic sy
 
 The following figure shows a simple example flow, that collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
 
-![The `th-sensor` flow diagram](../../docs/th_sensor-flow-diagram.png)
+![The `th-sensor` flow diagram](docs/th_sensor-flow-diagram.png)
 
 The collected data is visualized by the [Chronograf](https://docs.influxdata.com/chronograf/v1.7/) dashboard, as you can see on the following figure:
 
@@ -15,22 +15,23 @@ The collected data is visualized by the [Chronograf](https://docs.influxdata.com
 
 ## Architectural considerations
 
+The [Event Driven System Design](http://www.allitebooks.org/event-processing-in-action/) and Event Driven Architectures fit very well to IoT and automation problems. Such events of the distributed system can be efficiently forwarded via messages, using messaging middlewares, such as [MQTT](http://mqtt.org/), [RabbitMQ](https://www.rabbitmq.com/), [NATS](https://nats.io/), etc. Then the system components, that produce, consume, process the messages can be integrated via the messaging middlewares applying the [Enterprise Integration Messaging Patterns](https://www.enterpriseintegrationpatterns.com/patterns/messaging/index.html).
+
 Axon follows the philosophy of distributed system architectures to integrate hardware and software components, that are running on a wide range of hardware and OS platforms, and are written in several languages. It is also an important part of the philosophy to use as many existing components that are available, as possible, and implement only the missing ones.
 
-Important NOTE: Axon is not a framework, neither a single monolithic application. It is rather a concept of how to do message-based system integration.
-
-The [Event Driven System Design](http://www.allitebooks.org/event-processing-in-action/) and Event Driven Architectures fit very well to IoT and automation problems. Such events of the distributed system can be efficiently forwarded via messages, using messaging middlewares , such as [MQTT](http://mqtt.org/), [RabbitMQ](https://www.rabbitmq.com/), [NATS](https://nats.io/), etc. Then the system components, that produce, consume, process the messages can be integrated via the messaging middlewares applying the [Enterprise Integration Messaging Patterns](https://www.enterpriseintegrationpatterns.com/patterns/messaging/index.html).
+_Important NOTE:_ __Axon is not a framework, neither a single monolithic application. It is rather a concept of how to do message-based system integration.__
 
 ## The axon-go project
 
-This project holds event-driven agents implemented in go, that are communicating via NATS channels with each other.
+This project holds event-driven agents implemented in [Go](https://golang.org/), that are communicating via [NATS ](https://nats.io/) channels with each other.
 
-Axon is a set of independent components, that can be written in any programming languages,
-which has a library to access [NATS](https://nats.io/). The components are event driven agents that either consume and/or produce messages through NATS. These agents use NATS subjects for communicating with each others.
+Axon is a set of independent components, that can be written in any programming languages, which has a library to access [NATS](https://nats.io/). The components are event driven agents that either consume and/or produce messages through NATS. These agents use NATS subjects for communicating with each others.
 
 _Why [NATS](https://nats.io/)? Why not [MQTT](http://mqtt.org/)?_
 
-In fact [MQTT](http://mqtt.org/) is also can be used, however it is even possible to easily bridge the messages between the two kind of middleware, using gateway components. On the other hand axon-go uses [NATS](https://nats.io/) subjects, and streaming, because this technology is extremely well scaleable. It easily fits into the memory of a [NanoPi](http://wiki.friendlyarm.com/wiki/index.php/NanoPi_NEO) Raspberry Pi clone, and runs smoothly, on the other hand it is able to scale up to a multi-cloud cluster. There are clients implementedin many programming languages, and these also can run a many platforms, e.g. on an Arduino, or an ESP8266, or ESP32 to mention some extremes. So the patterns and agents implemented here might be use in a very wide range of environments, with totally different purposes.
+In fact [MQTT](http://mqtt.org/) is also can be used, however it is even possible to easily bridge the messages between the two kind of middleware, using gateway components. On the other hand axon-go uses [NATS](https://nats.io/) subjects, and streaming, because this technology is extremely well scaleable. It easily fits into the memory of a [NanoPi](http://wiki.friendlyarm.com/wiki/index.php/NanoPi_NEO) Raspberry Pi clone, and runs smoothly, on the other hand it is able to scale up to a multi-cloud cluster. There are clients implementedin many programming languages, and these also can run a many platforms, e.g. on an [Arduino](https://www.arduino.cc/en/main/software), or an [ESP8266](https://en.wikipedia.org/wiki/ESP8266), or [ESP32](https://en.wikipedia.org/wiki/ESP32) just to mention some extremes.
+
+Another important aspect is the integration patterns could be used. [NATS](https://nats.io/) provides all the patterns needes, e.g. RPC-like request-respose, async topic-like subject, in-memor or persistent streams, worker-groups, etc. So the designer of the flow can apply all these patterns without any limitation, and the agents implemented here might be use in a very wide range of environments, with totally different purposes.
 
 ### Messages
 
@@ -39,7 +40,7 @@ In fact [MQTT](http://mqtt.org/) is also can be used, however it is even possibl
 The structure of the messages a given kind of agent is able to consume,
 or produces depends on the specific agent, as well as it depends on the agent's behavior, although there is a generic format of the messages:
 
-```JSON
+```JavaScript
 {
     type: "the-type-of-the-message", // Optional
     meta: { // Optional
@@ -55,7 +56,7 @@ or produces depends on the specific agent, as well as it depends on the agent's 
 
 This is an example that the `axon-cron` agent emits:
 
-```JSON
+```JavaScript
     {
         "type":"measure",
         "meta":{
@@ -69,7 +70,7 @@ This is an example that the `axon-cron` agent emits:
 
 This is another example that the sensor units send after doing the measurement:
 
-```JSON
+```JavaScript
     {
         "type":"measurement",
         "meta":{
@@ -91,6 +92,8 @@ For further details on the message formats, study the desicprion of the specific
 #### The representation format of the messages
 
 Currently the agent implementations use JSON representation formats for the messages, on the other hand it may not optimal for all kind of applications, such as real-time robot control for example. So other, more optimal formats can also be used. most probably the agents will be extended soon to be able to handle other formats, such as the [Google's Protocol Buffer](https://developers.google.com/protocol-buffers) representation. Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
+
+That is even possible to combine several representational formats in different parts of the same flow, depending on the needs.
 
 ### Agents
 
@@ -121,7 +124,7 @@ that you find under the `dist/` folder.
 
 Select the platform you want to use, download the binaries into a folder of your preference, and make sure that folder is set into the `PATH`.
 
-If you want to start the agents of the flows under one parent process, like if it were a single application, then you also need to install a foreman-like process manager, e.g. [foreman](](https://nodered.org/), [forego](https://github.com/ddollar/forego), [node-foreman](https://github.com/strongloop/node-foreman), etc.
+If you want to start the agents of the flows under one parent process, like if it were a single application, then you also need to install a foreman-like process manager, e.g. [foreman](https://nodered.org/), [forego](https://github.com/ddollar/forego), [node-foreman](https://github.com/strongloop/node-foreman), etc.
 
 ### For development
 
@@ -145,5 +148,5 @@ The [`examples`](examples/) demonstrates how to run simple and more complete net
 The examples:
 
 - [`cron-echo/`](examples/cron-echo/): The most simple flow that sends timestamp at regular intervals then prints them to the console.
-- [`th-sensor`](examples/th-sensor/): This flow collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
+- [`th-sensor/`](examples/th-sensor/): This flow collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
 

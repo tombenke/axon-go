@@ -11,5 +11,5 @@ This [`axon-sensor-th` component](https://github.com/tombenke/axon-sensor-th) is
 
 The collected data is visualized by the [Chronograf](https://docs.influxdata.com/chronograf/v1.7/) dashboard, as you can see on the following figure:
 
-![Chronograf dashboard](docs/chronograf-dashboard.png)
+![Chronograf dashboard](../../docs/chronograf-dashboard.png)
 
