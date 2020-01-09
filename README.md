@@ -5,6 +5,8 @@ axon-go
 
 The main motivation behind the creation of this project was to have a generic system integration concept and a handful set of agents that makes possible the implementation of IoT related solutions, such as [HVAC](https://en.wikipedia.org/wiki/Heating,_ventilation,_and_air_conditioning) for home, and [greenhouse](https://walipini.herokuapp.com/), [garden irrigation](https://github.com/tombenke/giri), robotics, etc. on a simple and easy way.
 
+There are so many cases when there is a need for automation capabilities at home or in a farm environment. Why do we have to be bound to cloud services, or custom made, expensive technologies, when we anyway have the technologies to implement distributed systems in the cloud? Why don't we set up "local cloud-like" solutions, running on raspberry pi-s and arduino-like computer nodes? these solutions do not necessarily have to run in the cloud, or communicate with and run in the cloud only in cases when it is advantageous to us, and fully controlled by us? Why don't we use the very same technologies and tools for all these purposes that we are using anyway in the cloud? Axon aims to make this possible.
+
 The following figure shows a simple example flow, that collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
 
 ![The `th-sensor` flow diagram](docs/th_sensor-flow-diagram.png)
@@ -21,7 +23,7 @@ Axon follows the philosophy of distributed system architectures to integrate har
 
 _Important NOTE:_
 
-__Axon is not a framework, neither a single monolithic application. \
+__Axon is not a framework, neither a single monolithic application.__ \
 __It is rather a concept of how to do message-based system integration.__
 
 ## The axon-go project
@@ -34,7 +36,7 @@ _Why [NATS](https://nats.io/)? Why not [MQTT](http://mqtt.org/)?_
 
 In fact [MQTT](http://mqtt.org/) is also can be used, however it is even possible to easily bridge the messages between the two kind of middleware, using gateway components. On the other hand axon-go uses [NATS](https://nats.io/) subjects, and streaming, because this technology is extremely well scaleable. It easily fits into the memory of a [NanoPi](http://wiki.friendlyarm.com/wiki/index.php/NanoPi_NEO) Raspberry Pi clone, and runs smoothly, on the other hand it is able to scale up to a multi-cloud cluster. There are clients implementedin many programming languages, and these also can run a many platforms, e.g. on an [Arduino](https://www.arduino.cc/en/main/software), or an [ESP8266](https://en.wikipedia.org/wiki/ESP8266), or [ESP32](https://en.wikipedia.org/wiki/ESP32) just to mention some extremes.
 
-Another important aspect is the integration patterns could be used. [NATS](https://nats.io/) provides all the patterns needes, e.g. RPC-like request-respose, async topic-like subject, in-memor or persistent streams, worker-groups, etc. So the designer of the flow can apply all these patterns without any limitation, and the agents implemented here might be use in a very wide range of environments, with totally different purposes.
+Another important aspect is the integration patterns could be used. [NATS](https://nats.io/) provides all the patterns needes, e.g. RPC-like request-respose, async topic-like subject, in-memory or persistent streams, worker-groups, etc. So the designer of the flow can apply all these patterns without any limitation, and the agents implemented here might be use in a very wide range of environments, with totally different purposes.
 
 ### Messages
 
