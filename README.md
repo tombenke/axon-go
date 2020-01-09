@@ -7,7 +7,7 @@ The main motivation behind the creation of this project was to have a generic sy
 
 There are so many cases when there is a need for automation capabilities at home or in a farm environment. Why do we have to be bound to cloud services, or custom made, expensive technologies, when we anyway have the technologies to implement distributed systems in the cloud? Why don't we set up "local cloud-like" solutions, running on raspberry pi-s and arduino-like computer nodes? these solutions do not necessarily have to run in the cloud, or communicate with and run in the cloud only in cases when it is advantageous to us, and fully controlled by us? Why don't we use the very same technologies and tools for all these purposes that we are using anyway in the cloud? Axon aims to make this possible.
 
-The following figure shows a simple example flow, that collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
+The following figure shows a simple example flow made with axon, that collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
 
 ![The `th-sensor` flow diagram](docs/th_sensor-flow-diagram.png)
 
