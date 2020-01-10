@@ -120,6 +120,7 @@ This project currently provides only a handful of agents:
 
 - [`axon-cron`](axon-cron/README.md)
 - [`axon-debug`](axon-debug/README.md)
+- [`axon-function-js`](axon-function-js/README.md)
 - [`axon-influxdb-writer`](axon-influxdb-writer/README.md)
 
 ## Installation
@@ -156,4 +157,5 @@ The examples:
 
 - [`cron-echo/`](examples/cron-echo/): The most simple flow that sends timestamp at regular intervals then prints them to the console.
 - [`th-sensor/`](examples/th-sensor/): This flow collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
+- [`th-sensor-simu/`](examples/th-sensor-simu/): The same flow of collecting thermometer and humidity sensor data but sensors are simulated by a JavaScript function.
 
