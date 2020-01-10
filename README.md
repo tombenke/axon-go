@@ -123,6 +123,16 @@ This project currently provides only a handful of agents:
 - [`axon-function-js`](axon-function-js/README.md)
 - [`axon-influxdb-writer`](axon-influxdb-writer/README.md)
 
+## Prerequisites
+
+In order to be able to use the `axon-go` agents, and to run the examples, you will need a live [NATS](https://nats.io/) server.
+For experimenting, íou do not need to install a server, since there is an on-line one in the cloud, for testing purposes, and it is reacheable at the `demo.nats.io:4222` URL. This is the URL the examples are configured for.
+On the other hand, the agents use the `localhost:4222` as default URL, so in case you want to use them with the default configuration, or anyway wnts to use your own [NATS](https://nats.io/) server, then either you install it onto your machine, or use docker to start an instance of it, with the following command:
+
+```bash
+    docker run -it --rm --network=host --name nats-main nats -DV
+```
+
 ## Installation
 
 ### Deploy only
