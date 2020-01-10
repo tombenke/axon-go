@@ -14,7 +14,7 @@ import (
 
 
 func usage() {
-	log.Printf("Usage: axon-function-js [-u server] [-creds file] [-s] <source-subject> [-t] <target-subject>\n")
+	log.Printf("Usage: axon-function-js [-u server] [-creds file] [-s] <source-subject> [-t] <target-subject> -scriptfile <script-filename> -scriptparams <script-parameters>\n")
 	flag.PrintDefaults()
 }
 
@@ -30,6 +30,7 @@ type CliParams struct {
     Subject *string
     Target *string
     ScriptFile *string
+    ScriptParameters *string
 }
 
 func CliParse() *CliParams {
@@ -40,6 +41,7 @@ func CliParse() *CliParams {
         Subject: flag.String("s", "axon.func.in", "The subject to subscribe for inbound messages"),
         Target: flag.String("t", "axon.func.out", "The subject to send the outbound messages into"),
         ScriptFile: flag.String("scriptfile", "function.js", "The name of the JavaScript file that holds the function implementation."),
+        ScriptParameters: flag.String("scriptparams", "", "THe parameters of the script."),
         ShowHelp: flag.Bool("h", false, "Show help message"),
     }
 

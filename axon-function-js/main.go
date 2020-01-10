@@ -45,17 +45,18 @@ func loadScript(scriptFileName string) (*string, error) {
 func handleInboundMessage(nc *nats.Conn, parameters *CliParams, script *string) func (*nats.Msg) {
 
     return func(msg *nats.Msg) {
-        outMsg, err := runScript(script, string(msg.Data))
+        outMsg, err := runScript(script, parameters.ScriptParameters, string(msg.Data))
         axon.CheckFatal(err)
         sendOutboundMessage(nc, *parameters.Target, outMsg)
 	}
 }
 
 // Execute the JavaScript implementation of the function with the incoming message
-func runScript(script *string, inMsg string) (string, error) {
+func runScript(script *string, scriptParameters *string, inMsg string) (string, error) {
 
     vm := otto.New()
     vm.Set("message", inMsg)
+    vm.Set("parameters", scriptParameters)
     vm.Run(*script)
     value, err := vm.Run(*script)
     // err = ReferenceError: abcdefghijlmnopqrstuvwxyz is not defined

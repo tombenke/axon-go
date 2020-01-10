@@ -7,7 +7,8 @@ influxdb-writer: axon-influxdb-writer -u $NATS_URL -s "${AXON_ID}.sensors" -db h
 debug: axon-debug -u $NATS_URL -s "${AXON_ID}.sensors"
 
 # Simulate the sensor
-sensor-simulator: axon-function-js -u $NATS_URL -s "${AXON_ID}.measure" -t "${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js
+sensor-simulator-42: axon-function-js -u $NATS_URL -s "${AXON_ID}.measure" -t "${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptparams '{"device":"424242-424242"}'
+sensor-simulator-21: axon-function-js -u $NATS_URL -s "${AXON_ID}.measure" -t "${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptparams '{"device":"212121-212121"}'
 
 # Send a "measure" type message incl. timestamp to the `<axon-id>.measure` subject in every 10 seconds with nanoseconds precision
 cron: axon-cron -u $NATS_URL -s "${AXON_ID}.measure" -t "measure" -cron "@every 10s" -p ns
