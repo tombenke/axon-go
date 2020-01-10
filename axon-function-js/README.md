@@ -11,7 +11,8 @@ Inside the script the standard JavaScript built-in functions, variables and cons
 The value of the last expression of the script will be the message that the agent will forward into the `target` subject.
 
 The [`examples/th-sensor-simu/`](../examples/th-sensor-simu/) folder shows an example for the usage of this agent.
-This `axon-function-js` agent, that loads the [`examples/th-sensor-simu/axon-sensor-th-simu.js` script](../examples/th-sensor-simu/axon-sensor-th-simu.js) below, that expects a message, that contains a timestamp value in the `body` of the incoming message.
+
+This `axon-function-js` agent, that loads the [`examples/th-sensor-simu/axon-sensor-th-simu.js` script](../examples/th-sensor-simu/axon-sensor-th-simulator.js) below, that expects a message, that contains a timestamp value in the `body` of the incoming message.
 
 The JSON example below demonstrates such a message:
 
