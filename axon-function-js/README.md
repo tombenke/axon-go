@@ -6,6 +6,7 @@ It can receive any type of message.
 It executes a script written in JavaScript.
 This script is exeuted every time a message arrives from the subject the agent is subscribed for.
 The script gets the incoming message injected into a variable, named `message`.
+The script also can get parameters, using the `scriptparams` agrument of the command. This is a string, that the script can get as a variable, named `parameters` and the script implementation decides how to evaluate it.
 
 Inside the script the standard JavaScript built-in functions, variables and constants are usable, including `console.log()`.
 The value of the last expression of the script will be the message that the agent will forward into the `target` subject.
@@ -75,8 +76,8 @@ Then the following example below shows how the result, that will be send to the 
 Execute the agent with the `-h` swith to get help:
 
 ```bash
-$ axon-function-js -h
-Usage: axon-function-js [-u server] [-creds file] [-s] <source-subject> [-t] <target-subject>
+$ go install && axon-function-js -h
+Usage: axon-function-js [-u server] [-creds file] [-s] <source-subject> [-t] <target-subject> -scriptfile <script-filename> -scriptparams <script-parameters>
   -creds string
     	User Credentials File
   -h	Show help message
@@ -84,9 +85,10 @@ Usage: axon-function-js [-u server] [-creds file] [-s] <source-subject> [-t] <ta
     	The subject to subscribe for inbound messages (default "axon.func.in")
   -scriptfile string
     	The name of the JavaScript file that holds the function implementation. (default "function.js")
+  -scriptparams string
+    	THe parameters of the script.
   -t string
     	The subject to send the outbound messages into (default "axon.func.out")
   -u string
     	The nats server URLs (separated by comma) (default "nats://127.0.0.1:4222")
 ```
-
