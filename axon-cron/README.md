@@ -1,7 +1,7 @@
 axon-cron
 =========
 
-The `axon-cron` is a publish-only agent, that emits messages in predefined intervals, inluding the actual time. The `type` of the message is configurable, as well as the time precision (nanosec, microsec, millisec, sec), as well as the interval.
+The `axon-cron` is a producer-only agent, that emits messages in predefined intervals, inluding the actual time. The `type` of the message is configurable, as well as the time precision (nanosec, microsec, millisec, sec), as well as the interval.
 
 
 This is an example that the `axon-cron` agent emits:

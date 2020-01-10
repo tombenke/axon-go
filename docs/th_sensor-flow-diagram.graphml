@@ -81,10 +81,11 @@
     <node id="n4">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="76.25" width="148.39999999999986" x="1422.9324000000006" y="279.48855354370073"/>
+          <y:Geometry height="76.25" width="182.0267652992602" x="1385.842206630801" y="329.8581135437007"/>
           <y:Fill color="#FF9900" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="93.70703125" x="27.346484374999818" y="24.484375">Grafana<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="50.5625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="142.5546875" x="19.736038899630103" y="12.84375">Chronograf
+(or Grafana)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -96,24 +97,8 @@
     </node>
     <node id="n5">
       <data key="d6">
-        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="76.25" width="148.39999999999986" x="1422.9324000000006" y="377.8581135437007"/>
-          <y:Fill color="#FF9900" transparent="false"/>
-          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="130.875" x="8.762499999999818" y="24.484375">Chronograf<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n6">
-      <data key="d6">
         <y:SVGNode>
-          <y:Geometry height="66.76200103759766" width="56.554100036621094" x="1643.33124" y="334.6021130249019"/>
+          <y:Geometry height="66.76200103759766" width="56.554100036621094" x="1620.8576185608613" y="324.70711302490184"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="4.0" x="26.277050018310547" y="70.76200103759766">
@@ -131,7 +116,7 @@
         </y:SVGNode>
       </data>
     </node>
-    <node id="n7">
+    <node id="n6">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="47.61299896240236" width="206.55920000000026" x="999.6650000000002" y="456.56000000000006"/>
@@ -142,7 +127,7 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n8">
+    <node id="n7">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="47.61299896240236" width="304.4792000000001" x="950.7050000000002" y="344.17661406249954"/>
@@ -153,7 +138,7 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n9">
+    <node id="n8">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="47.61299896240236" width="225.30920000000026" x="505.5006444535979" y="456.56000000000006"/>
@@ -164,18 +149,18 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n10">
+    <node id="n9">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="47.61299896240236" width="225.30920000000026" x="512.7006444535978" y="347.1935005187988"/>
           <y:Fill color="#CCFFCC" transparent="false"/>
           <y:BorderStyle color="#666699" raised="false" type="line" width="2.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="42.0" horizontalTextPosition="right" iconData="5" iconTextGap="8" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="center" visible="true" width="197.990234375" x="13.65948281250013" y="2.806499481201172">axon-sensor-th</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="42.0" horizontalTextPosition="right" iconData="5" iconTextGap="8" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="center" visible="true" width="197.990234375" x="13.659482812500073" y="2.806499481201172">axon-sensor-th</y:NodeLabel>
           <y:Shape type="roundrectangle"/>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n11">
+    <node id="n10">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="47.61299896240236" width="173.77960000000013" x="107.87196970410054" y="398.1935005187988"/>
@@ -186,7 +171,7 @@
         </y:ShapeNode>
       </data>
     </node>
-    <edge id="e0" source="n7" target="n2">
+    <edge id="e0" source="n6" target="n2">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -196,7 +181,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e1" source="n8" target="n3">
+    <edge id="e1" source="n7" target="n3">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -205,7 +190,7 @@
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e2" source="n1" target="n8">
+    <edge id="e2" source="n1" target="n7">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="-12.981850000000577" ty="3.0168864562992894">
@@ -217,7 +202,7 @@
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e3" source="n10" target="n1">
+    <edge id="e3" source="n9" target="n1">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -229,7 +214,7 @@
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e4" source="n9" target="n1">
+    <edge id="e4" source="n8" target="n1">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -241,7 +226,7 @@
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e5" source="n0" target="n10">
+    <edge id="e5" source="n0" target="n9">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -253,7 +238,7 @@
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e6" source="n0" target="n9">
+    <edge id="e6" source="n0" target="n8">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -265,7 +250,7 @@
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e7" source="n11" target="n0">
+    <edge id="e7" source="n10" target="n0">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -277,53 +262,22 @@
     <edge id="e8" source="n3" target="n4">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1368.104356249998" y="357.9481438059738"/>
-            <y:Point x="1387.9443562499982" y="317.61355354370073"/>
-          </y:Path>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#808080" type="line" width="3.0"/>
           <y:Arrows source="none" target="standard"/>
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e9" source="n3" target="n5">
+    <edge id="e9" source="n4" target="n5">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1368.7443562499982" y="376.9030866439025"/>
-            <y:Point x="1385.3843562499983" y="415.9831135437007"/>
-          </y:Path>
+          <y:Path sx="79.59857360036744" sy="0.0" tx="-0.7839337683128633" ty="9.895000000000039"/>
           <y:LineStyle color="#808080" type="line" width="3.0"/>
           <y:Arrows source="none" target="standard"/>
         </y:QuadCurveEdge>
       </data>
     </edge>
-    <edge id="e10" source="n4" target="n6">
-      <data key="d10">
-        <y:QuadCurveEdge straightness="0.1">
-          <y:Path sx="0.0" sy="0.0" tx="-2.063933768312836" ty="-13.144999999999925">
-            <y:Point x="1591.9443562499985" y="310.1731135437009"/>
-            <y:Point x="1631.1443562499978" y="354.8381135437008"/>
-          </y:Path>
-          <y:LineStyle color="#808080" type="line" width="3.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:QuadCurveEdge>
-      </data>
-    </edge>
-    <edge id="e11" source="n5" target="n6">
-      <data key="d10">
-        <y:QuadCurveEdge straightness="0.1">
-          <y:Path sx="59.771956249998084" sy="0.0" tx="-0.7839337683128633" ty="9.895000000000039">
-            <y:Point x="1593.5443562499981" y="415.9831135437007"/>
-            <y:Point x="1633.7043562499978" y="377.87811354370075"/>
-          </y:Path>
-          <y:LineStyle color="#808080" type="line" width="3.0"/>
-          <y:Arrows source="none" target="standard"/>
-        </y:QuadCurveEdge>
-      </data>
-    </edge>
-    <edge id="e12" source="n1" target="n7">
-      <data key="d9"/>
+    <edge id="e10" source="n1" target="n6">
       <data key="d10">
         <y:QuadCurveEdge straightness="0.1">
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">

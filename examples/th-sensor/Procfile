@@ -1,4 +1,4 @@
-# Execute: forego start -f examples/th-sensor/Procfile -e examples/th-sensor/.env
+# Execute: forego start -f examples/th-sensor-simu/Procfile -e examples/th-sensor-simu/.env
 
 # Write the measurements coming from the `<axon-id>.log` subject, into the InfluxDB `home` database.
 influxdb-writer: axon-influxdb-writer -u $NATS_URL -s "${AXON_ID}.sensors" -db home

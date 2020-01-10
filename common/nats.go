@@ -75,3 +75,16 @@ func setupConnOptions(opts []nats.Option) []nats.Option {
 	return opts
 }
 
+// Check if there is an error, and print it with the `prefix`.
+func Check(prefix string, err error) {
+    if err != nil {
+        log.Printf("%s%s", prefix, err)
+    }
+}
+
+func CheckFatal(err error) {
+    if err != nil {
+        log.Fatal(err)
+        panic(err)
+    }
+}
