@@ -3,7 +3,7 @@ axon-debug
 
 This is a very simple subscribe-only agent, that accepts any message, and writes that onto the terminal as that is. It provides debugging purposes mostly.
 
-Execute the agent with the `-h` swith to get help:
+Execute the agent with the `-h` switch to get help:
 
 ```bash
 $ axon-debug -h

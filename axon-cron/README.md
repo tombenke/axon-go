@@ -18,7 +18,7 @@ This is an example that the `axon-cron` agent emits:
     }
 ```
 
-Execute the agent with the `-h` swith to get help:
+Execute the agent with the `-h` switch to get help:
 
 ```bash
 $ axon-cron -h

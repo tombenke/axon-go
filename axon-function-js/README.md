@@ -73,7 +73,7 @@ Then the following example below shows how the result, that will be send to the 
     }
 ```
 
-Execute the agent with the `-h` swith to get help:
+Execute the agent with the `-h` switch to get help:
 
 ```bash
 $ go install && axon-function-js -h

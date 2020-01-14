@@ -5,7 +5,7 @@ axon-go
 
 The main motivation behind the creation of this project was to have a generic system integration concept and a handful set of agents that makes possible the implementation of IoT related solutions, such as [HVAC](https://en.wikipedia.org/wiki/Heating,_ventilation,_and_air_conditioning) for home, and [greenhouse](https://walipini.herokuapp.com/), [garden irrigation](https://github.com/tombenke/giri), robotics, etc. on a simple and easy way.
 
-There are so many cases when there is a need for automation capabilities at home or in a farm environment. Why do we have to be bound to cloud services, or custom made, expensive technologies, when we anyway have the technologies to implement distributed systems in the cloud? Why don't we set up "local cloud-like" solutions, running on raspberry pi-s and arduino-like computer nodes? these solutions do not necessarily have to run in the cloud, or communicate with and run in the cloud only in cases when it is advantageous to us, and fully controlled by us? Why don't we use the very same technologies and tools for all these purposes that we are using anyway in the cloud? Axon aims to make this possible.
+There are so many cases when there is a need for automation capabilities at home or in a farm environment. Why do we have to be bound to cloud services, or custom made, expensive technologies, when we anyway have the technologies to implement distributed systems in the cloud? Why don't we set up "local cloud-like" solutions, running on raspberry pi-s and arduino-like computer nodes? These solutions do not necessarily have to run in the cloud, or communicate with and run in the cloud only in cases when it is advantageous to us, and fully controlled by us? Why don't we use the very same technologies and tools for all these purposes that we are using anyway in the cloud? Axon aims to make this possible.
 
 The following figure shows a simple example flow made with axon, that collects thermometer and humidity sensor data measured periodically, then store them into a time-series database, that can be visualized.
 
@@ -92,11 +92,11 @@ This is another example that the sensor units send after doing the measurement:
 
 __NOTE: Currently the `time` property of the `axon-cron` agent is placed directly into the root of the message body, that will change soon, according to the generic schema describen above.__
 
-For further details on the message formats, study the desicprion of the specific agents.
+For further details on the message formats, study the description of the specific agents.
 
 #### The representation format of the messages
 
-Currently the agent implementations use JSON representation formats for the messages, on the other hand it may not optimal for all kind of applications, such as real-time robot control for example. So other, more optimal formats can also be used. most probably the agents will be extended soon to be able to handle other formats, such as the [Google's Protocol Buffer](https://developers.google.com/protocol-buffers) representation. Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
+Currently the agent implementations use JSON representation formats for the messages, on the other hand it may not optimal for all kind of applications, such as real-time robot control for example. So other, more optimal formats can also be used. Most probably the agents will be extended soon to be able to handle other formats, such as the [Google's Protocol Buffer](https://developers.google.com/protocol-buffers) representation. Protocol buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data.
 
 That is even possible to combine several representational formats in different parts of the same flow, depending on the needs.
 
@@ -126,8 +126,8 @@ This project currently provides only a handful of agents:
 ## Prerequisites
 
 In order to be able to use the `axon-go` agents, and to run the examples, you will need a live [NATS](https://nats.io/) server.
-For experimenting, íou do not need to install a server, since there is an on-line one in the cloud, for testing purposes, and it is reacheable at the `demo.nats.io:4222` URL. This is the URL the examples are configured for.
-On the other hand, the agents use the `localhost:4222` as default URL, so in case you want to use them with the default configuration, or anyway wnts to use your own [NATS](https://nats.io/) server, then either you install it onto your machine, or use docker to start an instance of it, with the following command:
+For experimenting, You do not need to install a server, since there is an on-line one in the cloud, for testing purposes, and it is reacheable at the `demo.nats.io:4222` URL. This is the URL the examples are configured for.
+On the other hand, the agents use the `localhost:4222` as default URL, so in case you want to use them with the default configuration, or anyway wants to use your own [NATS](https://nats.io/) server, then either you install it onto your machine, or use docker to start an instance of it, with the following command:
 
 ```bash
     docker run -it --rm --network=host --name nats-main nats -DV
@@ -138,7 +138,7 @@ On the other hand, the agents use the `localhost:4222` as default URL, so in cas
 ### Deploy only
 
 In case you only want to use the agents, then you can use the pre-compiled binaries
-that you find under the `dist/` folder.
+that you find under the [`dist/`](dist/) folder.
 
 Select the platform you want to use, download the binaries into a folder of your preference, and make sure that folder is set into the `PATH`.
 
@@ -146,10 +146,24 @@ If you want to start the agents of the flows under one parent process, like if i
 
 ### For development
 
-If you want to compile from source, then clone the repository, or install it via the `go get` command.
+#### Build the `axon-go` agents
+
+If you want to compile the `axon-go` agents, then clone the repository, and build the binaries:
 
 ```bash
-    go get https://github.com/tombenke/axon-go
+    git clone git@github.com:tombenke/axon-go.git
+    cd  axon-go
+    ./build.bash
+```
+
+The binaries will be placed into the [`dist/`](dist/) folder.
+
+#### Implement new agents using the `axon-go-common` module
+
+If you want to implement your own agent using the [`axon-go-common`](https://github.com/tombenke/axon-go-common) module, then you need to install the package similar to other go dependencies with the `go get` command:
+
+```bash
+    go get github.com/tombenke/axon-go-common
 ```
 
 Then you need to build the common module, and install the agents one-by-one.
