@@ -8,7 +8,7 @@ import (
     "encoding/json"
 
 	"github.com/nats-io/nats.go"
-    axon "github.com/tombenke/axon-go/common"
+    axon "github.com/tombenke/axon-go-common"
 	influx "github.com/influxdata/influxdb1-client/v2"
 )
 

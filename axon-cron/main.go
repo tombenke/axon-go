@@ -6,7 +6,7 @@ import (
     "time"
 
     "github.com/robfig/cron"
-    axon "github.com/tombenke/axon-go/common"
+    axon "github.com/tombenke/axon-go-common"
 )
 
 func nowAsUnixWithPrecision(precision string) int64 {

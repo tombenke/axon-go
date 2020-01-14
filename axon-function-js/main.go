@@ -7,7 +7,7 @@ import (
 
     "github.com/robertkrimen/otto"
 	"github.com/nats-io/nats.go"
-    axon "github.com/tombenke/axon-go/common"
+    axon "github.com/tombenke/axon-go-common"
 )
 
 func main() {
