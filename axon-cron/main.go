@@ -60,5 +60,6 @@ func main() {
     defer c.Stop()  // Stop the scheduler (does not stop any jobs already running).
 
     for {
+        time.Sleep(100*time.Hour)
     }
 }
