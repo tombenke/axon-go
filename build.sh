@@ -29,7 +29,7 @@ do
     build "$agent" "linux-arm5" "linux" "arm" "5"
     build "$agent" "windows-386" "windows" "386"
     build "$agent" "windows-amd64" "windows" "amd64"
-    build "$agent" "darwin-386" "darwin" "386"
+#    build "$agent" "darwin-386" "darwin" "386"
     build "$agent" "darwin-amd64" "darwin" "amd64"
     echo
 done

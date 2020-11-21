@@ -1,28 +1,28 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 	"log"
 	"runtime"
 
 	"github.com/nats-io/nats.go"
-    axon "github.com/tombenke/axon-go-common"
+	axon "github.com/tombenke/axon-go-common"
 )
 
 func main() {
 
-    // Parse command line parameters
-    parameters := *CliParse()
+	// Parse command line parameters
+	parameters := *CliParse()
 
-    // Connect to NATS
+	// Connect to NATS
 	nc, err := axon.ConnectToNats(*parameters.Urls, *parameters.UserCreds, "axon-debug")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-    // Subscribe to the subject to observe and log
+	// Subscribe to the subject to observe and log
 	nc.Subscribe(*parameters.Subject, func(msg *nats.Msg) {
-	    fmt.Printf("%s\n", string(msg.Data))
+		fmt.Printf("%s\n", string(msg.Data))
 	})
 	nc.Flush()
 
@@ -37,4 +37,3 @@ func main() {
 
 	runtime.Goexit()
 }
-

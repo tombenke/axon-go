@@ -1,0 +1,59 @@
+# https://taskfile.dev
+
+version: "2"
+
+vars:
+
+env:
+
+tasks:
+  default:
+    desc: Executes all the tests then build the binary.
+    cmds:
+      - task: test
+      - task: build
+
+  test:
+    desc: Run all the go tests.
+    cmds:
+      - gofmt -w .
+      - go test ./... -short -count=1
+
+  coverage:
+    desc: Open test coverage in browser
+    cmds:
+      - go test ./... -coverprofile=c.out
+      - go tool cover -html=c.out
+
+  lint-display:
+    desc: Call gofmt, go vet and go lint
+    cmds:
+      - gofmt -d .
+      - go vet ./...
+      - golint ./...
+
+  lint:
+    desc: Test gofmt, go vet and go lint
+    cmds:
+      - test -z $(gofmt -d .)
+      - test -z $(go vet ./...)
+      - test -z $(golint ./...)
+
+  build:
+    desc: Build the go binary.
+    cmds:
+      - cd axon-cron && task build
+      - cd axon-debug && task build
+      - cd axon-file-reader && task build
+      - cd axon-function-js && task build
+      - cd axon-influxdb-writer && task build
+
+  clean:
+    desc: Clean temporary files and folders
+    cmds:
+      - cd axon-cron && task clean
+      - cd axon-debug && task clean
+      - cd axon-file-reader && task clean
+      - cd axon-function-js && task clean
+      - cd axon-influxdb-writer && task clean
+
