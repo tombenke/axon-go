@@ -19,7 +19,7 @@ build () {
     fi
 }
 
-agents="axon-cron axon-debug axon-influxdb-writer axon-function-js"
+agents="axon-cron axon-debug axon-file-reader axon-influxdb-writer axon-function-js"
 
 for agent in $agents
 do

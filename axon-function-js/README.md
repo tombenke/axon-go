@@ -35,7 +35,7 @@ This is the script, that will process the incoming message:
     // Parse the JSON format string of the input message
     input = JSON.parse(message)
 
-    // Create random values it it were measured
+    // Create random values like if it were measured
     temperature = 20. + Math.random() * 2
     humidity = 55. + Math.random() * 3
 
