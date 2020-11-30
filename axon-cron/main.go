@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/robfig/cron"
+	"github.com/sirupsen/logrus"
 	axon "github.com/tombenke/axon-go-common"
+	"github.com/tombenke/axon-go/common/log"
 )
+
+var logger *logrus.Logger = log.Logger
 
 func nowAsUnixWithPrecision(precision string) int64 {
 	nowNs := time.Now().UnixNano()
@@ -32,7 +35,7 @@ func main() {
 	// Connect to NATS
 	nc, err := axon.ConnectToNats(*parameters.Urls, *parameters.UserCreds, "axon-cron")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	c := cron.New()
@@ -49,9 +52,9 @@ func main() {
 		nc.Flush()
 
 		if err := nc.LastError(); err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		} else {
-			log.Printf("Published [%s] : '%s'\n", subj, msg)
+			logger.Printf("Published [%s] : '%s'\n", subj, msg)
 		}
 	})
 

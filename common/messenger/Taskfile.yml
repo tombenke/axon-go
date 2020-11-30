@@ -1,0 +1,43 @@
+# https://taskfile.dev
+
+version: "2"
+
+env:
+vars:
+
+tasks:
+  default:
+    desc: Executes all the tests then build the binary.
+    cmds:
+      - task: test
+
+  test:
+    desc: Run all the go tests.
+    cmds:
+      - gofmt -w .
+      - go test ./... -count=1
+
+  coverage:
+    desc: Open test coverage in browser
+    cmds:
+      - go test ./... -coverprofile=c.out
+      - go tool cover -html=c.out
+
+  lint-display:
+    desc: Call gofmt, go vet and go lint
+    cmds:
+      - gofmt -d .
+      - go vet ./...
+      - golint ./...
+
+  lint:
+    desc: Test gofmt, go vet and go lint
+    cmds:
+      - test -z $(gofmt -d .)
+      - test -z $(go vet ./...)
+      - test -z $(golint ./...)
+
+  clean:
+    desc: Clean temporary files and folders
+    cmds:
+      - echo "everything is clean"
