@@ -30,7 +30,7 @@ var validIns []validIn = []validIn{
 
 const notEqualMsg string = "The two objects should be the equal!"
 
-// Test with empty string
+// Test input args
 func TestParseInArgs(t *testing.T) {
 	assert := assert.New(t)
 
@@ -44,6 +44,44 @@ func TestParseInArgs(t *testing.T) {
 		assert.Panics(
 			func() {
 				parseIn(i)
+			},
+			"It should panic!",
+		)
+	}
+}
+
+// invalid output strings
+var invalidOuts []string = []string{
+	"",       // no name string
+	":",      // empty name string
+	":topic", // empty name string
+}
+
+type validOut struct {
+	Arg      string
+	Expected Out
+}
+
+var validOuts []validOut = []validOut{
+	validOut{"name", Out{IO{"name", "name"}}},        // name only
+	validOut{"name:", Out{IO{"name", "name"}}},       // name and default value
+	validOut{"name:topic", Out{IO{"topic", "name"}}}, // name and topic name
+}
+
+// Test output args
+func TestParseOutArgs(t *testing.T) {
+	assert := assert.New(t)
+
+	// Test valid cases
+	for _, i := range validOuts {
+		assert.Equal(parseOut(i.Arg), i.Expected, notEqualMsg)
+	}
+
+	// Test invalid cases
+	for _, i := range invalidOuts {
+		assert.Panics(
+			func() {
+				parseOut(i)
 			},
 			"It should panic!",
 		)

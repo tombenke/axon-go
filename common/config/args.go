@@ -25,3 +25,23 @@ func parseIn(inStr string) (result In) {
 	}
 	return result
 }
+
+func parseOut(inStr string) (result Out) {
+	parts := strings.Split(inStr, ":")
+
+	switch len(parts) {
+	case 1:
+		result = Out{IO: IO{Topic: parts[0], Name: parts[0]}}
+	case 2:
+		if parts[1] == "" {
+			result = Out{IO: IO{Topic: parts[0], Name: parts[0]}}
+		} else {
+			result = Out{IO: IO{Topic: parts[1], Name: parts[0]}}
+		}
+	}
+
+	if result.Name == "" {
+		panic("Input name must be defined!")
+	}
+	return result
+}
