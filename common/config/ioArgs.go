@@ -4,6 +4,29 @@ import (
 	"strings"
 )
 
+// Generic IO properties
+type IO struct {
+	Topic string
+	Name  string
+}
+
+// Inputs
+type In struct {
+	IO
+	DefaultValue interface{}
+}
+
+type Inputs []In
+
+func (i *Inputs) String() string {
+	return ""
+}
+
+func (i *Inputs) Set(value string) error {
+	*i = append(*i, parseIn(value))
+	return nil
+}
+
 func parseIn(inStr string) (result In) {
 	parts := strings.Split(inStr, ":")
 
@@ -24,6 +47,22 @@ func parseIn(inStr string) (result In) {
 		panic("Input name must be defined!")
 	}
 	return result
+}
+
+// Outputs
+type Out struct {
+	IO
+}
+
+type Outputs []Out
+
+func (o *Outputs) String() string {
+	return ""
+}
+
+func (o *Outputs) Set(value string) error {
+	*o = append(*o, parseOut(value))
+	return nil
 }
 
 func parseOut(inStr string) (result Out) {
