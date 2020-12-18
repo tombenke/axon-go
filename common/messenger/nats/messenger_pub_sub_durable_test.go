@@ -1,4 +1,4 @@
-package messenger
+package nats
 
 import (
 	"github.com/stretchr/testify/require"
@@ -6,14 +6,10 @@ import (
 	"testing"
 )
 
-var (
-	testSubject = "test_subject"
-)
-
 // Test the Asynchronous / Observer pattern: publish/subscribe
-func TestPubSub(t *testing.T) {
+func TestPubSubDurable(t *testing.T) {
 	// Connect to NATS
-	m := NewMessenger(testMessengerConfig)
+	m := NewMessenger(testConfig)
 	defer m.Close()
 
 	// Use a WaitGroup to wait for the message to arrive
@@ -21,13 +17,15 @@ func TestPubSub(t *testing.T) {
 	wg.Add(1)
 
 	// Subscribe to the source subject with the message processing function
-	m.Subscribe(testSubject, func(content []byte) {
+	testChannelDurable := "test_channel_durable"
+	testMsgContent := []byte("Some text to send...")
+	m.SubscribeDurable(testChannelDurable, func(content []byte) {
 		defer wg.Done()
 		require.EqualValues(t, content, testMsgContent)
 	})
 
 	// Send a message
-	m.Publish(testSubject, testMsgContent)
+	m.PublishDurable(testChannelDurable, testMsgContent)
 
 	// Wait for the message to come in
 	wg.Wait()
