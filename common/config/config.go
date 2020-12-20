@@ -29,8 +29,9 @@ const (
 	logFormatEnvVar  = "LOG_FORMAT"
 	defaultLogFormat = "json"
 
-	natsUrlsEnvVar = "NATS_URL"
-	natsUrlsHelp   = "The NATS server's URLs (separated by comma)"
+	natsUrlsEnvVar  = "NATS_URL"
+	natsUrlsHelp    = "The NATS server's URLs (separated by comma)"
+	defaultNatsUrls = "localhost:4222"
 
 	natsUserCredsHelp    = "User Credentials"
 	natsUserCredsEnvVar  = "NATS_CREDENTIALS"
@@ -42,7 +43,7 @@ const (
 
 // The default config struct that every axon actor node inherits
 type NodeConfig struct {
-	messenger.MessengerConfig
+	messenger.Config
 
 	Name      string
 	LogLevel  string
@@ -68,8 +69,8 @@ func GetDefaultFlagSet(defaultNodeName string, config *NodeConfig) *flag.FlagSet
 	fs.StringVar(&(*config).LogFormat, "f", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
 	fs.StringVar(&(*config).LogFormat, "log-format", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
 
-	fs.StringVar(&(*config).Urls, "u", GetEnvWithDefault(natsUrlsEnvVar, messenger.DefaultNatsURL()), natsUrlsHelp)
-	fs.StringVar(&(*config).Urls, "nats-urls", GetEnvWithDefault(natsUrlsEnvVar, messenger.DefaultNatsURL()), natsUrlsHelp)
+	fs.StringVar(&(*config).Urls, "u", GetEnvWithDefault(natsUrlsEnvVar, defaultNatsUrls), natsUrlsHelp)
+	fs.StringVar(&(*config).Urls, "nats-urls", GetEnvWithDefault(natsUrlsEnvVar, defaultNatsUrls), natsUrlsHelp)
 
 	fs.StringVar(&(*config).UserCreds, "c", GetEnvWithDefault(natsUserCredsEnvVar, defaultNatsUserCreds), natsUserCredsHelp)
 	fs.StringVar(&(*config).UserCreds, "creds", GetEnvWithDefault(natsUserCredsEnvVar, defaultNatsUserCreds), natsUserCredsHelp)
