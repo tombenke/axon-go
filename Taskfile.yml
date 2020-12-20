@@ -19,6 +19,18 @@ tasks:
       - gofmt -w .
       - go test ./... -short -count=1
 
+  test-verbose:
+    desc: Run all the go tests in verbose mode.
+    cmds:
+      - gofmt -w .
+      - go test ./... -v -count=1 
+
+  test-single:
+    desc: Run all the go tests in verbose mode from a single test file.
+    cmds:
+      - gofmt -w .
+      - go test ./... -run={{.CASE}} -v -count=1 
+
   coverage:
     desc: Open test coverage in browser
     cmds:
