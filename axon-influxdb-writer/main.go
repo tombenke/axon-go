@@ -64,7 +64,7 @@ func main() {
 	parameters := *CliParse()
 
 	// Connect to InfluxDB
-	c := connectToInfluxDb(*parameters.InfluxDbUrl, *parameters.InfluxDbCreds)
+	c := connectToInfluxDb(*parameters.InfluxDbURL, *parameters.InfluxDbCreds)
 
 	// Connect to NATS
 	nc, err := axon.ConnectToNats(*parameters.Urls, *parameters.UserCreds, "axon-influxdb-writer")

@@ -22,10 +22,11 @@ func showUsageAndExit(exitcode int) {
 	os.Exit(exitcode)
 }
 
+// CliParams holds the configuration parameters of the application
 type CliParams struct {
 	Urls          *string
 	UserCreds     *string
-	InfluxDbUrl   *string
+	InfluxDbURL   *string
 	InfluxDbCreds *string
 	InfluxDbName  *string
 	ShowTime      *bool
@@ -33,12 +34,13 @@ type CliParams struct {
 	Subject       *string
 }
 
+// CliParse parses the CLI parameters and returns with the results
 func CliParse() *CliParams {
 
 	parameters := CliParams{
 		Urls:          flag.String("u", nats.DefaultURL, "The nats server URLs (separated by comma)"),
 		UserCreds:     flag.String("creds", "", "User Credentials File"),
-		InfluxDbUrl:   flag.String("i", "http://localhost:8086", "InfluxDB URL"),
+		InfluxDbURL:   flag.String("i", "http://localhost:8086", "InfluxDB URL"),
 		InfluxDbCreds: flag.String("icreds", "", "User Credentials File for InfluxDB"),
 		InfluxDbName:  flag.String("db", "axon", "The name of the InfluxDB database"),
 		Subject:       flag.String("s", "axon.log", "The subject to subscribe for inbound messages"),

@@ -22,6 +22,7 @@ func showUsageAndExit(exitcode int) {
 	os.Exit(exitcode)
 }
 
+// CliParams holds the configuration parameters of the application
 type CliParams struct {
 	Urls        *string
 	UserCreds   *string
@@ -32,6 +33,7 @@ type CliParams struct {
 	ShowHelp    *bool
 }
 
+// CliParse parses the CLI parameters and returns with the results
 func CliParse() *CliParams {
 
 	parameters := CliParams{
