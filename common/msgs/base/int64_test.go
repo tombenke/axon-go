@@ -8,34 +8,34 @@ import (
 	"testing"
 )
 
-func TestBoolGetType(t *testing.T) {
-	assert.Equal(t, NewBoolMessage(true).GetType(), BoolTypeName)
+func TestInt64GetType(t *testing.T) {
+	assert.Equal(t, NewInt64Message(42).GetType(), Int64TypeName)
 }
 
-func TestBoolMessage(t *testing.T) {
+func TestInt64Message(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewInt64MessageAt(42, at, prec)
+	var n Int64
 	n.ParseJSON(m.JSON())
 	n.ParseJSON([]byte(m.String()))
 	assert.Equal(t, m, &n)
 }
 
-func TestBoolMessageCodec(t *testing.T) {
+func TestInt64MessageCodec(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewInt64MessageAt(42, at, prec)
+	var n Int64
 	n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
 	assert.Equal(t, m, &n)
 }
 
-func TestBoolMessageCodecPanic(t *testing.T) {
+func TestInt64MessageCodecPanic(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewInt64MessageAt(42, at, prec)
+	var n Int64
 	func() {
 		defer func() {
 			if r := recover(); r != nil {

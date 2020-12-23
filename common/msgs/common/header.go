@@ -4,28 +4,43 @@ import (
 	"time"
 )
 
-type TimePrecisionType string
+// TimePrecision is the type of precision of the Timestamp value hold by the message Header
+type TimePrecision string
 
 const (
-	Nanoseconds  TimePrecisionType = "ns"
-	Microseconds                   = "us"
-	Milliseconds                   = "ms"
-	Seconds                        = "s"
+	// Nanoseconds TimePrecision enum value
+	Nanoseconds TimePrecision = "ns"
+	// Microseconds TimePrecision enum value
+	Microseconds TimePrecision = "us"
+	// Milliseconds TimePrecision enum value
+	Milliseconds TimePrecision = "ms"
+	// Seconds TimePrecision enum value
+	Seconds TimePrecision = "s"
+	// DefaultTimePrecision is the default value for Timeprecision
+	DefaultTimePrecision TimePrecision = Nanoseconds
 )
 
+// Header is the generic message header structure
 type Header struct {
-	/* ROS example
-	seq      uint32
-	stamp    time
-	frame_id string
-	*/
-
-	MessageType   string
-	TimePrecision TimePrecisionType
-	Timestamp     time.Time
+	TimePrecision TimePrecision
+	Timestamp     int64
 }
 
-func nowAsUnixWithPrecision(precision string) int64 {
+// NewHeader creates a new generic message header with the timestamp of the current time in "ns" precision
+func NewHeader() Header {
+	return NewHeaderAt(NowAsUnixWithPrecision(DefaultTimePrecision), DefaultTimePrecision)
+}
+
+// NewHeaderAt creates a new generic message header with the `at` timestamp value and `withPrecision` precision
+func NewHeaderAt(at int64, withPrecision TimePrecision) Header {
+	return Header{
+		TimePrecision: withPrecision,
+		Timestamp:     at,
+	}
+}
+
+// NowAsUnixWithPrecision returns with the current time with `precision` precision
+func NowAsUnixWithPrecision(precision TimePrecision) int64 {
 	nowNs := time.Now().UnixNano()
 	switch precision {
 	case "ns":

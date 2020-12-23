@@ -1,4 +1,4 @@
-package base
+package sensors
 
 import (
 	"errors"
@@ -8,34 +8,34 @@ import (
 	"testing"
 )
 
-func TestBoolGetType(t *testing.T) {
-	assert.Equal(t, NewBoolMessage(true).GetType(), BoolTypeName)
+func TestHumidityGetType(t *testing.T) {
+	assert.Equal(t, NewHumidityMessage(0).GetType(), HumidityTypeName)
 }
 
-func TestBoolMessage(t *testing.T) {
+func TestHumidityMessage(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewHumidityMessageAt(42., at, prec)
+	var n Humidity
 	n.ParseJSON(m.JSON())
 	n.ParseJSON([]byte(m.String()))
 	assert.Equal(t, m, &n)
 }
 
-func TestBoolMessageCodec(t *testing.T) {
+func TestHumidityMessageCodec(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewHumidityMessageAt(42., at, prec)
+	var n Humidity
 	n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
 	assert.Equal(t, m, &n)
 }
 
-func TestBoolMessageCodecPanic(t *testing.T) {
+func TestHumidityMessageCodecPanic(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewHumidityMessageAt(42., at, prec)
+	var n Humidity
 	func() {
 		defer func() {
 			if r := recover(); r != nil {

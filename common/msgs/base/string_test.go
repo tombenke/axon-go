@@ -8,34 +8,34 @@ import (
 	"testing"
 )
 
-func TestBoolGetType(t *testing.T) {
-	assert.Equal(t, NewBoolMessage(true).GetType(), BoolTypeName)
+func TestStringGetType(t *testing.T) {
+	assert.Equal(t, NewStringMessage("Some text...").GetType(), StringTypeName)
 }
 
-func TestBoolMessage(t *testing.T) {
+func TestStringMessage(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewStringMessageAt("Some text...", at, prec)
+	var n String
 	n.ParseJSON(m.JSON())
 	n.ParseJSON([]byte(m.String()))
 	assert.Equal(t, m, &n)
 }
 
-func TestBoolMessageCodec(t *testing.T) {
+func TestStringMessageCodec(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewStringMessageAt("Some text...", at, prec)
+	var n String
 	n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
 	assert.Equal(t, m, &n)
 }
 
-func TestBoolMessageCodecPanic(t *testing.T) {
+func TestStringMessageCodecPanic(t *testing.T) {
 	at := int64(1608732048980057025)
 	prec := common.TimePrecision("ns")
-	m := NewBoolMessageAt(true, at, prec)
-	var n Bool
+	m := NewStringMessageAt("Some text...", at, prec)
+	var n String
 	func() {
 		defer func() {
 			if r := recover(); r != nil {
