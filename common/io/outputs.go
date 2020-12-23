@@ -7,16 +7,20 @@ import (
 	"reflect"
 )
 
+// Output holds the data of an output port of the actor
 type Output struct {
 	IO
 }
 
+// Outputs holds a map of the the output ports of the actor. The key is the name of the port.
 type Outputs map[string]Output
 
+// OutputsHandler declares the methods to the management of the output ports
 type OutputsHandler interface {
 	SetOutputMessage(string, msgs.Message) error
 }
 
+// SetOutputMessage sets the message to emit via the output port selected by the `name` parameter
 func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) error {
 	if _, ok := (*outputs)[name]; ok {
 		fmt.Printf("outputs: %s", reflect.TypeOf((*outputs)[name]))
