@@ -1,13 +1,14 @@
+// Package config provides the implementation of the commonly used,
+// generic CLI parameter parsing and configuration management routines
 package config
 
 import (
 	"flag"
-	//"fmt"
 	"github.com/tombenke/axon-go/common/messenger"
 	"os"
 )
 
-// Get the value of the `envVarName` environment variable and return with it.
+// GetEnvWithDefault gets the value of the `envVarName` environment variable and return with it.
 // If there is no such variable defined in the environment, then return with the `defaultValue`.
 func GetEnvWithDefault(envVarName string, defaultValue string) string {
 	value, ok := os.LookupEnv(envVarName)
@@ -41,7 +42,7 @@ const (
 	outputsHelp = "Output. Format: <name>:[<topic-name>]"
 )
 
-// The default config struct that every axon actor node inherits
+// NodeConfig is the default config struct that every axon actor node inherits
 type NodeConfig struct {
 	messenger.Config
 
@@ -54,6 +55,7 @@ type NodeConfig struct {
 	Outputs Outputs
 }
 
+// GetDefaultFlagSet returns with the default values of the generic configuration parameters
 func GetDefaultFlagSet(defaultNodeName string, config *NodeConfig) *flag.FlagSet {
 	fs := flag.NewFlagSet("fs-name", flag.PanicOnError)
 
