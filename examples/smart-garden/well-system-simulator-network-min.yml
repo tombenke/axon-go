@@ -1,0 +1,163 @@
+name: Well-System simulation of the Smart-Garden
+nodes:
+  - name: well
+    type: well-simulator
+    inputs:
+      - name: well-backfill-capacity
+        default: '{"Body": { "Data": 600 }'
+      - name: well-cross-section
+        default: '{"Body": { "Data": 0.00083008 }'
+      - name: max-water-level
+        default: '{"Body": { "Data": -29 }}'
+      - name: min-water-level
+        default: '{"Body": { "Data": -36 }}'
+      - name: well-water-level
+        channel: well-water-level
+      - name: water-need
+        channel: well-pump-water-need
+    outputs:
+      - name: water-level
+        channel: well-water-level
+
+  - name: well-water-upper-level-sensor-simulator
+    type: water-level-sensor-simulator
+    inputs:
+      - name: reference-water-level
+        default: '{"Body": { "Data": -30 }}'
+      - name: water-level
+        channel: well-water-level 
+    outputs:
+      - name: water-level-state
+        channel: well-water-upper-level-state 
+        type: base/Bool
+
+  - name: well-water-lower-level-sensor-simulator
+    type: water-level-sensor-simulator
+    inputs:
+      - name: reference-water-level
+        default: '{"Body": { "Data": -35 }}'
+      - name: water-level
+        channel: well-water-level 
+    outputs:
+      - name: water-level-state
+        channel: well-water-lower-level-state 
+        type: base/Bool
+
+  - name: buffer-water-tank-upper-level-sensor-simulator
+    type: water-level-sensor-simulator
+    inputs:
+      - name: reference-water-level
+        default: '{"Body": { "Data": 0.75 }}'
+      - name: water-level
+        channel: well-water-buffer-tank-level
+    outputs:
+      - name: buffer-water-tank-upper-level-state
+        type: base/Bool
+
+  - name: well-pump-controller
+    type: well-pump-controller-simulator
+    inputs:
+      - name: well-water-upper-level-state
+        channel: well-water-upper-level-state
+      - name: well-water-lower-level-state
+        channel: well-water-lower-level-state
+      - name: buffer-tank-upper-level-state
+        channel: buffer-water-tank-upper-level-state
+      - name: well-pump-controller-state
+        channel: well-pump-controller-state
+    outputs:
+      - name: well-pump-relay-state
+        channel: well-pump-relay-state
+      - name: well-pump-controller-state
+        channel: well-pump-controller-state
+
+  - name: electric-power-supply-system
+    type: electric-power-supply-system-simulator
+    inputs:
+      - name: max-power
+        default: '{"Body": { "Data": 10000 }}' # Wh
+      - name: power-need
+        channel: well-pump-relay.electric-power-need
+    outputs:
+      - name: power-output
+        channel: well-pump-relay.electric-power-output
+
+  - name: well-pump-relay
+    type: relay-simulator
+    inputs:
+      - name: relay-state
+        channel: well-pump-relay-state
+      - name: power-input
+        channel: well-pump-relay.electric-power-output
+      - name: power-need
+        channel: well-pump-power-need
+    outputs:
+      - name: power-output
+        channel: well-pump-power
+      - name: power-need
+        channel: well-pump-relay.electric-power-need
+
+  - name: well-pump
+    type: pump-simulator
+    inputs:
+      - name: pump-capacity
+        default: '{"Body": { "Data": 4000 }}' # l/h
+      - name: power-consumption
+        default: '{"Body": { "Data": 2000 }}' # W
+      - name: power-input
+        channel: well-pump-power
+      - name: water-input
+        channel: well-water-output
+      - name: water-need
+        channel: well-water-buffer-tank-consumption-need
+    outputs:
+      - name: power-need
+        channel: well-pump-power-need
+      - name: water-output
+        channel: well-pump-water-output
+      - name: water-need
+        channel: well-pump-water-need
+
+  - name: water-buffer-tank
+    type: water-buffer-tank-simulator
+    inputs:
+      - name: tank-cross-section
+        default: '{"Body": { "Data": 1 }}' # m2
+      - name: max-water-level
+        default: '{"Body": { "Data": 0.95 }}' # m
+      - name: water-input
+        channel: well-pump-water-output
+      - name: water-level
+        channel: well-water-buffer-tank-level
+      - name: water-output-need
+        channel: high-pressure-wss-input-need
+    outputs:
+      - name: water-input-need
+        channel: well-water-buffer-tank-consumption-need
+      - name: water-output
+        channel: well-water-buffer-tank-water-output
+      - name: water-level
+        channel: well-water-buffer-tank-level
+
+  - name: high-pressure-water-supply-system
+    type: high-pressure-water-supply-system-simulator
+    inputs:
+      - name: buffer-volume
+        default: '{"Body": { "Data": 0.05 }}' # m3
+      - name: max-pressure
+        default: '{"Body": { "Data": 2. }}' # bar
+      - name: min-pressure
+        default: '{"Body": { "Data": 1. }}' # bar
+      - name: water-output-need
+        default: '{"Body": { "Data": 0. }}' # m3, There is no high-pressure water consumption by default
+        channel: "" # nil, there is no consumer, so no consumption need
+      - name: water input
+        channel: well-water-buffer-tank-water-output
+      - name: water-buffer-tank-level
+        channel: well-water-buffer-tank-level
+    outputs:
+      - name: water-output
+        channel: "" # nil, there is no consumer of the output
+      - name: water-input-need
+        channel: high-pressure-wss-input-need
+
