@@ -38,8 +38,8 @@ const (
 	natsUserCredsEnvVar  = "NATS_CREDENTIALS"
 	defaultNatsUserCreds = ""
 
-	inputsHelp  = "Input. Format: [<topic>]:<name>:[<default-value>]"
-	outputsHelp = "Output. Format: <name>:[<topic-name>]"
+	inputsHelp  = "Input. Format: [<channel>]:<name>:[<default-value>]"
+	outputsHelp = "Output. Format: <name>:[<channel-name>]"
 )
 
 // NodeConfig is the default config struct that every axon actor node inherits

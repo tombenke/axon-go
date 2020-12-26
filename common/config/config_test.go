@@ -72,6 +72,6 @@ func TestConfigWithArgs(t *testing.T) {
 	c := ParseCliArgs(nodeName, args)
 	assert.Equal(t, c.Name, nodeName)
 	assert.Equal(t, c.LogLevel, logLevel)
-	assert.Equal(t, c.Inputs, Inputs{In{IO: IO{Topic: "well-water-level", Name: "water-level"}, DefaultValue: "0."}, In{IO: IO{Topic: "reference-water-level", Name: "well-water-upper-level"}, DefaultValue: "0."}})
-	assert.Equal(t, c.Outputs, Outputs{Out{IO: IO{Topic: "well-water-upper-level-state", Name: "level-state"}}})
+	assert.Equal(t, c.Inputs, Inputs{In{IO: IO{Channel: "well-water-level", Name: "water-level"}, DefaultValue: "0."}, In{IO: IO{Channel: "reference-water-level", Name: "well-water-upper-level"}, DefaultValue: "0."}})
+	assert.Equal(t, c.Outputs, Outputs{Out{IO: IO{Channel: "well-water-upper-level-state", Name: "level-state"}}})
 }

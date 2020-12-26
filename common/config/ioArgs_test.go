@@ -7,12 +7,12 @@ import (
 
 // invalid input strings
 var invalidIns []string = []string{
-	"",           // no name string
-	":",          // empty name string
-	"::",         // empty name string
-	"topic::",    // empty name string
-	"::0.1",      // empty name string
-	"topic::0.1", // empty name string
+	"",             // no name string
+	":",            // empty name string
+	"::",           // empty name string
+	"channel::",    // empty name string
+	"::0.1",        // empty name string
+	"channel::0.1", // empty name string
 }
 
 type validIn struct {
@@ -21,11 +21,11 @@ type validIn struct {
 }
 
 var validIns []validIn = []validIn{
-	validIn{"name", In{IO{"name", "name"}, ""}},               // name only
-	validIn{"name:0.1", In{IO{"name", "name"}, "0.1"}},        // name and default value
-	validIn{":name:0.1", In{IO{"name", "name"}, "0.1"}},       // name and default value
-	validIn{"topic:name:", In{IO{"topic", "name"}, ""}},       // topic and name
-	validIn{"topic:name:0.1", In{IO{"topic", "name"}, "0.1"}}, // full
+	validIn{"name", In{IO{"name", "name"}, ""}},                   // name only
+	validIn{"name:0.1", In{IO{"name", "name"}, "0.1"}},            // name and default value
+	validIn{":name:0.1", In{IO{"name", "name"}, "0.1"}},           // name and default value
+	validIn{"channel:name:", In{IO{"channel", "name"}, ""}},       // channel and name
+	validIn{"channel:name:0.1", In{IO{"channel", "name"}, "0.1"}}, // full
 }
 
 const notEqualMsg string = "The two objects should be the equal!"
@@ -52,9 +52,9 @@ func TestParseInArgs(t *testing.T) {
 
 // invalid output strings
 var invalidOuts []string = []string{
-	"",       // no name string
-	":",      // empty name string
-	":topic", // empty name string
+	"",         // no name string
+	":",        // empty name string
+	":channel", // empty name string
 }
 
 type validOut struct {
@@ -63,9 +63,9 @@ type validOut struct {
 }
 
 var validOuts []validOut = []validOut{
-	validOut{"name", Out{IO{"name", "name"}}},        // name only
-	validOut{"name:", Out{IO{"name", "name"}}},       // name and default value
-	validOut{"name:topic", Out{IO{"topic", "name"}}}, // name and topic name
+	validOut{"name", Out{IO{"name", "name"}}},            // name only
+	validOut{"name:", Out{IO{"name", "name"}}},           // name and default value
+	validOut{"name:channel", Out{IO{"channel", "name"}}}, // name and channel name
 }
 
 // Test output args
