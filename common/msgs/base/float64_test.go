@@ -53,3 +53,9 @@ func TestFloat64MessageCodecPanic(t *testing.T) {
 		n.Decode(msgs.JSONRepresentation, m.Encode(msgs.Representation("wrong-representation")))
 	}()
 }
+
+func TestParseDefaultJSONValue(t *testing.T) {
+	var m Float64
+	m.ParseJSON([]byte(`{"Body": { "Data": 42 }}`))
+	assert.Equal(t, float64(42), m.Body.Data)
+}

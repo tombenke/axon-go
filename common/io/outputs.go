@@ -3,6 +3,7 @@ package io
 import (
 	"errors"
 	"fmt"
+	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/msgs"
 	"reflect"
 )
@@ -28,4 +29,9 @@ func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) error
 		return nil
 	}
 	return errors.New("There is no output port named to " + name)
+}
+
+// NewOutputs creates a new Outputs map based on the config parameters
+func NewOutputs(outputs config.Outputs) (Outputs, error) {
+	return Outputs{}, nil
 }

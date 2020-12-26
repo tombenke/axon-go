@@ -2,6 +2,7 @@ package io
 
 import (
 	"errors"
+	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/msgs"
 )
 
@@ -26,4 +27,9 @@ func (inputs Inputs) GetInputMessage(name string) (msgs.Message, error) {
 		return input.Message, nil
 	}
 	return nil, errors.New("There is no input port named to " + name)
+}
+
+// NewInputs creates a new Inputs map based on the config parameters
+func NewInputs(inputs config.Inputs) (Inputs, error) {
+	return Inputs{}, nil
 }
