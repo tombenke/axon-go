@@ -1,5 +1,5 @@
 // Package messenger package defines the interface for the basic functions to communicate through the messaging middleware.
-// The agents see the inbound and outbound messages as akind of message streams.
+// The communicating parties see the inbound and outbound messages as akind of message streams.
 package messenger
 
 import (

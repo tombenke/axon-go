@@ -1,5 +1,5 @@
 // Package nats package implements the basic functions to communicate through the messaging middleware.
-// The agents see the inbound and outbound messages as akind of message streams.
+// The communicating parties see the inbound and outbound messages as akind of message streams.
 // This package implements the NATS version of streams functions.
 package nats
 
