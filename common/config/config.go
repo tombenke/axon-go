@@ -19,6 +19,9 @@ func GetEnvWithDefault(envVarName string, defaultValue string) string {
 }
 
 const (
+	DefaultType           = "base/Any"
+	DefaultRepresentation = "application/json"
+
 	nodeNameHelp   = "The name of the node"
 	nodeNameEnvVar = "NODE_NAME"
 
@@ -30,13 +33,13 @@ const (
 	logFormatEnvVar  = "LOG_FORMAT"
 	defaultLogFormat = "json"
 
-	natsUrlsEnvVar  = "NATS_URL"
-	natsUrlsHelp    = "The NATS server's URLs (separated by comma)"
-	defaultNatsUrls = "localhost:4222"
+	messagingUrlsEnvVar = "MESSAGING_URL"
+	messagingUrlsHelp   = "The Messaging server's URLs (separated by comma)"
+	defaultMessagingURL = "localhost:4222"
 
-	natsUserCredsHelp    = "User Credentials"
-	natsUserCredsEnvVar  = "NATS_CREDENTIALS"
-	defaultNatsUserCreds = ""
+	messagingUserCredsHelp    = "User Credentials"
+	messagingUserCredsEnvVar  = "MESSAGING_CREDENTIALS"
+	defaultMessagingUserCreds = ""
 
 	inputsHelp  = "Input. Format: [<channel>]:<name>:[<default-value>]"
 	outputsHelp = "Output. Format: <name>:[<channel-name>]"
@@ -49,10 +52,8 @@ type NodeConfig struct {
 	Name      string
 	LogLevel  string
 	LogFormat string
-	//Inputs    arrayFlags
-	//Outputs   arrayFlags
-	Inputs  Inputs
-	Outputs Outputs
+	Inputs    Inputs
+	Outputs   Outputs
 }
 
 // GetDefaultFlagSet returns with the default values of the generic configuration parameters
@@ -71,11 +72,11 @@ func GetDefaultFlagSet(defaultNodeName string, config *NodeConfig) *flag.FlagSet
 	fs.StringVar(&(*config).LogFormat, "f", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
 	fs.StringVar(&(*config).LogFormat, "log-format", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
 
-	fs.StringVar(&(*config).Urls, "u", GetEnvWithDefault(natsUrlsEnvVar, defaultNatsUrls), natsUrlsHelp)
-	fs.StringVar(&(*config).Urls, "nats-urls", GetEnvWithDefault(natsUrlsEnvVar, defaultNatsUrls), natsUrlsHelp)
+	fs.StringVar(&(*config).Config.Urls, "u", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
+	fs.StringVar(&(*config).Config.Urls, "messaging-urls", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
 
-	fs.StringVar(&(*config).UserCreds, "c", GetEnvWithDefault(natsUserCredsEnvVar, defaultNatsUserCreds), natsUserCredsHelp)
-	fs.StringVar(&(*config).UserCreds, "creds", GetEnvWithDefault(natsUserCredsEnvVar, defaultNatsUserCreds), natsUserCredsHelp)
+	fs.StringVar(&(*config).Config.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
+	fs.StringVar(&(*config).Config.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
 
 	fs.Var(&(*config).Inputs, "in", inputsHelp)
 	fs.Var(&(*config).Outputs, "out", outputsHelp)

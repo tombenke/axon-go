@@ -6,14 +6,16 @@ import (
 
 // IO defines the properties of a generic I/O port
 type IO struct {
-	Channel string
-	Name    string
+	Name           string
+	Type           string
+	Representation string
+	Channel        string
 }
 
 // In defines the properties of an input descriptor CLI parameter
 type In struct {
 	IO
-	DefaultValue interface{}
+	Default interface{}
 }
 
 // Inputs is an array of the input CLI parameters
@@ -32,24 +34,31 @@ func (i *Inputs) Set(value string) error {
 
 // parseIn parses the input CLI parameter and returns with an `In` object build from the parse results
 func parseIn(inStr string) (result In) {
-	parts := strings.Split(inStr, ":")
+	parts := strings.Split(inStr, "|")
 
 	switch len(parts) {
 	case 1:
-		result = In{IO: IO{Channel: parts[0], Name: parts[0]}, DefaultValue: ""}
+		result = In{IO: IO{Name: parts[0], Channel: "", Type: DefaultType, Representation: DefaultRepresentation}, Default: ""}
 	case 2:
-		result = In{IO: IO{Channel: parts[0], Name: parts[0]}, DefaultValue: parts[1]}
-	case 3:
-		if parts[0] == "" {
-			result = In{IO: IO{Channel: parts[1], Name: parts[1]}, DefaultValue: parts[2]}
-		} else {
-			result = In{IO: IO{Channel: parts[0], Name: parts[1]}, DefaultValue: parts[2]}
-		}
+		result = In{IO: IO{Name: parts[0], Channel: parts[1], Type: DefaultType, Representation: DefaultRepresentation}, Default: ""}
+	case 5:
+		result = In{IO: IO{Name: parts[0], Channel: parts[1], Type: parts[2], Representation: parts[3]}, Default: parts[4]}
+	default:
+		panic("Wrong number of input port parameters")
 	}
 
 	if result.Name == "" {
-		panic("Input name must be defined!")
+		panic("Input port name must be defined!")
 	}
+
+	if result.Type == "" {
+		result.Type = DefaultType
+	}
+
+	if result.Representation == "" {
+		result.Representation = DefaultRepresentation
+	}
+
 	return result
 }
 
@@ -74,21 +83,30 @@ func (o *Outputs) Set(value string) error {
 
 // parseOut parses the output CLI parameter and returns with an `Out` object build from the parse results
 func parseOut(inStr string) (result Out) {
-	parts := strings.Split(inStr, ":")
+	parts := strings.Split(inStr, "|")
 
 	switch len(parts) {
 	case 1:
-		result = Out{IO: IO{Channel: parts[0], Name: parts[0]}}
+		result = Out{IO: IO{Name: parts[0], Channel: "", Type: DefaultType, Representation: DefaultRepresentation}}
 	case 2:
-		if parts[1] == "" {
-			result = Out{IO: IO{Channel: parts[0], Name: parts[0]}}
-		} else {
-			result = Out{IO: IO{Channel: parts[1], Name: parts[0]}}
-		}
+		result = Out{IO: IO{Name: parts[0], Channel: parts[1], Type: DefaultType, Representation: DefaultRepresentation}}
+	case 4:
+		result = Out{IO: IO{Name: parts[0], Channel: parts[1], Type: parts[2], Representation: parts[3]}}
+	default:
+		panic("Wrong number of output port parameters")
 	}
 
 	if result.Name == "" {
-		panic("Input name must be defined!")
+		panic("Output port name must be defined!")
 	}
+
+	if result.Type == "" {
+		result.Type = DefaultType
+	}
+
+	if result.Representation == "" {
+		result.Representation = DefaultRepresentation
+	}
+
 	return result
 }

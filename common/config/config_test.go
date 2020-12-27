@@ -46,8 +46,8 @@ func TestParseCliArgsWithDefaults(t *testing.T) {
 	assert.Equal(t, c.Name, defaultNodeName)
 	assert.Equal(t, c.LogLevel, defaultLogLevel)
 	assert.Equal(t, c.LogFormat, defaultLogFormat)
-	assert.Equal(t, c.Urls, defaultNatsUrls)
-	assert.Equal(t, c.UserCreds, defaultNatsUserCreds)
+	assert.Equal(t, c.Urls, defaultMessagingURL)
+	assert.Equal(t, c.UserCreds, defaultMessagingUserCreds)
 	assert.Equal(t, c.Precision, "ns")
 	assert.Equal(t, c.Inputs, *new(Inputs))
 	assert.Equal(t, c.Outputs, *new(Outputs))
@@ -63,15 +63,22 @@ func TestConfigWithArgs(t *testing.T) {
 	args = append(args, "-log-level")
 	args = append(args, logLevel)
 	args = append(args, "-in")
-	args = append(args, "well-water-level:water-level:0.")
+	args = append(args, `water-level|well-water-level|||{"Body": {"Data": 0.}}`)
 	args = append(args, "-in")
-	args = append(args, "reference-water-level:well-water-upper-level:0.")
+	args = append(args, `reference-water-level|well-water-upper-level|||{"Body": {"Data": 0.}}`)
 	args = append(args, "-out")
-	args = append(args, "level-state:well-water-upper-level-state")
+	args = append(args, "level-state|well-water-upper-level-state")
 
 	c := ParseCliArgs(nodeName, args)
 	assert.Equal(t, c.Name, nodeName)
 	assert.Equal(t, c.LogLevel, logLevel)
-	assert.Equal(t, c.Inputs, Inputs{In{IO: IO{Channel: "well-water-level", Name: "water-level"}, DefaultValue: "0."}, In{IO: IO{Channel: "reference-water-level", Name: "well-water-upper-level"}, DefaultValue: "0."}})
-	assert.Equal(t, c.Outputs, Outputs{Out{IO: IO{Channel: "well-water-upper-level-state", Name: "level-state"}}})
+	assert.Equal(t,
+		Inputs{
+			In{IO: IO{Name: "water-level", Channel: "well-water-level", Type: DefaultType, Representation: DefaultRepresentation}, Default: `{"Body": {"Data": 0.}}`},
+			In{IO: IO{Name: "reference-water-level", Channel: "well-water-upper-level", Type: DefaultType, Representation: DefaultRepresentation}, Default: `{"Body": {"Data": 0.}}`}},
+		c.Inputs)
+	assert.Equal(t,
+		Outputs{
+			Out{IO: IO{Name: "level-state", Channel: "well-water-upper-level-state", Type: DefaultType, Representation: DefaultRepresentation}}},
+		c.Outputs)
 }

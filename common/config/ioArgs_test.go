@@ -7,12 +7,14 @@ import (
 
 // invalid input strings
 var invalidIns []string = []string{
-	"",             // no name string
-	":",            // empty name string
-	"::",           // empty name string
-	"channel::",    // empty name string
-	"::0.1",        // empty name string
-	"channel::0.1", // empty name string
+	"",              // no name string
+	"|",             // empty name string
+	"||",            // empty name string
+	"|channel||",    // empty name string
+	"||0.1",         // empty name string
+	"|channel||0.1", // empty name string
+	"name||||||",    // Wrong number of arguments
+	"name|||",       // Wrong number of arguments
 }
 
 type validIn struct {
@@ -21,14 +23,13 @@ type validIn struct {
 }
 
 var validIns []validIn = []validIn{
-	validIn{"name", In{IO{"name", "name"}, ""}},                   // name only
-	validIn{"name:0.1", In{IO{"name", "name"}, "0.1"}},            // name and default value
-	validIn{":name:0.1", In{IO{"name", "name"}, "0.1"}},           // name and default value
-	validIn{"channel:name:", In{IO{"channel", "name"}, ""}},       // channel and name
-	validIn{"channel:name:0.1", In{IO{"channel", "name"}, "0.1"}}, // full
+	validIn{"name", In{IO{"name", DefaultType, DefaultRepresentation, ""}, ""}},                                                 // name only
+	validIn{"name||||0.1", In{IO{"name", DefaultType, DefaultRepresentation, ""}, "0.1"}},                                       // name and default value
+	validIn{"name||||0.1", In{IO{"name", DefaultType, DefaultRepresentation, ""}, "0.1"}},                                       // name and default value
+	validIn{"name|channel|||", In{IO{"name", DefaultType, DefaultRepresentation, "channel"}, ""}},                               // channel and name
+	validIn{"name|channel|||false", In{IO{"name", DefaultType, DefaultRepresentation, "channel"}, "false"}},                     // channel and name
+	validIn{"name|channel|base/Bool|application/json|true", In{IO{"name", "base/Bool", "application/json", "channel"}, "true"}}, // full
 }
-
-const notEqualMsg string = "The two objects should be the equal!"
 
 // Test input args
 func TestParseInArgs(t *testing.T) {
@@ -36,7 +37,7 @@ func TestParseInArgs(t *testing.T) {
 
 	// Test valid cases
 	for _, i := range validIns {
-		assert.Equal(parseIn(i.Arg), i.Expected, notEqualMsg)
+		assert.Equal(i.Expected, parseIn(i.Arg))
 	}
 
 	// Test invalid cases
@@ -52,9 +53,11 @@ func TestParseInArgs(t *testing.T) {
 
 // invalid output strings
 var invalidOuts []string = []string{
-	"",         // no name string
-	":",        // empty name string
-	":channel", // empty name string
+	"",          // no name string
+	"|",         // empty name string
+	"|channel",  // empty name string
+	"name||",    // Wrong number of arguments
+	"name|||||", // Wrong number of arguments
 }
 
 type validOut struct {
@@ -63,9 +66,9 @@ type validOut struct {
 }
 
 var validOuts []validOut = []validOut{
-	validOut{"name", Out{IO{"name", "name"}}},            // name only
-	validOut{"name:", Out{IO{"name", "name"}}},           // name and default value
-	validOut{"name:channel", Out{IO{"channel", "name"}}}, // name and channel name
+	validOut{"name", Out{IO{"name", DefaultType, DefaultRepresentation, ""}}},
+	validOut{"name|", Out{IO{"name", DefaultType, DefaultRepresentation, ""}}},
+	validOut{"name|channel|base/Bool|application/json", Out{IO{"name", "base/Bool", "application/json", "channel"}}},
 }
 
 // Test output args
@@ -74,7 +77,7 @@ func TestParseOutArgs(t *testing.T) {
 
 	// Test valid cases
 	for _, i := range validOuts {
-		assert.Equal(parseOut(i.Arg), i.Expected, notEqualMsg)
+		assert.Equal(parseOut(i.Arg), i.Expected)
 	}
 
 	// Test invalid cases
