@@ -19,6 +19,16 @@ type OutputsHandler interface {
 	SetOutputMessage(string, msgs.Message) error
 }
 
+// GetOutputMessage returns the last message set to the output port for sending selected by the `name` parameter
+func (outputs Outputs) GetOutputMessage(name string) msgs.Message {
+
+	if output, ok := outputs[name]; ok {
+		return output.Message
+	}
+	errorMessage := fmt.Sprintf("There is no output port named to '%s'", name)
+	panic(errorMessage)
+}
+
 // SetOutputMessage sets the message to emit via the output port selected by the `name` parameter
 func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) {
 	if _, ok := (*outputs)[name]; !ok {
@@ -33,7 +43,7 @@ func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) {
 		panic(errorMessage)
 	}
 
-	(*outputs)[name] = Output{IO{Name: name, Type: outMsg.GetType(), Message: outMsg}}
+	(*outputs)[name] = Output{IO: IO{Name: name, Type: outMsgType, Message: outMsg}}
 }
 
 // NewOutputs creates a new Outputs map based on the config parameters

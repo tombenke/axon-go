@@ -1,7 +1,6 @@
 package io
 
 import (
-	"errors"
 	"fmt"
 	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/msgs"
@@ -21,13 +20,31 @@ type InputsHandler interface {
 	GetInputMessage(string) (msgs.Message, error)
 }
 
-// GetInputMessage returns the last message received via the inputput port selected by the `name` parameter
-func (inputs Inputs) GetInputMessage(name string) (msgs.Message, error) {
+// GetInputMessage returns the last message received via the input port selected by the `name` parameter
+func (inputs Inputs) GetInputMessage(name string) msgs.Message {
 
 	if input, ok := inputs[name]; ok {
-		return input.Message, nil
+		return input.Message
 	}
-	return nil, errors.New("There is no input port named to " + name)
+	errorMessage := fmt.Sprintf("There is no input port named to '%s'", name)
+	panic(errorMessage)
+}
+
+// SetInputMessage sets the message that received via the input channel to the port selected by the `name` parameter
+func (inputs *Inputs) SetInputMessage(name string, inMsg msgs.Message) {
+	if _, ok := (*inputs)[name]; !ok {
+		errorMessage := fmt.Sprintf("'%s' port does not exist, so can not set message to it.", name)
+		panic(errorMessage)
+	}
+
+	inMsgType := inMsg.GetType()
+	portMsgType := string((*inputs)[name].Type)
+	if inMsgType != portMsgType {
+		errorMessage := fmt.Sprintf("'%s' message-type mismatch to port's '%s' message-type.", inMsgType, portMsgType)
+		panic(errorMessage)
+	}
+
+	(*inputs)[name] = Input{IO: IO{Name: name, Type: inMsgType, Message: inMsg}, DefaultMessage: (*inputs)[name].DefaultMessage}
 }
 
 // NewInputs creates a new Inputs map based on the config parameters
@@ -56,7 +73,10 @@ func NewInputs(inputsCfg config.Inputs) Inputs {
 		Default := msgs.GetDefaultMessageByType(Type)
 		if in.Default != "" {
 			// The default config value is not empty, so it should be a valid message in JSON format
-			Default.Decode(msgs.JSONRepresentation, []byte(in.Default))
+			err := Default.Decode(msgs.JSONRepresentation, []byte(in.Default))
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		inputs[Name] = Input{IO: IO{Name: Name, Type: Type, Representation: Repr, Channel: Chan}, DefaultMessage: Default}

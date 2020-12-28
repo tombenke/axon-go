@@ -7,24 +7,37 @@ import (
 	"testing"
 )
 
+func TestGetOutputMessage(t *testing.T) {
+	bmsg := base.NewBoolMessage(true)
+	out := Outputs{"State": Output{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	rmsg := (out).GetOutputMessage("State")
+	assert.Equal(t, rmsg, bmsg)
+}
+
+func TestGetOutputMessageWrongPort(t *testing.T) {
+	bmsg := base.NewBoolMessage(true)
+	out := Outputs{"State": Output{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	assert.Panics(t, func() { out.GetOutputMessage("WrongPort") })
+}
+
 func TestSetOutputMessage(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
-	o := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
-	(o).SetOutputMessage("State", bmsg)
-	assert.Equal(t, o["State"].IO.Message.String(), bmsg.String())
+	out := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	(out).SetOutputMessage("State", bmsg)
+	assert.Equal(t, out["State"].IO.Message.String(), bmsg.String())
 }
 
 func TestSetOutputMessageWrongPort(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
-	o := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
-	assert.Panics(t, func() { (o).SetOutputMessage("WrongPortName", bmsg) })
+	out := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	assert.Panics(t, func() { out.SetOutputMessage("WrongPortName", bmsg) })
 }
 
 func TestSetOutputMessageWrongMessageType(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
-	o := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	out := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
 	smsg := base.NewStringMessage("Wrong message")
-	assert.Panics(t, func() { (o).SetOutputMessage("State", smsg) })
+	assert.Panics(t, func() { out.SetOutputMessage("State", smsg) })
 }
 
 func TestNewOutputs(t *testing.T) {
