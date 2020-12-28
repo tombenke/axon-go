@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	NodeConfig
+	Node
 	Precision string
 }
 
@@ -19,7 +19,7 @@ func ParseCliArgs(defaultNodeName string, args []string) Config {
 	config := Config{}
 
 	// Get the dafault CLI args
-	fs := GetDefaultFlagSet(defaultNodeName, &config.NodeConfig)
+	fs := GetDefaultFlagSet(defaultNodeName, &config.Node)
 
 	// Extend the default set with node specific arguments
 	fs.StringVar(&config.Precision, "p", "ns", "The precision of time value: ns, us, ms, s")

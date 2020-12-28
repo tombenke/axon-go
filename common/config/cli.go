@@ -4,7 +4,6 @@ package config
 
 import (
 	"flag"
-	"github.com/tombenke/axon-go/common/messenger"
 	"os"
 )
 
@@ -19,9 +18,6 @@ func GetEnvWithDefault(envVarName string, defaultValue string) string {
 }
 
 const (
-	DefaultType           = "base/Any"
-	DefaultRepresentation = "application/json"
-
 	nodeNameHelp   = "The name of the node"
 	nodeNameEnvVar = "NODE_NAME"
 
@@ -45,19 +41,8 @@ const (
 	outputsHelp = "Output. Format: <name>:[<channel-name>]"
 )
 
-// NodeConfig is the default config struct that every axon actor node inherits
-type NodeConfig struct {
-	messenger.Config
-
-	Name      string
-	LogLevel  string
-	LogFormat string
-	Inputs    Inputs
-	Outputs   Outputs
-}
-
 // GetDefaultFlagSet returns with the default values of the generic configuration parameters
-func GetDefaultFlagSet(defaultNodeName string, config *NodeConfig) *flag.FlagSet {
+func GetDefaultFlagSet(defaultNodeName string, config *Node) *flag.FlagSet {
 	fs := flag.NewFlagSet("fs-name", flag.PanicOnError)
 
 	var showHelp bool

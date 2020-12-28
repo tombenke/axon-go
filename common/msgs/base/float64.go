@@ -13,6 +13,12 @@ const (
 	Float64TypeName = "base/Float64"
 )
 
+func init() {
+	msgs.RegisterMessageType(Float64TypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewFloat64Message(float64(0))
+	})
+}
+
 // Float64 represents the structure of the messages emitted or consumed by the float64 sensors and actuators.
 type Float64 struct {
 	Header common.Header

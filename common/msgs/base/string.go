@@ -13,6 +13,12 @@ const (
 	StringTypeName = "base/String"
 )
 
+func init() {
+	msgs.RegisterMessageType(StringTypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewStringMessage("")
+	})
+}
+
 // String represents the structure of the messages emitted or consumed by the string-type sensors and actuators.
 type String struct {
 	Header common.Header

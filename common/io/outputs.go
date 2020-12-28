@@ -32,6 +32,22 @@ func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) error
 }
 
 // NewOutputs creates a new Outputs map based on the config parameters
-func NewOutputs(outputs config.Outputs) (Outputs, error) {
-	return Outputs{}, nil
+func NewOutputs(outputsCfg config.Outputs) Outputs {
+	outputs := make(Outputs)
+	for _, o := range outputsCfg {
+		Name := o.IO.Name
+		Type := o.IO.Type
+		Repr := msgs.Representation(o.IO.Representation)
+		Chan := o.IO.Channel
+		if !msgs.IsMessageTypeRegistered(Type) {
+			errorString := fmt.Sprintf("The '%s' message type has not been registered!", Type)
+			panic(errorString)
+		}
+		if !msgs.DoesMessageTypeImplementsRepresentation(Type, Repr) {
+			errorString := fmt.Sprintf("'%s' message-type does not implement codec for '%s' representation format", Type, Repr)
+			panic(errorString)
+		}
+		outputs[Name] = Output{IO{Name: Name, Type: Type, Representation: Repr, Channel: Chan}}
+	}
+	return outputs
 }

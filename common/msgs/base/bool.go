@@ -13,6 +13,12 @@ const (
 	BoolTypeName = "base/Bool"
 )
 
+func init() {
+	msgs.RegisterMessageType(BoolTypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewBoolMessage(false)
+	})
+}
+
 // Bool represents the structure of the messages emitted or consumed by the boolean-type sensors and actuators.
 type Bool struct {
 	Header common.Header

@@ -11,6 +11,12 @@ const (
 	AnyTypeName = "base/Any"
 )
 
+func init() {
+	msgs.RegisterMessageType(AnyTypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewAnyMessage(map[string]interface{}{})
+	})
+}
+
 // Any represents the structure of a generic message that may contain anything
 type Any map[string]interface{}
 

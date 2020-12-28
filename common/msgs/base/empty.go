@@ -13,6 +13,12 @@ const (
 	EmptyTypeName = "base/Empty"
 )
 
+func init() {
+	msgs.RegisterMessageType(EmptyTypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewEmptyMessage()
+	})
+}
+
 // Empty represents the structure of the empty message.
 type Empty struct {
 	Header common.Header

@@ -13,6 +13,12 @@ const (
 	HumidityTypeName = "sensors/Humidity"
 )
 
+func init() {
+	msgs.RegisterMessageType(HumidityTypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewHumidityMessage(float64(0))
+	})
+}
+
 // Humidity message structure represent a physical level value, such as water level.
 type Humidity struct {
 	Header common.Header

@@ -4,23 +4,6 @@ import (
 	"strings"
 )
 
-// IO defines the properties of a generic I/O port
-type IO struct {
-	Name           string
-	Type           string
-	Representation string
-	Channel        string
-}
-
-// In defines the properties of an input descriptor CLI parameter
-type In struct {
-	IO
-	Default interface{}
-}
-
-// Inputs is an array of the input CLI parameters
-type Inputs []In
-
 // String is a dummy implementation of the function
 func (i *Inputs) String() string {
 	return ""
@@ -61,14 +44,6 @@ func parseIn(inStr string) (result In) {
 
 	return result
 }
-
-// Out defines the properties of an output descriptor CLI parameter
-type Out struct {
-	IO
-}
-
-// Outputs is an array of the output CLI parameters
-type Outputs []Out
 
 // String is a dummy implementation of the function
 func (o *Outputs) String() string {

@@ -13,6 +13,12 @@ const (
 	TemperatureTypeName = "sensors/Temperature"
 )
 
+func init() {
+	msgs.RegisterMessageType(TemperatureTypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewTemperatureMessage(float64(0))
+	})
+}
+
 // Temperature represents the structure of the messages emitted by the Temperature sensors
 type Temperature struct {
 	Header common.Header

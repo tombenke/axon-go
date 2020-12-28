@@ -13,6 +13,12 @@ const (
 	Int64TypeName = "base/Int64"
 )
 
+func init() {
+	msgs.RegisterMessageType(Int64TypeName, []msgs.Representation{msgs.JSONRepresentation}, func() msgs.Message {
+		return NewInt64Message(int64(0))
+	})
+}
+
 // Int64 represents the structure of the messages emitted or consumed by the int64 sensors and actuators.
 type Int64 struct {
 	Header common.Header
