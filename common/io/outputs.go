@@ -1,11 +1,9 @@
 package io
 
 import (
-	"errors"
 	"fmt"
 	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/msgs"
-	"reflect"
 )
 
 // Output holds the data of an output port of the actor
@@ -22,13 +20,20 @@ type OutputsHandler interface {
 }
 
 // SetOutputMessage sets the message to emit via the output port selected by the `name` parameter
-func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) error {
-	if _, ok := (*outputs)[name]; ok {
-		fmt.Printf("outputs: %s", reflect.TypeOf((*outputs)[name]))
-		(*outputs)[name] = Output{IO{Name: name, Type: outMsg.GetType(), Message: outMsg}}
-		return nil
+func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) {
+	if _, ok := (*outputs)[name]; !ok {
+		errorMessage := fmt.Sprintf("'%s' port does not exist, so can not set message to it.", name)
+		panic(errorMessage)
 	}
-	return errors.New("There is no output port named to " + name)
+
+	outMsgType := outMsg.GetType()
+	portMsgType := string((*outputs)[name].Type)
+	if outMsgType != portMsgType {
+		errorMessage := fmt.Sprintf("'%s' message-type mismatch to port's '%s' message-type.", outMsgType, portMsgType)
+		panic(errorMessage)
+	}
+
+	(*outputs)[name] = Output{IO{Name: name, Type: outMsg.GetType(), Message: outMsg}}
 }
 
 // NewOutputs creates a new Outputs map based on the config parameters

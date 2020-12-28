@@ -7,11 +7,24 @@ import (
 	"testing"
 )
 
-func TestOutputsSetOutputMessage(t *testing.T) {
+func TestSetOutputMessage(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
 	o := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
 	(o).SetOutputMessage("State", bmsg)
-	//TODO: Write the test
+	assert.Equal(t, o["State"].IO.Message.String(), bmsg.String())
+}
+
+func TestSetOutputMessageWrongPort(t *testing.T) {
+	bmsg := base.NewBoolMessage(true)
+	o := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	assert.Panics(t, func() { (o).SetOutputMessage("WrongPortName", bmsg) })
+}
+
+func TestSetOutputMessageWrongMessageType(t *testing.T) {
+	bmsg := base.NewBoolMessage(true)
+	o := Outputs{"State": Output{IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}}}
+	smsg := base.NewStringMessage("Wrong message")
+	assert.Panics(t, func() { (o).SetOutputMessage("State", smsg) })
 }
 
 func TestNewOutputs(t *testing.T) {
@@ -21,4 +34,18 @@ func TestNewOutputs(t *testing.T) {
 	}
 	outputs := NewOutputs(outputsCfg)
 	assert.Equal(t, len(outputs), 2)
+}
+
+func TestNewOutputsWithUnregisteredMessageType(t *testing.T) {
+	outputsCfg := config.Outputs{
+		config.Out{IO: config.IO{Name: "sensor-value", Type: "base/WrongType", Representation: "application/json", Channel: "value-of-sensor-1"}},
+	}
+	assert.Panics(t, func() { NewOutputs(outputsCfg) })
+}
+
+func TestNewOutputsWithMissingRepresentation(t *testing.T) {
+	outputsCfg := config.Outputs{
+		config.Out{IO: config.IO{Name: "sensor-value", Type: "base/Bool", Representation: "wrong/representation", Channel: "value-of-sensor-1"}},
+	}
+	assert.Panics(t, func() { NewOutputs(outputsCfg) })
 }

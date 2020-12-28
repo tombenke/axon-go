@@ -21,8 +21,9 @@ func (ctx Context) GetInputMessage(name string) (msgs.Message, error) {
 }
 
 // SetOutputMessage sets the `outMsg` message to be emitted via the output port selected by its `name`.
-func (ctx Context) SetOutputMessage(name string, outMsg msgs.Message) error {
-	return ctx.Outputs.SetOutputMessage(name, outMsg)
+func (ctx Context) SetOutputMessage(name string, outMsg msgs.Message) {
+	ctx.Outputs.SetOutputMessage(name, outMsg)
+	return
 }
 
 // NewContext creates a new processor context object and returns with it
