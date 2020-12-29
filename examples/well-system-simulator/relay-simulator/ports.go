@@ -15,7 +15,7 @@ var inputsCfg = config.Inputs{
 		Name:           "relay-state",
 		Type:           "base/Bool",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "well-pump-relay-state",
 	}, Default: ""},
 	config.In{IO: config.IO{
 		Name:           "power-input",

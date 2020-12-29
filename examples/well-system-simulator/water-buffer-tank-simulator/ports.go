@@ -16,30 +16,30 @@ var inputsCfg = config.Inputs{
 		Type:           "base/Float64",
 		Representation: "application/json",
 		Channel:        "",
-	}, Default: `{"Body": {"Data": 0}}`},
+	}, Default: `{"Body": {"Data": 1.0}}`}, // [m2]
 	config.In{IO: config.IO{
 		Name:           "max-water-level",
 		Type:           "base/Float64",
 		Representation: "application/json",
 		Channel:        "",
-	}, Default: `{"Body": {"Data": 0}}`},
+	}, Default: `{"Body": {"Data": 0.95}}`}, // [m]
 	config.In{IO: config.IO{
 		Name:           "water-input",
 		Type:           "base/Float64",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "well-pump-water-output",
 	}, Default: ""},
 	config.In{IO: config.IO{
 		Name:           "water-level",
 		Type:           "base/Float64",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "well-water-buffer-tank-level",
 	}, Default: ""},
 	config.In{IO: config.IO{
 		Name:           "water-output-need",
 		Type:           "base/Float64",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "high-pressure-wss-input-need",
 	}, Default: ""},
 }
 
@@ -48,18 +48,18 @@ var outputsCfg = config.Outputs{
 		Name:           "water-input-need",
 		Type:           "base/Float64",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "well-water-buffer-tank-consumption-need",
 	}},
 	config.Out{IO: config.IO{
 		Name:           "water-output",
 		Type:           "base/Float64",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "well-water-buffer-tank-water-output",
 	}},
 	config.Out{IO: config.IO{
 		Name:           "water-level",
 		Type:           "base/Float64",
 		Representation: "application/json",
-		Channel:        "",
+		Channel:        "well-water-buffer-tank-level",
 	}},
 }
