@@ -2,47 +2,10 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/msgs/base"
 	at "github.com/tombenke/axon-go/common/testing"
 	"testing"
 )
-
-var inputsCfg = config.Inputs{
-	config.In{IO: config.IO{
-		Name:           "relay-state",
-		Type:           "base/Bool",
-		Representation: "application/json",
-		Channel:        "",
-	}, Default: ""},
-	config.In{IO: config.IO{
-		Name:           "power-input",
-		Type:           "base/Float64",
-		Representation: "application/json",
-		Channel:        "well-pump-relay.electric-power-input",
-	}, Default: ""},
-	config.In{IO: config.IO{
-		Name:           "power-need",
-		Type:           "base/Float64",
-		Representation: "application/json",
-		Channel:        "well-pump-power-need",
-	}, Default: ""},
-}
-
-var outputsCfg = config.Outputs{
-	config.Out{IO: config.IO{
-		Name:           "power-output",
-		Type:           "base/Float64",
-		Representation: "application/json",
-		Channel:        "well-pump-power",
-	}},
-	config.Out{IO: config.IO{
-		Name:           "power-need",
-		Type:           "base/Float64",
-		Representation: "application/json",
-		Channel:        "well-pump-relay.electric-power-need",
-	}},
-}
 
 var testCases at.TestCases = at.TestCases{
 	// Relay is OFF
