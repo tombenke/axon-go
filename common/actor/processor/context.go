@@ -27,6 +27,7 @@ func (ctx Context) SetOutputMessage(name string, outMsg msgs.Message) {
 
 // NewContext creates a new processor context object and returns with it
 func NewContext(logger *logrus.Logger, inputs io.Inputs, outputs io.Outputs) Context {
-	var context Context
+	context := Context{Inputs: inputs, Outputs: outputs, Logger: logger}
+
 	return context
 }

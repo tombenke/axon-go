@@ -51,7 +51,8 @@ nodes:
       - name: water-level
         channel: well-water-buffer-tank-level
     outputs:
-      - name: buffer-water-tank-upper-level-state
+      - name: water-level-state
+        channel: buffer-water-tank-upper-level-state
         type: base/Bool
 
   - name: well-pump-controller
