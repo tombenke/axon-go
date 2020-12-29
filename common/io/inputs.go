@@ -15,13 +15,8 @@ type Input struct {
 // Inputs holds a map of the the input ports of the actor. The key is the name of the port.
 type Inputs map[string]Input
 
-// InputsHandler declares the methods to the management of the input ports
-type InputsHandler interface {
-	GetInputMessage(string) (msgs.Message, error)
-}
-
-// GetInputMessage returns the last message received via the input port selected by the `name` parameter
-func (inputs Inputs) GetInputMessage(name string) msgs.Message {
+// GetMessage returns the last message received via the input port selected by the `name` parameter
+func (inputs Inputs) GetMessage(name string) msgs.Message {
 
 	if input, ok := inputs[name]; ok {
 		return input.Message
@@ -30,8 +25,8 @@ func (inputs Inputs) GetInputMessage(name string) msgs.Message {
 	panic(errorMessage)
 }
 
-// SetInputMessage sets the message that received via the input channel to the port selected by the `name` parameter
-func (inputs *Inputs) SetInputMessage(name string, inMsg msgs.Message) {
+// SetMessage sets the message that received via the input channel to the port selected by the `name` parameter
+func (inputs *Inputs) SetMessage(name string, inMsg msgs.Message) {
 	if _, ok := (*inputs)[name]; !ok {
 		errorMessage := fmt.Sprintf("'%s' port does not exist, so can not set message to it.", name)
 		panic(errorMessage)

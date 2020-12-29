@@ -14,13 +14,8 @@ type Output struct {
 // Outputs holds a map of the the output ports of the actor. The key is the name of the port.
 type Outputs map[string]Output
 
-// OutputsHandler declares the methods to the management of the output ports
-type OutputsHandler interface {
-	SetOutputMessage(string, msgs.Message) error
-}
-
-// GetOutputMessage returns the last message set to the output port for sending selected by the `name` parameter
-func (outputs Outputs) GetOutputMessage(name string) msgs.Message {
+// GetMessage returns the last message set to the output port for sending selected by the `name` parameter
+func (outputs Outputs) GetMessage(name string) msgs.Message {
 
 	if output, ok := outputs[name]; ok {
 		return output.Message
@@ -29,8 +24,8 @@ func (outputs Outputs) GetOutputMessage(name string) msgs.Message {
 	panic(errorMessage)
 }
 
-// SetOutputMessage sets the message to emit via the output port selected by the `name` parameter
-func (outputs *Outputs) SetOutputMessage(name string, outMsg msgs.Message) {
+// SetMessage sets the message to emit via the output port selected by the `name` parameter
+func (outputs *Outputs) SetMessage(name string, outMsg msgs.Message) {
 	if _, ok := (*outputs)[name]; !ok {
 		errorMessage := fmt.Sprintf("'%s' port does not exist, so can not set message to it.", name)
 		panic(errorMessage)

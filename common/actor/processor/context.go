@@ -17,12 +17,12 @@ type Context struct {
 
 // GetInputMessage returns the latest input message arrived to the input port selected by its `name`.
 func (ctx Context) GetInputMessage(name string) msgs.Message {
-	return ctx.Inputs.GetInputMessage(name)
+	return ctx.Inputs.GetMessage(name)
 }
 
 // SetOutputMessage sets the `outMsg` message to be emitted via the output port selected by its `name`.
 func (ctx Context) SetOutputMessage(name string, outMsg msgs.Message) {
-	ctx.Outputs.SetOutputMessage(name, outMsg)
+	ctx.Outputs.SetMessage(name, outMsg)
 }
 
 // NewContext creates a new processor context object and returns with it

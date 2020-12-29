@@ -24,7 +24,7 @@ type TestCaseMsgs map[string]msgs.Message
 func CompareOutputsData(t *testing.T, ctx processor.Context, tc TestCase) {
 	for portName, _ := range tc.Outputs {
 		expected := tc.Outputs[portName]
-		actual := ctx.Outputs.GetOutputMessage(portName)
+		actual := ctx.Outputs.GetMessage(portName)
 		assert.Equal(t, reflect.TypeOf(actual), reflect.TypeOf(expected))
 
 		expectedDataValue := reflect.ValueOf(expected).Elem().FieldByName("Body").FieldByName("Data")
@@ -45,7 +45,7 @@ func CompareOutputsData(t *testing.T, ctx processor.Context, tc TestCase) {
 
 func SetInputs(inputs *io.Inputs, inputMsgs TestCaseMsgs) {
 	for portName, _ := range inputMsgs {
-		(*inputs).SetInputMessage(portName, inputMsgs[portName])
+		(*inputs).SetMessage(portName, inputMsgs[portName])
 	}
 }
 

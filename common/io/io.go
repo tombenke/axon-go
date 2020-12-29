@@ -22,6 +22,6 @@ type IO struct {
 
 // Handler is an interface for both the input and output type ports
 type Handler interface {
-	InputsHandler
-	OutputsHandler
+	GetInputMessage(string) (msgs.Message, error)
+	SetOutputMessage(string, msgs.Message) error
 }

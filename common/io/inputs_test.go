@@ -7,37 +7,37 @@ import (
 	"testing"
 )
 
-func TestGetInputMessage(t *testing.T) {
+func TestInputsGetMessage(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
 	in := Inputs{"State": Input{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}, DefaultMessage: bmsg}}
-	rmsg := (in).GetInputMessage("State")
+	rmsg := (in).GetMessage("State")
 	assert.Equal(t, rmsg, bmsg)
 }
 
-func TestGetInputMessageWrongPort(t *testing.T) {
+func TestInputsGetMessageWrongPort(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
 	in := Inputs{"State": Input{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}, DefaultMessage: bmsg}}
-	assert.Panics(t, func() { (in).GetInputMessage("WrongPort") })
+	assert.Panics(t, func() { (in).GetMessage("WrongPort") })
 }
 
-func TestSetInputMessage(t *testing.T) {
+func TestInputsSetMessage(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
 	in := Inputs{"State": Input{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}, DefaultMessage: bmsg}}
-	(in).SetInputMessage("State", bmsg)
+	(in).SetMessage("State", bmsg)
 	assert.Equal(t, in["State"].IO.Message.String(), bmsg.String())
 }
 
-func TestSetInputMessageWrongPort(t *testing.T) {
+func TestInputsSetMessageWrongPort(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
 	in := Inputs{"State": Input{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}, DefaultMessage: bmsg}}
-	assert.Panics(t, func() { (in).SetInputMessage("WrongPortName", bmsg) })
+	assert.Panics(t, func() { (in).SetMessage("WrongPortName", bmsg) })
 }
 
-func TestSetInputMessageWrongMessageType(t *testing.T) {
+func TestInputsSetMessageWrongMessageType(t *testing.T) {
 	bmsg := base.NewBoolMessage(true)
 	in := Inputs{"State": Input{IO: IO{Name: "State", Type: base.BoolTypeName, Message: bmsg}, DefaultMessage: bmsg}}
 	smsg := base.NewStringMessage("Wrong message")
-	assert.Panics(t, func() { (in).SetInputMessage("State", smsg) })
+	assert.Panics(t, func() { (in).SetMessage("State", smsg) })
 }
 
 func TestNewInputsNoDefault(t *testing.T) {
