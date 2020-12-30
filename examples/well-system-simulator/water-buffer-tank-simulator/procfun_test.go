@@ -9,10 +9,10 @@ import (
 
 var testCases at.TestCases = at.TestCases{
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"dt": base.NewFloat64Message(1000),
 		},
-		at.TestCaseMsgs{},
+		Outputs: at.TestCaseMsgs{},
 	},
 	// TODO: Add test cases
 }

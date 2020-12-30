@@ -9,29 +9,29 @@ import (
 
 var testCases at.TestCases = at.TestCases{
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"reference-water-level": base.NewFloat64Message(0.75),
 			"water-level":           base.NewFloat64Message(0.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"water-level-state": base.NewBoolMessage(false),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"reference-water-level": base.NewFloat64Message(0.75),
 			"water-level":           base.NewFloat64Message(0.75),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"water-level-state": base.NewBoolMessage(true),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"reference-water-level": base.NewFloat64Message(0.75),
 			"water-level":           base.NewFloat64Message(0.8),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"water-level-state": base.NewBoolMessage(true),
 		},
 	},

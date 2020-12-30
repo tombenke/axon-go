@@ -46,7 +46,7 @@ var inputsCfg = config.Inputs{
 		Type:           "base/Float64",
 		Representation: "application/json",
 		Channel:        "well-water-level",
-	}, Default: `{"Body": {"Data": -30 }}`}, // max_water_level (the well is full by default)
+	}, Default: `{"Body": {"Data": -30 }}`}, // maxWaterLevel (the well is full by default)
 }
 
 var outputsCfg = config.Outputs{

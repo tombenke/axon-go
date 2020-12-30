@@ -6,6 +6,7 @@ import (
 	"github.com/tombenke/axon-go/common/msgs/base"
 )
 
+// ProcessorFun is the message processor function of the actor node
 func ProcessorFun(ctx processor.Context) error {
 
 	fmt.Printf("ctx: %v\n", ctx)

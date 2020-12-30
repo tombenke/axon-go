@@ -9,14 +9,14 @@ import (
 
 var testCases at.TestCases = at.TestCases{
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"dt":                            base.NewFloat64Message(1000),
 			"well-water-upper-level-state":  base.NewBoolMessage(false),
 			"well-water-lower-level-state":  base.NewBoolMessage(false),
 			"buffer-tank-upper-level-state": base.NewBoolMessage(false),
 			"well-pump-controller-state":    base.NewStringMessage("REFILL-THE-WELL"),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"well-pump-relay-state":      base.NewBoolMessage(false),
 			"well-pump-controller-state": base.NewStringMessage("REFILL-THE-WELL"),
 		},

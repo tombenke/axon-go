@@ -9,38 +9,38 @@ import (
 
 var testCases at.TestCases = at.TestCases{
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"max-power":  base.NewFloat64Message(2000.0),
 			"power-need": base.NewFloat64Message(0.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(0.0),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"max-power":  base.NewFloat64Message(2000.0),
 			"power-need": base.NewFloat64Message(1500.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(1500.0),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"max-power":  base.NewFloat64Message(2000.0),
 			"power-need": base.NewFloat64Message(2000.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(2000.0),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"max-power":  base.NewFloat64Message(2000.0),
 			"power-need": base.NewFloat64Message(4599.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(2000.0),
 		},
 	},

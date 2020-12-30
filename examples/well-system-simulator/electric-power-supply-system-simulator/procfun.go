@@ -5,6 +5,7 @@ import (
 	"github.com/tombenke/axon-go/common/msgs/base"
 )
 
+// ProcessorFun is the message processor function of the actor node
 func ProcessorFun(ctx processor.Context) error {
 	maxPower := ctx.GetInputMessage("max-power").(*base.Float64).Body.Data
 	powerNeed := ctx.GetInputMessage("power-need").(*base.Float64).Body.Data

@@ -9,7 +9,7 @@ import (
 
 var testCases at.TestCases = at.TestCases{
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"dt":                     base.NewFloat64Message(1000),
 			"well-backfill-capacity": base.NewFloat64Message(0.6),
 			"well-cross-section":     base.NewFloat64Message(0.0201056),
@@ -18,7 +18,7 @@ var testCases at.TestCases = at.TestCases{
 			"water-need":             base.NewFloat64Message(0),
 			"water-level":            base.NewFloat64Message(-30),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"water-level":  base.NewFloat64Message(-30),
 			"water-output": base.NewFloat64Message(0),
 		},

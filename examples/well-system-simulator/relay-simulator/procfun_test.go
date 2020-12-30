@@ -10,23 +10,23 @@ import (
 var testCases at.TestCases = at.TestCases{
 	// Relay is OFF
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"relay-state": base.NewBoolMessage(false),
 			"power-input": base.NewFloat64Message(0.0),
 			"power-need":  base.NewFloat64Message(0.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(0.0),
 			"power-need":   base.NewFloat64Message(0.0),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"relay-state": base.NewBoolMessage(false),
 			"power-input": base.NewFloat64Message(10.0),
 			"power-need":  base.NewFloat64Message(10.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(0.0),
 			"power-need":   base.NewFloat64Message(0.0),
 		},
@@ -34,23 +34,23 @@ var testCases at.TestCases = at.TestCases{
 
 	// Relay is ON
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"relay-state": base.NewBoolMessage(true),
 			"power-input": base.NewFloat64Message(0.0),
 			"power-need":  base.NewFloat64Message(0.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(0.0),
 			"power-need":   base.NewFloat64Message(0.0),
 		},
 	},
 	at.TestCase{
-		at.TestCaseMsgs{
+		Inputs: at.TestCaseMsgs{
 			"relay-state": base.NewBoolMessage(true),
 			"power-input": base.NewFloat64Message(10.0),
 			"power-need":  base.NewFloat64Message(10.0),
 		},
-		at.TestCaseMsgs{
+		Outputs: at.TestCaseMsgs{
 			"power-output": base.NewFloat64Message(10.0),
 			"power-need":   base.NewFloat64Message(10.0),
 		},

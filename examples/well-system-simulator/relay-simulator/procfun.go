@@ -5,6 +5,7 @@ import (
 	"github.com/tombenke/axon-go/common/msgs/base"
 )
 
+// ProcessorFun is the message processor function of the actor node
 func ProcessorFun(ctx processor.Context) error {
 	relayState := ctx.GetInputMessage("relay-state").(*base.Bool).Body.Data
 	powerNeedIn := ctx.GetInputMessage("power-need").(*base.Float64).Body.Data
