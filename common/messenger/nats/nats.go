@@ -2,6 +2,7 @@ package nats
 
 import (
 	nats "github.com/nats-io/nats.go"
+	messenger "github.com/tombenke/axon-go/common/messenger"
 	"time"
 )
 
@@ -21,13 +22,48 @@ func (m connections) Publish(subject string, msg []byte) error {
 	return err
 }
 
-// Subscribe to the `subject` topic, and calls the `cb` call-back function with the inbound messages
-func (m connections) Subscribe(subject string, cb func([]byte)) {
-	m.nc.Subscribe(subject, func(msg *nats.Msg) {
+// Subscriber structure holds the subscriptions
+// and provides methods that implements the generic Subscriber
+type Subscriber struct {
+	Subscription *nats.Subscription
+}
+
+// Unsubscribe unsubscribes the `Subscriber` from the topic
+func (subs Subscriber) Unsubscribe() error {
+	return subs.Subscription.Unsubscribe()
+}
+
+// newSubscriber creates a new NATS Subscriber
+func newSubscriber(subscription *nats.Subscription) messenger.Subscriber {
+	var subscriber = Subscriber{Subscription: subscription}
+	return subscriber
+}
+
+// Subscribe subscribes to the `subject` topic, and calls the `cb` call-back function with the inbound messages
+func (m connections) Subscribe(subject string, cb func([]byte)) messenger.Subscriber {
+	subscription, err := m.nc.Subscribe(subject, func(msg *nats.Msg) {
 		m.logger.Debugf("Received message from '%s'\n", subject)
 		cb(msg.Data)
 	})
+	if err != nil {
+		panic(err)
+	}
 	m.nc.Flush()
+	return newSubscriber(subscription)
+}
+
+// ChanSubscribe subscribes to the `subject` topic, and sends theinbound messages into the `ch` channel
+// You should not close the channel until sub.Unsubscribe() has been called.
+func (m connections) ChanSubscribe(subject string, ch chan []byte) messenger.Subscriber {
+	subscription, err := m.nc.Subscribe(subject, func(msg *nats.Msg) {
+		m.logger.Debugf("Received message from '%s'\n", subject)
+		ch <- msg.Data
+	})
+	if err != nil {
+		panic(err)
+	}
+	m.nc.Flush()
+	return newSubscriber(subscription)
 }
 
 // Request `msg` message through the `subject` topic and expects a response until `timeout`.

@@ -22,12 +22,18 @@ type Config struct {
 // No error means the message was successfully received by streaming channel.
 type AckHandler func(string, error)
 
+// Subscriber interface is returned by the Subscribe calls, and provide an `Unsubscribe()` method.
+type Subscriber interface {
+	Unsubscribe() error
+}
+
 // Messenger interface represents the messaging patterns
 // that an underlying messaging middleware has to implement
 type Messenger interface {
 	// Non durable subjects
 	Publish(string, []byte) error
-	Subscribe(string, func([]byte))
+	Subscribe(string, func([]byte)) Subscriber
+	ChanSubscribe(string, chan []byte) Subscriber
 	Request(subject string, msg []byte, timeout time.Duration) ([]byte, error)
 	Response(subject string, service func([]byte) ([]byte, error))
 

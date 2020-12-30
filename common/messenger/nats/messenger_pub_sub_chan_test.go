@@ -8,7 +8,7 @@ import (
 )
 
 // Test the Asynchronous / Observer pattern: publish/subscribe
-func TestPubSub(t *testing.T) {
+func TestPubSubChan(t *testing.T) {
 	// Connect to NATS
 	m := NewMessenger(testConfig)
 	defer m.Close()
@@ -21,11 +21,15 @@ func TestPubSub(t *testing.T) {
 	testSubject := "test_subject"
 	testMsgContent := []byte("Some text to send...")
 	var s messenger.Subscriber
-	s = m.Subscribe(testSubject, func(content []byte) {
+	ch := make(chan []byte)
+	s = m.ChanSubscribe(testSubject, ch)
+
+	go func() {
 		defer wg.Done()
+		content := <-ch
 		require.EqualValues(t, content, testMsgContent)
 		s.Unsubscribe()
-	})
+	}()
 
 	// Send a message
 	m.Publish(testSubject, testMsgContent)
