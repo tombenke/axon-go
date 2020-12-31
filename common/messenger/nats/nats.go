@@ -52,11 +52,11 @@ func (m connections) Subscribe(subject string, cb func([]byte)) messenger.Subscr
 	return newSubscriber(subscription)
 }
 
-// ChanSubscribe subscribes to the `subject` topic, and sends theinbound messages into the `ch` channel
+// ChanSubscribe subscribes to the `subject` topic, and sends the inbound messages into the `ch` channel
 // You should not close the channel until sub.Unsubscribe() has been called.
 func (m connections) ChanSubscribe(subject string, ch chan []byte) messenger.Subscriber {
 	subscription, err := m.nc.Subscribe(subject, func(msg *nats.Msg) {
-		m.logger.Debugf("Received message from '%s'\n", subject)
+		m.logger.Infof("Received message from '%s'\n", subject)
 		ch <- msg.Data
 	})
 	if err != nil {
@@ -70,7 +70,7 @@ func (m connections) ChanSubscribe(subject string, ch chan []byte) messenger.Sub
 func (m connections) Request(subject string, msg []byte, timeout time.Duration) ([]byte, error) {
 	subj := subject
 
-	m.logger.Infof("Request '%s' through '%s'\n", msg, subj)
+	m.logger.Infof("Request through '%s'\n", subj)
 	resp, err := m.nc.Request(subj, msg, timeout)
 	if err != nil {
 		m.logger.Error(err)

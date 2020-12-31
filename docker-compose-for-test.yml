@@ -1,9 +1,9 @@
 version: "3.2"
 services:
   nats:
-    container_name: soo-nats
+    container_name: axon-nats
     image: nats-streaming:latest
-    command: -store file -dir datastore -m 8222
+    command: -store file -dir datastore -m 8222 -V
     restart: always
     ports:
       - "4222:4222"

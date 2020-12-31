@@ -38,7 +38,15 @@ func (outputs *Outputs) SetMessage(name string, outMsg msgs.Message) {
 		panic(errorMessage)
 	}
 
-	(*outputs)[name] = Output{IO: IO{Name: name, Type: outMsgType, Message: outMsg}}
+	(*outputs)[name] = Output{
+		IO: IO{
+			Name:           name,
+			Type:           outMsgType,
+			Message:        outMsg,
+			Representation: (*outputs)[name].Representation,
+			Channel:        (*outputs)[name].Channel,
+		},
+	}
 }
 
 // NewOutputs creates a new Outputs map based on the config parameters

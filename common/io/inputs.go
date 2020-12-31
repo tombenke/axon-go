@@ -39,7 +39,16 @@ func (inputs *Inputs) SetMessage(name string, inMsg msgs.Message) {
 		panic(errorMessage)
 	}
 
-	(*inputs)[name] = Input{IO: IO{Name: name, Type: inMsgType, Message: inMsg}, DefaultMessage: (*inputs)[name].DefaultMessage}
+	(*inputs)[name] = Input{
+		IO: IO{
+			Name:           name,
+			Type:           inMsgType,
+			Representation: (*inputs)[name].Representation,
+			Channel:        (*inputs)[name].Channel,
+			Message:        inMsg,
+		},
+		DefaultMessage: (*inputs)[name].DefaultMessage,
+	}
 }
 
 // NewInputs creates a new Inputs map based on the config parameters

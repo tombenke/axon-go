@@ -3,6 +3,7 @@ package io
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tombenke/axon-go/common/config"
+	"github.com/tombenke/axon-go/common/msgs"
 	"github.com/tombenke/axon-go/common/msgs/base"
 	"testing"
 )
@@ -47,6 +48,12 @@ func TestNewOutputs(t *testing.T) {
 	}
 	outputs := NewOutputs(outputsCfg)
 	assert.Equal(t, len(outputs), 2)
+	for _, oCfg := range outputsCfg {
+		assert.Equal(t, oCfg.Name, outputs[oCfg.Name].Name)
+		assert.Equal(t, oCfg.Type, outputs[oCfg.Name].Type)
+		assert.Equal(t, msgs.Representation(oCfg.Representation), outputs[oCfg.Name].Representation)
+		assert.Equal(t, oCfg.Channel, outputs[oCfg.Name].Channel)
+	}
 }
 
 func TestNewOutputsWithUnregisteredMessageType(t *testing.T) {
