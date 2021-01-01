@@ -24,9 +24,9 @@ var logger = logrus.New()
 var messengerCfg = messenger.Config{
 	Urls:       "localhost:4222",
 	UserCreds:  "",
-	ClientName: "test-client",
+	ClientName: "status-test-client",
 	ClusterID:  "test-cluster",
-	ClientID:   "test-client",
+	ClientID:   "status-test-client",
 	Logger:     logger,
 }
 
@@ -37,7 +37,6 @@ func TestStatus(t *testing.T) {
 
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
 	wg := sync.WaitGroup{}
-	wg.Add(3)
 
 	// Create a trigger channel to start the test
 	triggerCh := make(chan bool)
@@ -52,6 +51,7 @@ func TestStatus(t *testing.T) {
 	startMockOrchestrator(reportCh, triggerCh, doneCh, &wg, logger, m)
 
 	// Start the sender process
+	wg.Add(1)
 	go Status(actorName, doneCh, &wg, m, logger)
 
 	// Start testing
@@ -75,6 +75,7 @@ func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh cha
 	statusReportCh := make(chan []byte)
 	statusReportSubs := m.ChanSubscribe("status-report", statusReportCh)
 
+	wg.Add(1)
 	go func() {
 		defer statusReportSubs.Unsubscribe()
 		defer close(statusReportCh)

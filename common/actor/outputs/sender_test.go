@@ -31,9 +31,9 @@ var logger = logrus.New()
 var messengerCfg = messenger.Config{
 	Urls:       "localhost:4222",
 	UserCreds:  "",
-	ClientName: "test-client",
+	ClientName: "sender-test-client",
 	ClusterID:  "test-cluster",
-	ClientID:   "test-client",
+	ClientID:   "sender-test-client",
 	Logger:     logger,
 }
 
@@ -64,7 +64,6 @@ func TestSender(t *testing.T) {
 
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
 	wg := sync.WaitGroup{}
-	wg.Add(4)
 
 	// Create a channel to shut down the processes if needed
 	doneCh := make(chan bool)
@@ -75,11 +74,12 @@ func TestSender(t *testing.T) {
 	// Start the processes of the test-bed
 	reportCh, testCompletedCh := at.ChecklistProcess(checklist, doneCh, &wg, logger)
 	startMockOrchestrator(reportCh, doneCh, &wg, logger, m)
-	numMsgReceivers := startMockMessageReceivers(getOutputsData(), reportCh, doneCh, &wg, logger, m)
-	wg.Add(numMsgReceivers)
+	startMockMessageReceivers(getOutputsData(), reportCh, doneCh, &wg, logger, m)
+	//wg.Add(numMsgReceivers)
 	outputsCh := startMockProcessor(triggerCh, reportCh, doneCh, &wg, logger)
 
 	// Start the sender process
+	wg.Add(1)
 	go Sender(outputsCh, doneCh, &wg, m, logger)
 
 	// Start testing
@@ -113,6 +113,7 @@ func getOutputsData() io.Outputs {
 func startMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan io.Outputs {
 	outputsCh := make(chan io.Outputs)
 
+	wg.Add(1)
 	go func() {
 		defer close(outputsCh)
 		defer wg.Done()
@@ -148,6 +149,7 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 	sendingCompletedCh := make(chan []byte)
 	sendingCompletedSubs := m.ChanSubscribe("sending-completed", sendingCompletedCh)
 
+	wg.Add(1)
 	go func() {
 		defer processingCompletedSubs.Unsubscribe()
 		defer close(processingCompletedCh)
@@ -180,6 +182,7 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 // Returns the number processes forked, that is actually the number of output ports.
 func startMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) int {
 	for o := range outputs {
+		wg.Add(1)
 		go func(outName string) {
 			name := outputs[outName].Name
 			channel := outputs[outName].Channel

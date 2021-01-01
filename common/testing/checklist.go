@@ -14,6 +14,7 @@ func ChecklistProcess(expected []string, done chan bool, wg *sync.WaitGroup, log
 	reportCh := make(chan string)
 	reported := make(map[string]bool)
 
+	wg.Add(1)
 	go func() {
 		defer close(testCompletedCh)
 		defer close(reportCh)
