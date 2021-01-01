@@ -26,6 +26,10 @@ func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, 
 		defer close(inputsCh)
 		defer appWg.Done()
 
+		// Create wait-group for the channel observer sub-processes
+		obsWg := sync.WaitGroup{}
+		obsDoneCh := make(chan bool)
+
 		// Setup communication channels with the orchestrator
 		receiveAndProcessCh := make(chan []byte)
 		receiveAndProcessSubs := m.ChanSubscribe("receive-and-process", receiveAndProcessCh)
@@ -40,19 +44,21 @@ func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, 
 		defer close(inputsMuxCh)
 
 		// Starts the input port observers
-		startInPortsObservers(inputs, inputsMuxCh, doneCh, appWg, m, logger)
-		//appWg.Add(numObservers)
+		startInPortsObservers(inputs, inputsMuxCh, obsDoneCh, &obsWg, m, logger)
 
 		for {
 			select {
 			case <-doneCh:
 				logger.Infof("Receiver shuts down.")
+				close(obsDoneCh)
+				obsWg.Wait()
 				return
 
 			case input := <-inputsMuxCh:
-				logger.Infof("Receiver received an input message from '%s' channel on '%s' port", input.Channel, input.Name)
+				logger.Infof("Receiver got message to '%s' port", input.Name)
 				inputs.SetMessage(input.Name, input.Message)
-				// TODO: immediately forward to processor if not in synchronized mode
+				// TODO: Immediately forward to the processor if not in synchronized mode
+				// TODO: In synchronized mode set the message for the _timestamp and _dt virtual ports
 
 			case <-receiveAndProcessCh:
 				logger.Infof("Receiver received 'receive-and-process' message from orchestrator")
@@ -83,12 +89,10 @@ func setupInputPorts(inputsCfg config.Inputs, logger *logrus.Logger) io.Inputs {
 
 // startInPortsObservers starts one message observer for every port,
 // and returns with the number of observers started.
-func startInPortsObservers(inputs io.Inputs, inputsMuxCh chan io.Input, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) int {
+func startInPortsObservers(inputs io.Inputs, inputsMuxCh chan io.Input, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
 	for p := range inputs {
-		wg.Add(1)
 		newPortObserver(inputs[p], inputsMuxCh, doneCh, wg, m, logger)
 	}
-	return len(inputs)
 }
 
 // newPortObserver subscribes to an input channel with a go routine that observes the incoming messages.
@@ -98,8 +102,9 @@ func newPortObserver(input io.Input, inputsMuxCh chan io.Input, doneCh chan bool
 	inMsgCh := make(chan []byte)
 	inMsgSubs := m.ChanSubscribe(input.Channel, inMsgCh)
 
+	wg.Add(1)
 	go func() {
-		logger.Infof("Receiver started new observer of '%s' channel for '%s' port", input.Channel, input.Name)
+		logger.Infof("Receiver started new observer on '%s' port", input.Name)
 		defer inMsgSubs.Unsubscribe()
 		defer close(inMsgCh)
 		defer wg.Done()
@@ -107,7 +112,7 @@ func newPortObserver(input io.Input, inputsMuxCh chan io.Input, doneCh chan bool
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Input message observer for '%s' port shuts down.", input.Name)
+				logger.Infof("Input message observer on '%s' port shuts down.", input.Name)
 				return
 
 			case inputMsg := <-inMsgCh:

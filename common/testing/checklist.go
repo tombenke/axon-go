@@ -26,10 +26,12 @@ func ChecklistProcess(expected []string, done chan bool, wg *sync.WaitGroup, log
 				// Test either was completed or it was shut down
 				logger.Infof("Checklist Process shuts down.")
 				return
+
 			case report := <-reportCh:
 				logger.Infof("Checklist received report: '%s'", report)
 				reported[report] = true
 				if checkReported(reported, expected) {
+					logger.Infof("Checklist items are all done. Mission completed.")
 					return
 				}
 			}

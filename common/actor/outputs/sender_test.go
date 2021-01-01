@@ -75,7 +75,6 @@ func TestSender(t *testing.T) {
 	reportCh, testCompletedCh := at.ChecklistProcess(checklist, doneCh, &wg, logger)
 	startMockOrchestrator(reportCh, doneCh, &wg, logger, m)
 	startMockMessageReceivers(getOutputsData(), reportCh, doneCh, &wg, logger, m)
-	//wg.Add(numMsgReceivers)
 	outputsCh := startMockProcessor(triggerCh, reportCh, doneCh, &wg, logger)
 
 	// Start the sender process
