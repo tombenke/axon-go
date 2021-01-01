@@ -73,11 +73,11 @@ func TestSender(t *testing.T) {
 	triggerCh := make(chan bool)
 
 	// Start the processes of the test-bed
-	reportCh, testCompletedCh := ChecklistProcess(doneCh, &wg, logger)
-	StartMockOrchestrator(reportCh, doneCh, &wg, logger, m)
-	numMsgReceivers := StartMockMessageReceivers(GetOutputsData(), reportCh, doneCh, &wg, logger, m)
+	reportCh, testCompletedCh := at.ChecklistProcess(checklist, doneCh, &wg, logger)
+	startMockOrchestrator(reportCh, doneCh, &wg, logger, m)
+	numMsgReceivers := startMockMessageReceivers(getOutputsData(), reportCh, doneCh, &wg, logger, m)
 	wg.Add(numMsgReceivers)
-	outputsCh := StartMockProcessor(triggerCh, reportCh, doneCh, &wg, logger)
+	outputsCh := startMockProcessor(triggerCh, reportCh, doneCh, &wg, logger)
 
 	// Start the sender process
 	go Sender(outputsCh, doneCh, &wg, m, logger)
@@ -93,7 +93,7 @@ func TestSender(t *testing.T) {
 	wg.Wait()
 }
 
-func GetOutputsData() io.Outputs {
+func getOutputsData() io.Outputs {
 	// Create Output ports
 	outputs := io.NewOutputs(outputsCfg)
 
@@ -105,12 +105,12 @@ func GetOutputsData() io.Outputs {
 	return outputs
 }
 
-// StartMockProcessor starts a standalone process that emulates the behaviour of the actor's processor.
+// startMockProcessor starts a standalone process that emulates the behaviour of the actor's processor.
 // It creates and returns an `outputs` channel for the Sender.
 // MockProcessor waits for a trigger message via the `trigger` channel
 // then sends `io.Outputs` test data package through the `outputs` channel to the Sender.
 // MockProcessor will shut down if it receives a message via the `doneCh` channel.
-func StartMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan io.Outputs {
+func startMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan io.Outputs {
 	outputsCh := make(chan io.Outputs)
 
 	go func() {
@@ -125,7 +125,7 @@ func StartMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan b
 
 			case <-triggerCh:
 				logger.Infof("MockProcessor sends outputs test data")
-				outputs := GetOutputsData()
+				outputs := getOutputsData()
 				outputsCh <- outputs
 				reportCh <- checkSendOutputs
 			}
@@ -136,11 +136,12 @@ func StartMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan b
 	return outputsCh
 }
 
-// StartMockOrchestrator starts a standalone process that emulates the behaviour of an external orchestrator application.
+// startMockOrchestrator starts a standalone process that emulates the behaviour of an external orchestrator application.
 // Orchestrator waits for an incoming message via the `processing-completed` messaging channel,
 // then sends a trigger message to the Sender process via the `send-outputs` messaging channel.
-// MockProcessor will shut down if it receives a message via the `doneCh` channel.
-func StartMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) {
+// The Mock Orchestrator reports every relevant event to the Checklist process.
+// Mock Orchestrator will shut down if it receives a message via the `doneCh` channel.
+func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) {
 	processingCompletedCh := make(chan []byte)
 	processingCompletedSubs := m.ChanSubscribe("processing-completed", processingCompletedCh)
 
@@ -174,58 +175,10 @@ func StartMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 	logger.Infof("Mock Orchestrator started.")
 }
 
-// ChecklistProcess starts a process that collects the reports of the processes of the test-bed,
-// and checks the test was complete.
-// It creates and returns with two channels, one channel for collecting test results,
-// and another one that it will close, when the test is finished.
-func ChecklistProcess(done chan bool, wg *sync.WaitGroup, logger *logrus.Logger) (chan string, chan bool) {
-	testCompletedCh := make(chan bool)
-	reportCh := make(chan string)
-	reported := make(map[string]bool)
-
-	go func() {
-		defer close(testCompletedCh)
-		defer close(reportCh)
-		defer wg.Done()
-
-		for {
-			select {
-			case <-done:
-				// Test either was completed or it was shut down
-				logger.Infof("Checklist Process shuts down.")
-				return
-			case report := <-reportCh:
-				logger.Infof("Checklist received report: '%s'", report)
-				reported[report] = true
-				if CheckReported(reported) {
-					return
-				}
-			}
-		}
-	}()
-
-	logger.Infof("Checklist Process started.")
-	return reportCh, testCompletedCh
-}
-
-// CheckReported compares reported to expected,
-// and returns true if all expected item exists in reported array, otherwise returns false.
-func CheckReported(reported map[string]bool) bool {
-	result := true
-	for _, c := range checklist {
-		if _, exist := reported[c]; !exist {
-			result = false
-			break
-		}
-	}
-
-	return result
-}
-
-// StartMockMessageReceivers starts a process to each output message to send,
+// startMockMessageReceivers starts a process to each output message to send,
 // and checks if the messages are really sent to the expected channel.
 // Returns the number processes forked, that is actually the number of output ports.
-func StartMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) int {
+func startMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) int {
 	for o := range outputs {
 		go func(outName string) {
 			name := outputs[outName].Name
