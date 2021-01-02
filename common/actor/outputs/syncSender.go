@@ -10,11 +10,11 @@ import (
 	"sync"
 )
 
-// Sender receives outputs from the processor function via the `outputsCh` that it sends to
+// SyncSender receives outputs from the processor function via the `outputsCh` that it sends to
 // the corresponding topics identified by the port.
 // The outputs structures hold every details about the ports, the message itself, and the subject to send.
 // This function runs as a standalone process, so it should be started as a go function.
-func Sender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
+func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
 	logger.Infof("Sender started.")
 	sendResultsCh := make(chan []byte)
 	sendResultsSubs := m.ChanSubscribe("send-results", sendResultsCh)
@@ -32,11 +32,12 @@ func Sender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, appWg
 
 		case outputs = <-outputsCh:
 			logger.Infof("Sender received outputs")
+			// In sync mode notifies the orchestrator about that it is ready to send
 			sendProcessingCompleted(actorName, m)
 
 		case <-sendResultsCh:
 			logger.Infof("Sender received trigger to send outputs")
-			sendOutputs(actorName, outputs, m)
+			syncSendOutputs(actorName, outputs, m)
 		}
 	}
 }
@@ -49,7 +50,7 @@ func sendProcessingCompleted(actorName string, m messenger.Messenger) {
 	m.Publish("processing-completed", processingCompletedMsg.Encode(msgs.JSONRepresentation))
 }
 
-func sendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger) {
+func syncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger) {
 	for o := range outputs {
 		channel := outputs[o].Channel
 		representation := outputs[o].Representation
