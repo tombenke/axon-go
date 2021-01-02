@@ -15,7 +15,7 @@ import (
 // The outputs structures hold every details about the ports, the message itself, and the subject to send.
 // This function runs as a standalone process, so it should be started as a go function.
 func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
-	logger.Infof("Sender started.")
+	logger.Infof("Sender started in sync.")
 	sendResultsCh := make(chan []byte)
 	sendResultsSubs := m.ChanSubscribe("send-results", sendResultsCh)
 	var outputs io.Outputs

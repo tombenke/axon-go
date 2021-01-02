@@ -32,7 +32,8 @@ func ChecklistProcess(expected []string, done chan bool, wg *sync.WaitGroup, log
 				reported[report] = true
 				if checkReported(reported, expected) {
 					logger.Infof("Checklist items are all done. Mission completed.")
-					return
+					testCompletedCh <- true
+					//return
 				}
 			}
 		}
