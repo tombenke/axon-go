@@ -6,6 +6,8 @@ import (
 	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/io"
 	"github.com/tombenke/axon-go/common/messenger"
+	"github.com/tombenke/axon-go/common/msgs"
+	"github.com/tombenke/axon-go/common/msgs/orchestra"
 	"sync"
 )
 
@@ -60,8 +62,11 @@ func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, 
 				// TODO: Immediately forward to the processor if not in synchronized mode
 				// TODO: In synchronized mode set the message for the _timestamp and _dt virtual ports
 
-			case <-receiveAndProcessCh:
+			case messageBytes := <-receiveAndProcessCh:
 				logger.Infof("Receiver received 'receive-and-process' message from orchestrator")
+				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(0))
+				receiveAndProcessMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				// TODO: Use the timestamp and dt parameter from the message
 				inputsCh <- inputs
 				// TODO: use only in synchronized mode
 			}

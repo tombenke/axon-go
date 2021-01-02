@@ -4,6 +4,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/tombenke/axon-go/common/messenger"
 	messengerImpl "github.com/tombenke/axon-go/common/messenger/nats"
+	"github.com/tombenke/axon-go/common/msgs"
+	"github.com/tombenke/axon-go/common/msgs/orchestra"
 	at "github.com/tombenke/axon-go/common/testing"
 	"sync"
 	"testing"
@@ -90,7 +92,9 @@ func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh cha
 			case <-triggerCh:
 				logger.Infof("MockOrchestrator received 'start-trigger'.")
 				logger.Infof("MockOrchestrator sends 'status-request' message.")
-				m.Publish("status-request", []byte("status-request-msg"))
+				statusRequestMsg := orchestra.NewStatusRequestMessage()
+				m.Publish("status-request", statusRequestMsg.Encode(msgs.JSONRepresentation))
+				// TODO: Make orchestra message representations and channel names configurable
 				reportCh <- checkSendStatusRequest
 
 			case <-statusReportCh:

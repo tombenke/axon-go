@@ -6,7 +6,9 @@ import (
 	"github.com/tombenke/axon-go/common/io"
 	"github.com/tombenke/axon-go/common/messenger"
 	messengerImpl "github.com/tombenke/axon-go/common/messenger/nats"
+	"github.com/tombenke/axon-go/common/msgs"
 	"github.com/tombenke/axon-go/common/msgs/base"
+	"github.com/tombenke/axon-go/common/msgs/orchestra"
 	at "github.com/tombenke/axon-go/common/testing"
 	"sync"
 	"testing"
@@ -213,7 +215,8 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 
 			case <-triggerOrchCh:
 				// TODO: Define and use message type with timestamp, and dt properties
-				m.Publish("receive-and-process", []byte("receive-and-process-msg"))
+				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(1.0))
+				m.Publish("receive-and-process", receiveAndProcessMsg.Encode(msgs.JSONRepresentation))
 				logger.Infof("Mock Orchestrator sent 'receive-and-process' message.")
 				reportCh <- checkSendReceiveAndProcess
 			}

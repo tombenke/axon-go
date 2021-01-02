@@ -4,6 +4,8 @@ package status
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/tombenke/axon-go/common/messenger"
+	"github.com/tombenke/axon-go/common/msgs"
+	"github.com/tombenke/axon-go/common/msgs/orchestra"
 	"sync"
 )
 
@@ -27,7 +29,9 @@ func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.
 		case <-statusRequestCh:
 			logger.Infof("Status received status-request message")
 			logger.Infof("Status sends status-report message")
-			m.Publish("status-report", []byte(actorName))
+			statusReportMsg := orchestra.NewStatusReportMessage(actorName)
+			m.Publish("status-report", statusReportMsg.Encode(msgs.JSONRepresentation))
+			// TODO: Make orchestra message representations and channel names configurable
 		}
 	}
 }

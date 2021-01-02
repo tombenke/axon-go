@@ -2,17 +2,21 @@ package outputs
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/io"
 	"github.com/tombenke/axon-go/common/messenger"
 	messengerImpl "github.com/tombenke/axon-go/common/messenger/nats"
+	"github.com/tombenke/axon-go/common/msgs"
 	"github.com/tombenke/axon-go/common/msgs/base"
+	"github.com/tombenke/axon-go/common/msgs/orchestra"
 	at "github.com/tombenke/axon-go/common/testing"
 	"sync"
 	"testing"
 )
 
 const (
+	actorName                              = "test-actor"
 	checkSendOutputs                       = "processor sent outputs to sender"
 	checkSendingCompleted                  = "orchestrator received sending-completed"
 	checkMsgArrivedWellPumpRelayState      = "well-pump-relay-state message arrived"
@@ -73,13 +77,13 @@ func TestSender(t *testing.T) {
 
 	// Start the processes of the test-bed
 	reportCh, testCompletedCh := at.ChecklistProcess(checklist, doneCh, &wg, logger)
-	startMockOrchestrator(reportCh, doneCh, &wg, logger, m)
+	startMockOrchestrator(t, reportCh, doneCh, &wg, logger, m)
 	startMockMessageReceivers(getOutputsData(), reportCh, doneCh, &wg, logger, m)
 	outputsCh := startMockProcessor(triggerCh, reportCh, doneCh, &wg, logger)
 
 	// Start the sender process
 	wg.Add(1)
-	go Sender(outputsCh, doneCh, &wg, m, logger)
+	go Sender(actorName, outputsCh, doneCh, &wg, m, logger)
 
 	// Start testing
 	triggerCh <- true
@@ -141,7 +145,7 @@ func startMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan b
 // then sends a trigger message to the Sender process via the `send-outputs` messaging channel.
 // The Mock Orchestrator reports every relevant event to the Checklist process.
 // Mock Orchestrator will shut down if it receives a message via the `doneCh` channel.
-func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) {
+func startMockOrchestrator(t *testing.T, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) {
 	processingCompletedCh := make(chan []byte)
 	processingCompletedSubs := m.ChanSubscribe("processing-completed", processingCompletedCh)
 
@@ -162,13 +166,23 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 				logger.Infof("MockOrchestrator shuts down.")
 				return
 
-			case <-processingCompletedCh:
+			case messageBytes := <-processingCompletedCh:
 				logger.Infof("MockOrchestrator received 'processing-completed' message.")
-				logger.Infof("MockOrchestrator sends 'send-results' message.")
-				m.Publish("send-results", []byte("send-results-msg"))
+				// Check if the right actorName was sent in the message
+				processingCompletedMsg := orchestra.NewProcessingCompletedMessage("")
+				processingCompletedMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				assert.Equal(t, processingCompletedMsg.(*orchestra.ProcessingCompleted).Body.Data, actorName)
 
-			case <-sendingCompletedCh:
+				logger.Infof("MockOrchestrator sends 'send-results' message.")
+				sendResultsMsg := orchestra.NewSendResultsMessage()
+				m.Publish("send-results", sendResultsMsg.Encode(msgs.JSONRepresentation))
+
+			case messageBytes := <-sendingCompletedCh:
 				logger.Infof("MockOrchestrator received 'sending-completed' message.")
+				// Check if the right actorName was sent in the message
+				sendingCompletedMsg := orchestra.NewSendingCompletedMessage("")
+				sendingCompletedMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				assert.Equal(t, sendingCompletedMsg.(*orchestra.SendingCompleted).Body.Data, actorName)
 				reportCh <- checkSendingCompleted
 			}
 		}
