@@ -45,18 +45,6 @@ var messengerCfg = messenger.Config{
 
 var inputsCfg = config.Inputs{
 	config.In{IO: config.IO{
-		Name:           "_timestamp",
-		Type:           "base/Int64",
-		Representation: "application/json",
-		Channel:        "_timestamp",
-	}, Default: `{"Body": {"Data": 1608732048980057025}}`},
-	config.In{IO: config.IO{
-		Name:           "_dt",
-		Type:           "base/Float64",
-		Representation: "application/json",
-		Channel:        "_dt",
-	}, Default: `{"Body": {"Data": 1000}}`},
-	config.In{IO: config.IO{
 		Name:           "well-water-upper-level-state",
 		Type:           "base/Bool",
 		Representation: "application/json",
@@ -83,8 +71,7 @@ var inputsCfg = config.Inputs{
 }
 
 var inputs = at.TestCaseMsgs{
-	"_timestamp":                    base.NewInt64Message(1000),
-	"_dt":                           base.NewFloat64Message(1000),
+	"_RAP":                          orchestra.NewReceiveAndProcessMessage(1),
 	"well-water-upper-level-state":  base.NewBoolMessage(false),
 	"well-water-lower-level-state":  base.NewBoolMessage(false),
 	"buffer-tank-upper-level-state": base.NewBoolMessage(false),
@@ -104,7 +91,7 @@ func TestReceiverStartStop(t *testing.T) {
 	doneCh := make(chan bool)
 
 	// Start the receiver process
-	Receiver(inputsCfg, doneCh, &wg, m, logger)
+	Receiver(true, inputsCfg, doneCh, &wg, m, logger)
 
 	// Wait until test is completed, then stop the processes
 	close(doneCh)
@@ -134,7 +121,7 @@ func TestReceiverDefaultsOnly(t *testing.T) {
 	triggerOrchCh := startMockOrchestrator(reportCh, doneCh, &wg, m, logger)
 
 	// Start the receiver process
-	inputsCh := Receiver(inputsCfg, doneCh, &wg, m, logger)
+	inputsCh := Receiver(true, inputsCfg, doneCh, &wg, m, logger)
 
 	startMockProcessor(inputsCh, reportCh, doneCh, &wg, logger)
 
@@ -170,7 +157,7 @@ func TestReceiverInputs(t *testing.T) {
 	triggerOrchCh := startMockOrchestrator(reportCh, doneCh, &wg, m, logger)
 
 	// Start the receiver process
-	inputsCh := Receiver(inputsCfg, doneCh, &wg, m, logger)
+	inputsCh := Receiver(true, inputsCfg, doneCh, &wg, m, logger)
 
 	startMockProcessor(inputsCh, reportCh, doneCh, &wg, logger)
 

@@ -17,7 +17,7 @@ import (
 // and the subject to receive from.
 // This function starts the receiver routine as a standalone process,
 // and returns a channel that the process uses to forward the incoming inputs.
-func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan io.Inputs {
+func Receiver(syncMode bool, inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan io.Inputs {
 
 	// Setup communication channel with the processor
 	inputsCh := make(chan io.Inputs)
@@ -39,7 +39,7 @@ func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, 
 		defer close(receiveAndProcessCh)
 
 		// Create Input ports, and initialize with default messages
-		inputs := setupInputPorts(inputsCfg, logger)
+		inputs := setupInputPorts(syncMode, inputsCfg, logger)
 
 		// Creates an inputs multiplexer channel for observers to send their inputs via one channel
 		inputsMuxCh := make(chan io.Input)
@@ -66,7 +66,9 @@ func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, 
 				logger.Infof("Receiver received 'receive-and-process' message from orchestrator")
 				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(0))
 				receiveAndProcessMsg.Decode(msgs.JSONRepresentation, messageBytes)
-				// TODO: Use the timestamp and dt parameter from the message
+				if syncMode {
+					inputs.SetMessage("_RAP", receiveAndProcessMsg)
+				}
 				inputsCh <- inputs
 				// TODO: use only in synchronized mode
 			}
@@ -77,9 +79,29 @@ func Receiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, 
 }
 
 // setupInputPorts creates inputs ports, and initilizes them with their default messages
-func setupInputPorts(inputsCfg config.Inputs, logger *logrus.Logger) io.Inputs {
+func setupInputPorts(syncMode bool, inputsCfg config.Inputs, logger *logrus.Logger) io.Inputs {
 
 	logger.Infof("Receiver sets up input ports")
+
+	// Extends the input ports with '_RAP'
+	if syncMode {
+		if findPortCfgByName(inputsCfg, "_RAP") {
+			panic("Can not define an input port with the '_RAP' reserved name.")
+		}
+
+		rapInPort := config.In{
+			IO: config.IO{
+				Name:           "_RAP",
+				Type:           "orchestra/ReceiveAndProcess",
+				Representation: "application/json",
+				Channel:        "_RAP",
+			},
+			Default: "",
+		}
+
+		inputsCfg = append(inputsCfg, rapInPort)
+	}
+
 	// Create input ports
 	inputs := io.NewInputs(inputsCfg)
 
@@ -90,6 +112,18 @@ func setupInputPorts(inputsCfg config.Inputs, logger *logrus.Logger) io.Inputs {
 	}
 
 	return inputs
+}
+
+// findPortCgfByName returns true if it finds an input port named to `portName` in the `inputsCfg` array,
+// otherwise it returns false.
+func findPortCfgByName(inputsCfg config.Inputs, portName string) bool {
+	for p := range inputsCfg {
+		if inputsCfg[p].Name == portName {
+			return true
+		}
+	}
+
+	return false
 }
 
 // startInPortsObservers starts one message observer for every port,

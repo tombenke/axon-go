@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-// Sender receives status request messages from the orchestrator application,
+// Status receives status request messages from the orchestrator application,
 // send responses to these requests, forwarding the actual status of the actor.
 // This function runs as a standalone process, so it should be started as a go function.
 func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
