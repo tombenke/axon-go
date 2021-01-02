@@ -24,12 +24,6 @@ var checklist = []string{
 
 var inputsCfg = config.Inputs{
 	config.In{IO: config.IO{
-		Name:           "dt",
-		Type:           "base/Float64",
-		Representation: "application/json",
-		Channel:        "",
-	}, Default: `{"Body": {"Data": 1000}}`},
-	config.In{IO: config.IO{
 		Name:           "max-power",
 		Type:           "base/Float64",
 		Representation: "application/json",
@@ -51,6 +45,7 @@ var outputsCfg = config.Outputs{
 		Channel:        "well-pump-relay.electric-power-input",
 	}},
 }
+
 var testCase = at.TestCase{
 	Inputs: at.TestCaseMsgs{
 		"max-power":  base.NewFloat64Message(2000.0),
@@ -61,7 +56,8 @@ var testCase = at.TestCase{
 	},
 }
 
-func TestProcessor(t *testing.T) {
+func TestStartProcessor(t *testing.T) {
+
 	var logger logrus.Logger
 
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
@@ -81,7 +77,7 @@ func TestProcessor(t *testing.T) {
 
 	outputsCh := StartProcessor(ProcessorFun, outputsCfg, doneCh, &wg, inputsCh, &logger)
 
-	StartMockSender(outputsCh, reportCh, doneCh, &wg, &logger)
+	StartMockSender(t, outputsCh, reportCh, doneCh, &wg, &logger)
 
 	// Start testing
 	time.Sleep(10 * time.Millisecond)
@@ -97,19 +93,17 @@ func TestProcessor(t *testing.T) {
 
 // ProcessorFun is the message processor function of the actor node
 func ProcessorFun(ctx Context) error {
-	/*
-		maxPower := ctx.GetInputMessage("max-power").(*base.Float64).Body.Data
-		powerNeed := ctx.GetInputMessage("power-need").(*base.Float64).Body.Data
+	maxPower := ctx.GetInputMessage("max-power").(*base.Float64).Body.Data
+	powerNeed := ctx.GetInputMessage("power-need").(*base.Float64).Body.Data
 
-		var powerOutput float64
-		if powerNeed > maxPower {
-			powerOutput = maxPower
-		} else {
-			powerOutput = powerNeed
-		}
+	var powerOutput float64
+	if powerNeed > maxPower {
+		powerOutput = maxPower
+	} else {
+		powerOutput = powerNeed
+	}
 
-		ctx.SetOutputMessage("power-output", base.NewFloat64Message(powerOutput))
-	*/
+	ctx.SetOutputMessage("power-output", base.NewFloat64Message(powerOutput))
 	return nil
 }
 
@@ -117,11 +111,12 @@ func StartMockReceiver(triggerCh chan bool, reportCh chan string, doneCh chan bo
 	logger.Infof("Mock Receiver started.")
 	inputsCh := make(chan io.Inputs)
 	// TODO: Create real inputs from test data
-	var inputs io.Inputs
+	inputs := io.NewInputs(inputsCfg)
+	SetInputs(&inputs, testCase.Inputs)
 
 	wg.Add(1)
 	go func() {
-		defer close(inputsCh)
+		//defer close(inputsCh)
 		defer wg.Done()
 
 		for {
@@ -141,7 +136,7 @@ func StartMockReceiver(triggerCh chan bool, reportCh chan string, doneCh chan bo
 	return inputsCh
 }
 
-func StartMockSender(outputsCh chan io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) {
+func StartMockSender(t *testing.T, outputsCh chan io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) {
 	logger.Infof("Mock Sender started.")
 
 	wg.Add(1)
@@ -154,7 +149,8 @@ func StartMockSender(outputsCh chan io.Outputs, reportCh chan string, doneCh cha
 				logger.Infof("Mock Sender shuts down.")
 				return
 
-			case <-outputsCh:
+			case outputs := <-outputsCh:
+				CompareOutputsData(t, outputs, testCase)
 				logger.Infof("Mock Sender received outputs")
 				reportCh <- checkSenderReceivedOutputs
 			}

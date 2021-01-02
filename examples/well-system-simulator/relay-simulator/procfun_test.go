@@ -63,6 +63,6 @@ func TestProcessorFun(t *testing.T) {
 		context := processor.SetupContext(tc, inputsCfg, outputsCfg)
 		err := ProcessorFun(context)
 		assert.Nil(t, err)
-		processor.CompareOutputsData(t, context, tc)
+		processor.CompareOutputsData(t, context.Outputs, tc)
 	}
 }

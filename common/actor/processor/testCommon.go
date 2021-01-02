@@ -19,10 +19,10 @@ import (
 // NOTE: The output messages to compare can not have any arbitrary structure.
 // This function is made for those output messages only, that has a `Body.Data` property,
 // which can be derived into a single base type provided for `reflect.Value` fields.
-func CompareOutputsData(t *testing.T, ctx Context, tc at.TestCase) {
+func CompareOutputsData(t *testing.T, outputs io.Outputs, tc at.TestCase) {
 	for portName := range tc.Outputs {
 		expected := tc.Outputs[portName]
-		actual := ctx.Outputs.GetMessage(portName)
+		actual := outputs.GetMessage(portName)
 		assert.Equal(t, reflect.TypeOf(actual), reflect.TypeOf(expected))
 
 		expectedDataValue := reflect.ValueOf(expected).Elem().FieldByName("Body").FieldByName("Data")
