@@ -79,12 +79,15 @@ func getOutputsData() io.Outputs {
 // MockProcessor waits for a trigger message via the `trigger` channel
 // then sends `io.Outputs` test data package through the `outputs` channel to the SyncSender.
 // MockProcessor will shut down if it receives a message via the `doneCh` channel.
-func startMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan io.Outputs {
+func startMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) (chan io.Outputs, chan bool) {
 	outputsCh := make(chan io.Outputs)
+	procStoppedCh := make(chan bool)
 
 	wg.Add(1)
 	go func() {
+		defer logger.Infof("MockProcessor stopped.")
 		defer close(outputsCh)
+		defer close(procStoppedCh)
 		defer wg.Done()
 
 		for {
@@ -103,15 +106,49 @@ func startMockProcessor(triggerCh chan bool, reportCh chan string, doneCh chan b
 	}()
 
 	logger.Infof("Mock Processor started.")
-	return outputsCh
+	return outputsCh, procStoppedCh
 }
 
 // startMockMessageReceivers starts a process to each output message to send,
 // and checks if the messages are really sent to the expected channel.
 // Returns the number processes forked, that is actually the number of output ports.
-func startMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) int {
+func startMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) chan bool {
+	rcvStoppedCh := make(chan bool)
+
+	wg.Add(1)
+	go func() {
+		defer logger.Infof("Receiver master stopped.")
+		defer close(rcvStoppedCh)
+		defer wg.Done()
+
+		// Create wait-group for the channel observer sub-processes
+		rcvWg := sync.WaitGroup{}
+		rcvDoneCh := make(chan bool)
+		startSubReceivers(outputs, reportCh, rcvDoneCh, &rcvWg, logger, m)
+
+		for {
+			select {
+			case <-doneCh:
+				logger.Infof("Receiver master shuts down.")
+				close(rcvDoneCh)
+				logger.Infof("Receiver master closed the 'rcvDoneCh'.")
+				logger.Infof("Receiver master starts waiting for sub-receivers to stop")
+				rcvWg.Wait()
+				logger.Infof("Receiver master's sub-receivers stopped")
+				return
+			}
+		}
+	}()
+
+	defer logger.Infof("Receiver master started.")
+	return rcvStoppedCh
+}
+
+func startSubReceivers(outputs io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) int {
+
 	for o := range outputs {
 		wg.Add(1)
+
 		go func(outName string) {
 			name := outputs[outName].Name
 			channel := outputs[outName].Channel
@@ -119,6 +156,7 @@ func startMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh 
 			messageReceivedCh := make(chan []byte)
 			messageReceivedSubs := m.ChanSubscribe(channel, messageReceivedCh)
 
+			defer logger.Infof("Message Receiver '%s' stopped.", channel)
 			defer messageReceivedSubs.Unsubscribe()
 			defer close(messageReceivedCh)
 			defer wg.Done()

@@ -17,7 +17,8 @@ import (
 // and the subject to receive from.
 // This function starts the receiver routine as a standalone process,
 // and returns a channel that the process uses to forward the incoming inputs.
-func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan io.Inputs {
+func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) (chan io.Inputs, chan bool) {
+	receiverStoppedCh := make(chan bool)
 
 	// Setup communication channel with the processor
 	inputsCh := make(chan io.Inputs)
@@ -25,7 +26,9 @@ func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGro
 	appWg.Add(1)
 	go func() {
 		logger.Infof("Receiver started in sync mode.")
+		defer logger.Infof("Receiver stopped.")
 		defer close(inputsCh)
+		defer close(receiverStoppedCh)
 		defer appWg.Done()
 
 		// Create wait-group for the channel observer sub-processes
@@ -53,7 +56,10 @@ func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGro
 			case <-doneCh:
 				logger.Infof("Receiver shuts down.")
 				close(obsDoneCh)
+				logger.Infof("Receiver closed the 'obsDoneCh'.")
+				logger.Infof("Receiver starts waiting for observers to stop")
 				obsWg.Wait()
+				logger.Infof("Receiver's observers stopped")
 				return
 
 			case input := <-inputsMuxCh:
@@ -66,11 +72,12 @@ func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGro
 				receiveAndProcessMsg.Decode(msgs.JSONRepresentation, messageBytes)
 				inputs.SetMessage("_RAP", receiveAndProcessMsg)
 				inputsCh <- inputs
+				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")
 			}
 		}
 	}()
 
-	return inputsCh
+	return inputsCh, receiverStoppedCh
 }
 
 // setupInputPorts creates inputs ports, and initilizes them with their default messages

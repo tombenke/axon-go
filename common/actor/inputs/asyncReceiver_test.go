@@ -21,7 +21,7 @@ func TestAsyncReceiverStartStop(t *testing.T) {
 	doneCh := make(chan bool)
 
 	// Start the receiver process
-	AsyncReceiver(inputsCfg, doneCh, &wg, m, logger)
+	AsyncReceiver(asyncInputsCfg, doneCh, &wg, m, logger)
 
 	// Wait until test is completed, then stop the processes
 	close(doneCh)
@@ -41,25 +41,45 @@ func TestAsyncReceiverInputs(t *testing.T) {
 	wg := sync.WaitGroup{}
 
 	// Create a channel to shut down the processes if needed
-	doneCh := make(chan bool)
+	// doneCh := make(chan bool)
 
 	// Start the processes of the test-bed
-	reportCh, testCompletedCh := at.ChecklistProcess(checklistAsync, doneCh, &wg, logger)
+	doneCheckCh := make(chan bool)
+	reportCh, testCompletedCh, chkStoppedCh := at.ChecklistProcess(checklistAsync, doneCheckCh, &wg, logger)
 
 	// Start the receiver process
-	inputsCh := AsyncReceiver(inputsCfg, doneCh, &wg, m, logger)
+	doneRcvCh := make(chan bool)
+	inputsCh, rcvStoppedCh := AsyncReceiver(asyncInputsCfg, doneRcvCh, &wg, m, logger)
 
-	startMockProcessor(inputsCh, reportCh, doneCh, &wg, logger)
+	doneProcCh := make(chan bool)
+	procStoppedCh := startMockProcessor(inputsCh, reportCh, doneProcCh, &wg, logger)
 
 	// Give chance for observers to start before send messages through external messaging mw.
 	time.Sleep(100 * time.Millisecond)
 
 	// Start testing
-	sendInputMessages(inputsCfg, syncInputs, reportCh, m, logger)
+	sendInputMessages(asyncInputsCfg, asyncInputs, reportCh, m, logger)
 
 	// Wait until test is completed, then stop the processes
 	<-testCompletedCh
-	close(doneCh)
+
+	logger.Infof("Stops Mock Processor")
+	close(doneProcCh)
+	logger.Infof("Wait Mock Processor to stop")
+	<-procStoppedCh
+	logger.Infof("Mock Processor stopped")
+
+	logger.Infof("Stops Stops Receiver")
+	close(doneRcvCh)
+	logger.Infof("Wait Receiver to stop")
+	<-rcvStoppedCh
+	logger.Infof("Receiver stopped")
+
+	logger.Infof("Stops Checklist")
+	close(doneCheckCh)
+	logger.Infof("Wait Checklist to stop")
+	<-chkStoppedCh
+	logger.Infof("Checklist stopped")
 
 	// Wait for the message to come in
 	wg.Wait()

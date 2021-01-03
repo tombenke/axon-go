@@ -43,25 +43,43 @@ func TestStatus(t *testing.T) {
 	// Create a trigger channel to start the test
 	triggerCh := make(chan bool)
 
-	// Create a channel to shut down the processes if needed
-	doneCh := make(chan bool)
-
 	actorName := "test-actor"
 
 	// Start the processes of the test-bed
-	reportCh, testCompletedCh := at.ChecklistProcess(checklist, doneCh, &wg, logger)
-	startMockOrchestrator(reportCh, triggerCh, doneCh, &wg, logger, m)
+	doneChkCh := make(chan bool)
+	reportCh, testCompletedCh, checklistStoppedCh := at.ChecklistProcess(checklist, doneChkCh, &wg, logger)
 
-	// Start the sender process
-	wg.Add(1)
-	go Status(actorName, doneCh, &wg, m, logger)
+	doneOrcCh := make(chan bool)
+	orcStoppedCh := startMockOrchestrator(reportCh, triggerCh, doneOrcCh, &wg, logger, m)
+
+	// Start the status process
+	doneStatusCh := make(chan bool)
+	statusStoppedCh := Status(actorName, doneStatusCh, &wg, m, logger)
 
 	// Start testing
 	triggerCh <- true
 
 	// Wait until test is completed, then stop the processes
+	logger.Infof("Wait until test is completed")
 	<-testCompletedCh
-	close(doneCh)
+
+	logger.Infof("Stops Orchestrator")
+	close(doneOrcCh)
+	logger.Infof("Wait Orchestrator to stop")
+	<-orcStoppedCh
+	logger.Infof("Orchestrator stopped")
+
+	logger.Infof("Stops Status")
+	close(doneStatusCh)
+	logger.Infof("Wait Status to stop")
+	<-statusStoppedCh
+	logger.Infof("Status stopped")
+
+	logger.Infof("Stops Checklist")
+	close(doneChkCh)
+	logger.Infof("Wait Checklist to stop")
+	<-checklistStoppedCh
+	logger.Infof("Checklist stopped")
 
 	// Wait for the message to come in
 	wg.Wait()
@@ -73,14 +91,17 @@ func TestStatus(t *testing.T) {
 // then waits for receiving the status response.
 // The Mock Orchestrator reports every relevant event to the Checklist process.
 // Mock Orchestrator will shut down if it receives a message via the `doneCh` channel.
-func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) {
+func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger, m messenger.Messenger) chan bool {
 	statusReportCh := make(chan []byte)
 	statusReportSubs := m.ChanSubscribe("status-report", statusReportCh)
+	orcStoppedCh := make(chan bool)
 
 	wg.Add(1)
 	go func() {
+		defer logger.Infof("MockOrchestrator stopped.")
 		defer statusReportSubs.Unsubscribe()
 		defer close(statusReportCh)
+		defer close(orcStoppedCh)
 		defer wg.Done()
 
 		for {
@@ -104,4 +125,6 @@ func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh cha
 		}
 	}()
 	logger.Infof("Mock Orchestrator started.")
+
+	return orcStoppedCh
 }

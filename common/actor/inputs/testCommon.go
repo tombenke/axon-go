@@ -44,7 +44,7 @@ var messengerCfg = messenger.Config{
 	Logger:     logger,
 }
 
-var inputsCfg = config.Inputs{
+var syncInputsCfg = config.Inputs{
 	config.In{IO: config.IO{
 		Name:           "well-water-upper-level-state",
 		Type:           "base/Bool",
@@ -79,6 +79,15 @@ var syncInputs = at.TestCaseMsgs{
 	"well-pump-controller-state":    base.NewStringMessage("REFILL-THE-WELL"),
 }
 
+var asyncInputsCfg = config.Inputs{
+	config.In{IO: config.IO{
+		Name:           "well-pump-controller-state",
+		Type:           "base/String",
+		Representation: "application/json",
+		Channel:        "well-pump-controller-state",
+	}, Default: `{"Body": {"Data": "REFILL-THE-WELL"}}`},
+}
+
 var asyncInputs = at.TestCaseMsgs{
 	"well-pump-controller-state": base.NewStringMessage("REFILL-THE-WELL"),
 }
@@ -86,9 +95,14 @@ var asyncInputs = at.TestCaseMsgs{
 // startMockProcessor starts a mock processor process that observes the `inputsCh` channel.
 // If arrives an inputs data package, checks it content and reports the result to the Checklist process.
 // Mock Processor will shut down if it receives a message via the `doneCh` channel.
-func startMockProcessor(inputsCh chan io.Inputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) {
+func startMockProcessor(inputsCh chan io.Inputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan bool {
+	procStoppedCh := make(chan bool)
+
 	wg.Add(1)
 	go func() {
+		logger.Infof("Mock Processor started.")
+		defer logger.Infof("Mock Processor stopped.")
+		defer close(procStoppedCh)
 		defer wg.Done()
 
 		for {
@@ -101,24 +115,30 @@ func startMockProcessor(inputsCh chan io.Inputs, reportCh chan string, doneCh ch
 				// TODO: Compare inputs got to expected default values
 				logger.Infof("Mock Processor received inputs to process.")
 				reportCh <- checkProcessorReceiveOutputs
+				logger.Infof("Mock Processor reported to received inputs to process.")
 			}
 		}
 	}()
-	logger.Infof("Mock Processor started.")
+
+	return procStoppedCh
 }
 
 // sensInputmessages take the input port configurations and the test data
 // and sends them to the Receiver through the channels defined to the corresponding ports.
 func sendInputMessages(inputsCfg config.Inputs, inputs at.TestCaseMsgs, reportCh chan string, m messenger.Messenger, logger *logrus.Logger) {
 
+	logger.Infof("Mock Actor start publishing messages to input channels.")
 	inputPorts := io.NewInputs(inputsCfg)
 	for p := range inputPorts {
 		portName := p
 		message := inputs[p]
 		channel := inputPorts[portName].Channel
 		representation := inputPorts[portName].Representation
-		logger.Infof("Publish '%v' format message '%v' to '%s' channel.", representation, message, channel)
+		logger.Infof("Mock Actor publishes message to '%s' channel.", channel)
+		//logger.Infof("Publish '%v' format message '%v' to '%s' channel.", representation, message, channel)
 		m.Publish(channel, message.Encode(representation))
+		logger.Infof("Mock Actor published message to '%s' channel.", channel)
 	}
 	reportCh <- checkSendMsgToInput
+	logger.Infof("Mock Actor reported to finish publishing messages to input channels.")
 }

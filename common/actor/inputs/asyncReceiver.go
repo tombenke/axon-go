@@ -15,7 +15,8 @@ import (
 // and the subject to receive from.
 // This function starts the receiver routine as a standalone process,
 // and returns a channel that the process uses to forward the incoming inputs.
-func AsyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan io.Inputs {
+func AsyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) (chan io.Inputs, chan bool) {
+	receiverStoppedCh := make(chan bool)
 
 	// Setup communication channel with the processor
 	inputsCh := make(chan io.Inputs)
@@ -23,7 +24,9 @@ func AsyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGr
 	appWg.Add(1)
 	go func() {
 		logger.Infof("Receiver started in async mode.")
+		defer logger.Infof("Receiver stopped.")
 		defer close(inputsCh)
+		defer close(receiverStoppedCh)
 		defer appWg.Done()
 
 		// Create wait-group for the channel observer sub-processes
@@ -45,7 +48,10 @@ func AsyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGr
 			case <-doneCh:
 				logger.Infof("Receiver shuts down.")
 				close(obsDoneCh)
+				logger.Infof("Receiver closed the 'obsDoneCh'.")
+				logger.Infof("Receiver starts waiting for observers to stop")
 				obsWg.Wait()
+				logger.Infof("Receiver's observers stopped")
 				return
 
 			case input := <-inputsMuxCh:
@@ -53,11 +59,12 @@ func AsyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGr
 				inputs.SetMessage(input.Name, input.Message)
 				// Immediately forward to the processor if not in synchronized mode
 				inputsCh <- inputs
+				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")
 			}
 		}
 	}()
 
-	return inputsCh
+	return inputsCh, receiverStoppedCh
 }
 
 // asyncSetupInputPorts creates inputs ports, and initilizes them with their default messages

@@ -12,26 +12,35 @@ import (
 // Status receives status request messages from the orchestrator application,
 // send responses to these requests, forwarding the actual status of the actor.
 // This function runs as a standalone process, so it should be started as a go function.
-func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
+func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan bool {
 	statusRequestCh := make(chan []byte)
 	statusRequestSubs := m.ChanSubscribe("status-request", statusRequestCh)
+	statusStoppedCh := make(chan bool)
 
-	defer statusRequestSubs.Unsubscribe()
-	defer close(statusRequestCh)
-	defer wg.Done()
+	wg.Add(1)
+	go func() {
+		defer statusRequestSubs.Unsubscribe()
+		defer close(statusRequestCh)
+		defer wg.Done()
 
-	for {
-		select {
-		case <-doneCh:
-			logger.Infof("Status shuts down.")
-			return
+		defer logger.Infof("Status stopped.")
+		defer close(statusStoppedCh)
 
-		case <-statusRequestCh:
-			logger.Infof("Status received status-request message")
-			logger.Infof("Status sends status-report message")
-			statusReportMsg := orchestra.NewStatusReportMessage(actorName)
-			m.Publish("status-report", statusReportMsg.Encode(msgs.JSONRepresentation))
-			// TODO: Make orchestra message representations and channel names configurable
+		for {
+			select {
+			case <-doneCh:
+				logger.Infof("Status shuts down.")
+				return
+
+			case <-statusRequestCh:
+				logger.Infof("Status received status-request message")
+				logger.Infof("Status sends status-report message")
+				statusReportMsg := orchestra.NewStatusReportMessage(actorName)
+				m.Publish("status-report", statusReportMsg.Encode(msgs.JSONRepresentation))
+				// TODO: Make orchestra message representations and channel names configurable
+			}
 		}
-	}
+	}()
+	logger.Infof("Status started")
+	return statusStoppedCh
 }

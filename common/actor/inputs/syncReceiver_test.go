@@ -25,7 +25,7 @@ func TestSyncReceiverStartStop(t *testing.T) {
 	doneCh := make(chan bool)
 
 	// Start the receiver process
-	SyncReceiver(inputsCfg, doneCh, &wg, m, logger)
+	SyncReceiver(syncInputsCfg, doneCh, &wg, m, logger)
 
 	// Wait until test is completed, then stop the processes
 	close(doneCh)
@@ -45,27 +45,52 @@ func TestSyncReceiverDefaultsOnly(t *testing.T) {
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
 	wg := sync.WaitGroup{}
 
-	// Create a channel to shut down the processes if needed
-	doneCh := make(chan bool)
-
 	// Start the processes of the test-bed
-	reportCh, testCompletedCh := at.ChecklistProcess(checklistDefaultsOnly, doneCh, &wg, logger)
+	doneCheckCh := make(chan bool)
+	reportCh, testCompletedCh, chkStoppedCh := at.ChecklistProcess(checklistDefaultsOnly, doneCheckCh, &wg, logger)
 
 	// Create a trigger channel to start the test
-	triggerOrchCh := startMockOrchestrator(reportCh, doneCh, &wg, m, logger)
+	doneOrchCh := make(chan bool)
+	triggerOrchCh, orchStoppedCh := startMockOrchestrator(reportCh, doneOrchCh, &wg, m, logger)
 
 	// Start the receiver process
-	inputsCh := SyncReceiver(inputsCfg, doneCh, &wg, m, logger)
+	doneRcvCh := make(chan bool)
+	inputsCh, rcvStoppedCh := SyncReceiver(syncInputsCfg, doneRcvCh, &wg, m, logger)
 
-	startMockProcessor(inputsCh, reportCh, doneCh, &wg, logger)
+	doneProcCh := make(chan bool)
+	procStoppedCh := startMockProcessor(inputsCh, reportCh, doneProcCh, &wg, logger)
 
 	// Start testing
 	time.Sleep(10 * time.Millisecond)
 	triggerOrchCh <- true
 
 	// Wait until test is completed, then stop the processes
+	logger.Infof("Wait until test is completed")
 	<-testCompletedCh
-	close(doneCh)
+
+	logger.Infof("Stops Mock Orchestrator")
+	close(doneOrchCh)
+	logger.Infof("Wait Mock Orchestrator to stop")
+	<-orchStoppedCh
+	logger.Infof("Mock Orchestrator stopped")
+
+	logger.Infof("Stops Mock Processor")
+	close(doneProcCh)
+	logger.Infof("Wait Mock Processor to stop")
+	<-procStoppedCh
+	logger.Infof("Mock Processor stopped")
+
+	logger.Infof("Stops Stops Receiver")
+	close(doneRcvCh)
+	logger.Infof("Wait Receiver to stop")
+	<-rcvStoppedCh
+	logger.Infof("Receiver stopped")
+
+	logger.Infof("Stops Checklist")
+	close(doneCheckCh)
+	logger.Infof("Wait Checklist to stop")
+	<-chkStoppedCh
+	logger.Infof("Checklist stopped")
 
 	// Wait for the message to come in
 	wg.Wait()
@@ -82,27 +107,55 @@ func TestSyncReceiverInputs(t *testing.T) {
 	wg := sync.WaitGroup{}
 
 	// Create a channel to shut down the processes if needed
-	doneCh := make(chan bool)
+	//doneCh := make(chan bool)
 
 	// Start the processes of the test-bed
-	reportCh, testCompletedCh := at.ChecklistProcess(checklistFull, doneCh, &wg, logger)
+	doneCheckCh := make(chan bool)
+	reportCh, testCompletedCh, chkStoppedCh := at.ChecklistProcess(checklistFull, doneCheckCh, &wg, logger)
 
 	// Create a trigger channel to start the test
-	triggerOrchCh := startMockOrchestrator(reportCh, doneCh, &wg, m, logger)
+	doneOrcCh := make(chan bool)
+	triggerOrchCh, orchStoppedCh := startMockOrchestrator(reportCh, doneOrcCh, &wg, m, logger)
 
 	// Start the receiver process
-	inputsCh := SyncReceiver(inputsCfg, doneCh, &wg, m, logger)
+	doneRcvCh := make(chan bool)
+	inputsCh, rcvStoppedCh := SyncReceiver(syncInputsCfg, doneRcvCh, &wg, m, logger)
 
-	startMockProcessor(inputsCh, reportCh, doneCh, &wg, logger)
+	doneProcCh := make(chan bool)
+	procStoppedCh := startMockProcessor(inputsCh, reportCh, doneProcCh, &wg, logger)
 
 	// Start testing
-	sendInputMessages(inputsCfg, syncInputs, reportCh, m, logger)
+	sendInputMessages(syncInputsCfg, syncInputs, reportCh, m, logger)
 	time.Sleep(10 * time.Millisecond)
 	triggerOrchCh <- true
 
 	// Wait until test is completed, then stop the processes
+	logger.Infof("Wait until test is completed")
 	<-testCompletedCh
-	close(doneCh)
+
+	logger.Infof("Stops Mock Orchestrator")
+	close(doneOrcCh)
+	logger.Infof("Wait Mock Orchestrator to stop")
+	<-orchStoppedCh
+	logger.Infof("Mock Orchestrator stopped")
+
+	logger.Infof("Stops Mock Processor")
+	close(doneProcCh)
+	logger.Infof("Wait Mock Processor to stop")
+	<-procStoppedCh
+	logger.Infof("Mock Processor stopped")
+
+	logger.Infof("Stops Stops Receiver")
+	close(doneRcvCh)
+	logger.Infof("Wait Receiver to stop")
+	<-rcvStoppedCh
+	logger.Infof("Receiver stopped")
+
+	logger.Infof("Stops Checklist")
+	close(doneCheckCh)
+	logger.Infof("Wait Checklist to stop")
+	<-chkStoppedCh
+	logger.Infof("Checklist stopped")
 
 	// Wait for the message to come in
 	wg.Wait()
@@ -120,12 +173,15 @@ func TestSyncReceiverInputsBulk(t *testing.T) {
 // Orchestrator waits for a trigger to send `receive-and-process` message to the input aggregator.
 // The Mock Orchestrator reports every relevant event to the Checklist process.
 // Mock Orchestrator will shut down if it receives a message via the `doneCh` channel.
-func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan bool {
+func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) (chan bool, chan bool) {
 	triggerOrchCh := make(chan bool)
+	orchStoppedCh := make(chan bool)
 
 	wg.Add(1)
 	go func() {
 		defer close(triggerOrchCh)
+		defer close(orchStoppedCh)
+		logger.Infof("Mock Orchestrator stopped.")
 		defer wg.Done()
 
 		for {
@@ -144,5 +200,5 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 	}()
 
 	logger.Infof("Mock Orchestrator started.")
-	return triggerOrchCh
+	return triggerOrchCh, orchStoppedCh
 }

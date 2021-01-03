@@ -14,32 +14,41 @@ import (
 // the corresponding topics identified by the port.
 // The outputs structures hold every details about the ports, the message itself, and the subject to send.
 // This function runs as a standalone process, so it should be started as a go function.
-func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, appWg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
-	logger.Infof("Sender started in sync.")
-	sendResultsCh := make(chan []byte)
-	sendResultsSubs := m.ChanSubscribe("send-results", sendResultsCh)
+func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) chan bool {
 	var outputs io.Outputs
+	senderStoppedCh := make(chan bool)
 
-	defer sendResultsSubs.Unsubscribe()
-	defer close(sendResultsCh)
-	defer appWg.Done()
+	wg.Add(1)
+	go func() {
+		sendResultsCh := make(chan []byte)
+		sendResultsSubs := m.ChanSubscribe("send-results", sendResultsCh)
 
-	for {
-		select {
-		case <-doneCh:
-			logger.Infof("Sender shuts down.")
-			return
+		defer sendResultsSubs.Unsubscribe()
+		defer close(sendResultsCh)
+		defer logger.Infof("Sender stopped")
+		defer close(senderStoppedCh)
+		defer wg.Done()
 
-		case outputs = <-outputsCh:
-			logger.Infof("Sender received outputs")
-			// In sync mode notifies the orchestrator about that it is ready to send
-			sendProcessingCompleted(actorName, m)
+		for {
+			select {
+			case <-doneCh:
+				logger.Infof("Sender shuts down.")
+				return
 
-		case <-sendResultsCh:
-			logger.Infof("Sender received trigger to send outputs")
-			syncSendOutputs(actorName, outputs, m)
+			case outputs = <-outputsCh:
+				logger.Infof("Sender received outputs")
+				// In sync mode notifies the orchestrator about that it is ready to send
+				sendProcessingCompleted(actorName, m)
+
+			case <-sendResultsCh:
+				logger.Infof("Sender received orchestrator trigger to send outputs")
+				syncSendOutputs(actorName, outputs, m)
+			}
 		}
-	}
+	}()
+
+	logger.Infof("Sender started in sync mode.")
+	return senderStoppedCh
 }
 
 // sendProcessingCompleted sends a message to the orchestrator about that

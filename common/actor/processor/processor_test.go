@@ -9,7 +9,7 @@ import (
 	at "github.com/tombenke/axon-go/common/testing"
 	"sync"
 	"testing"
-	"time"
+	//"time"
 )
 
 const (
@@ -58,34 +58,59 @@ var testCase = at.TestCase{
 
 func TestStartProcessor(t *testing.T) {
 
-	var logger logrus.Logger
+	var logger = logrus.New()
 
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
 	wg := sync.WaitGroup{}
-
-	// Create a channel to shut down the processes if needed
-	doneCh := make(chan bool)
 
 	// Create a trigger channel to start the test
 	triggerCh := make(chan bool)
 
 	// Start the processes of the test-bed
-	reportCh, testCompletedCh := at.ChecklistProcess(checklist, doneCh, &wg, &logger)
+	doneCheckCh := make(chan bool)
+	reportCh, testCompletedCh, checklistStoppedCh := at.ChecklistProcess(checklist, doneCheckCh, &wg, logger)
 
 	// Create a channel to feed inputs to the Processor
-	inputsCh := StartMockReceiver(triggerCh, reportCh, doneCh, &wg, &logger)
+	doneRcvCh := make(chan bool)
+	inputsCh, mockRcvStoppedCh := StartMockReceiver(triggerCh, reportCh, doneRcvCh, &wg, logger)
 
-	outputsCh := StartProcessor(ProcessorFun, outputsCfg, doneCh, &wg, inputsCh, &logger)
+	doneProcCh := make(chan bool)
+	outputsCh, procStoppedCh := StartProcessor(ProcessorFun, outputsCfg, doneProcCh, &wg, inputsCh, logger)
 
-	StartMockSender(t, outputsCh, reportCh, doneCh, &wg, &logger)
+	doneSndCh := make(chan bool)
+	mockSndStoppedCh := StartMockSender(t, outputsCh, reportCh, doneSndCh, &wg, logger)
 
 	// Start testing
-	time.Sleep(10 * time.Millisecond)
+	//time.Sleep(10 * time.Millisecond)
 	triggerCh <- true
 
 	// Wait until test is completed, then stop the processes
+	logger.Infof("Wait until test is completed")
 	<-testCompletedCh
-	close(doneCh)
+
+	logger.Infof("Stops Sender")
+	close(doneSndCh)
+	logger.Infof("Wait Sender to stop")
+	<-mockSndStoppedCh
+	logger.Infof("Sender stopped")
+
+	logger.Infof("Stops processor")
+	close(doneProcCh)
+	logger.Infof("Wait Processor to stop")
+	<-procStoppedCh
+	logger.Infof("Processor stopped")
+
+	logger.Infof("Stops Receiver")
+	close(doneRcvCh)
+	logger.Infof("Wait Receiver to stop")
+	<-mockRcvStoppedCh
+	logger.Infof("Receiver stopped")
+
+	logger.Infof("Stops Checklist")
+	close(doneCheckCh)
+	logger.Infof("Wait Checklist to stop")
+	<-checklistStoppedCh
+	logger.Infof("Checklist stopped")
 
 	// Wait for the message to come in
 	wg.Wait()
@@ -107,15 +132,18 @@ func ProcessorFun(ctx Context) error {
 	return nil
 }
 
-func StartMockReceiver(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan io.Inputs {
+func StartMockReceiver(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) (chan io.Inputs, chan bool) {
 	logger.Infof("Mock Receiver started.")
 	inputsCh := make(chan io.Inputs)
+	mockRcvStoppedCh := make(chan bool)
+	defer close(mockRcvStoppedCh)
 	inputs := io.NewInputs(inputsCfg)
 	SetInputs(&inputs, testCase.Inputs)
 
 	wg.Add(1)
 	go func() {
 		//defer close(inputsCh)
+		defer logger.Infof("Mock Receiver stopped.")
 		defer wg.Done()
 
 		for {
@@ -132,14 +160,17 @@ func StartMockReceiver(triggerCh chan bool, reportCh chan string, doneCh chan bo
 		}
 	}()
 
-	return inputsCh
+	return inputsCh, mockRcvStoppedCh
 }
 
-func StartMockSender(t *testing.T, outputsCh chan io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) {
+func StartMockSender(t *testing.T, outputsCh chan io.Outputs, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan bool {
 	logger.Infof("Mock Sender started.")
+	mockSndStoppedCh := make(chan bool)
 
 	wg.Add(1)
 	go func() {
+		defer close(mockSndStoppedCh)
+		defer logger.Infof("Mock Sender stopped.")
 		defer wg.Done()
 
 		for {
@@ -149,10 +180,13 @@ func StartMockSender(t *testing.T, outputsCh chan io.Outputs, reportCh chan stri
 				return
 
 			case outputs := <-outputsCh:
-				CompareOutputsData(t, outputs, testCase)
 				logger.Infof("Mock Sender received outputs")
+				CompareOutputsData(t, outputs, testCase)
+				logger.Infof("Mock Sender reports that received outputs")
 				reportCh <- checkSenderReceivedOutputs
 			}
 		}
 	}()
+
+	return mockSndStoppedCh
 }
