@@ -112,7 +112,7 @@ func TestSyncReceiverInputs(t *testing.T) {
 // In some ports more than one inputs arrive, so it uses the latest one arrived to the port,
 // that it sends to the processor.
 func TestSyncReceiverInputsBulk(t *testing.T) {
-	// TODO
+	// TODO Implement TestSyncReceiverInputsBulk test-case
 }
 
 // startMockOrchestrator starts a standalone process that emulates
@@ -135,7 +135,6 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 				return
 
 			case <-triggerOrchCh:
-				// TODO: Define and use message type with timestamp, and dt properties
 				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(1.0))
 				m.Publish("receive-and-process", receiveAndProcessMsg.Encode(msgs.JSONRepresentation))
 				logger.Infof("Mock Orchestrator sent 'receive-and-process' message.")

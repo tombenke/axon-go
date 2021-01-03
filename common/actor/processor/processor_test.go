@@ -110,7 +110,6 @@ func ProcessorFun(ctx Context) error {
 func StartMockReceiver(triggerCh chan bool, reportCh chan string, doneCh chan bool, wg *sync.WaitGroup, logger *logrus.Logger) chan io.Inputs {
 	logger.Infof("Mock Receiver started.")
 	inputsCh := make(chan io.Inputs)
-	// TODO: Create real inputs from test data
 	inputs := io.NewInputs(inputsCfg)
 	SetInputs(&inputs, testCase.Inputs)
 
