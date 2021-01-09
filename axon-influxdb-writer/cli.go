@@ -39,7 +39,7 @@ func CliParse() *CliParams {
 
 	parameters := CliParams{
 		Urls:          flag.String("u", nats.DefaultURL, "The nats server URLs (separated by comma)"),
-		UserCreds:     flag.String("creds", "", "User Credentials File"),
+		UserCreds:     flag.String("creds", "", "User Credentials"),
 		InfluxDbURL:   flag.String("i", "http://localhost:8086", "InfluxDB URL"),
 		InfluxDbCreds: flag.String("icreds", "", "User Credentials File for InfluxDB"),
 		InfluxDbName:  flag.String("db", "axon", "The name of the InfluxDB database"),
