@@ -7,6 +7,9 @@ import (
 	"os"
 )
 
+// Config holds the configuration parameters of the actor node application
+// It must inherit the configuration of the core `Node` object,
+// and may contain other additiona application-specific parameters.
 type Config struct {
 	// Node holds the config parameters that every actor node needs
 	Node commonConfig.Node
