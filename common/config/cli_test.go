@@ -12,9 +12,9 @@ type Config struct {
 	Precision string
 }
 
-// Parse the command line arguments and returns with the results as a structure
+// parseCliArgs parses the command line arguments and returns with the results as a structure
 // It is a mock function that each of the implementations of the nodes includes.
-func ParseCliArgs(defaultNodeName string, args []string) Config {
+func parseCliArgs(defaultNodeName string, args []string) Config {
 
 	config := Config{}
 
@@ -42,7 +42,7 @@ func ParseCliArgs(defaultNodeName string, args []string) Config {
 
 func TestParseCliArgsWithDefaults(t *testing.T) {
 	defaultNodeName := "node-name"
-	c := ParseCliArgs(defaultNodeName, []string{})
+	c := parseCliArgs(defaultNodeName, []string{})
 	assert.Equal(t, c.Name, defaultNodeName)
 	assert.Equal(t, c.LogLevel, defaultLogLevel)
 	assert.Equal(t, c.LogFormat, defaultLogFormat)
@@ -69,7 +69,7 @@ func TestConfigWithArgs(t *testing.T) {
 	args = append(args, "-out")
 	args = append(args, "level-state|well-water-upper-level-state")
 
-	c := ParseCliArgs(nodeName, args)
+	c := parseCliArgs(nodeName, args)
 	assert.Equal(t, c.Name, nodeName)
 	assert.Equal(t, c.LogLevel, logLevel)
 	assert.Equal(t,

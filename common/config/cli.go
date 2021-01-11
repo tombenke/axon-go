@@ -45,9 +45,6 @@ const (
 func GetDefaultFlagSet(defaultNodeName string, config *Node) *flag.FlagSet {
 	fs := flag.NewFlagSet("fs-name", flag.PanicOnError)
 
-	var showHelp bool
-	fs.BoolVar(&showHelp, "h", false, "Show help message")
-
 	fs.StringVar(&(*config).Name, "n", GetEnvWithDefault(nodeNameEnvVar, defaultNodeName), nodeNameHelp)
 	fs.StringVar(&(*config).Name, "name", GetEnvWithDefault(nodeNameEnvVar, defaultNodeName), nodeNameHelp)
 
