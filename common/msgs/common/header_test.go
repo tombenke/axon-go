@@ -48,7 +48,7 @@ func TestNowAsUnixWithPrecision(t *testing.T) {
 		nowNs := time.Now().UnixNano()
 		now := NowAsUnixWithPrecision(c.Precision)
 		if c.Precision == TimePrecision("ns") {
-			assert.Less(t, now-nowNs, int64(1000))
+			assert.Less(t, now-nowNs, int64(5000))
 		} else {
 			assert.Equal(t, now, nowNs/c.Factor)
 		}

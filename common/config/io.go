@@ -17,7 +17,7 @@ type IO struct {
 
 // In defines the properties of an input descriptor CLI parameter
 type In struct {
-	IO
+	IO      `yaml:",inline"`
 	Default string
 }
 
@@ -26,7 +26,7 @@ type Inputs []In
 
 // Out defines the properties of an output descriptor CLI parameter
 type Out struct {
-	IO
+	IO `yaml:",inline"`
 }
 
 // Outputs is an array of the output CLI parameters

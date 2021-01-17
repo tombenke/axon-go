@@ -54,14 +54,14 @@ func GetDefaultFlagSet(defaultNodeName string, config *Node) *flag.FlagSet {
 	fs.StringVar(&(*config).LogFormat, "f", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
 	fs.StringVar(&(*config).LogFormat, "log-format", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
 
-	fs.StringVar(&(*config).Config.Urls, "u", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
-	fs.StringVar(&(*config).Config.Urls, "messaging-urls", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
+	fs.StringVar(&(*config).Messenger.Urls, "u", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
+	fs.StringVar(&(*config).Messenger.Urls, "messaging-urls", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
 
-	fs.StringVar(&(*config).Config.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
-	fs.StringVar(&(*config).Config.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
+	fs.StringVar(&(*config).Messenger.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
+	fs.StringVar(&(*config).Messenger.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
 
-	fs.Var(&(*config).Inputs, "in", inputsHelp)
-	fs.Var(&(*config).Outputs, "out", outputsHelp)
+	fs.Var(&(*config).Ports.Inputs, "in", inputsHelp)
+	fs.Var(&(*config).Ports.Outputs, "out", outputsHelp)
 
 	return fs
 }

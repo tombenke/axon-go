@@ -46,11 +46,11 @@ func TestParseCliArgsWithDefaults(t *testing.T) {
 	assert.Equal(t, c.Name, defaultNodeName)
 	assert.Equal(t, c.LogLevel, defaultLogLevel)
 	assert.Equal(t, c.LogFormat, defaultLogFormat)
-	assert.Equal(t, c.Urls, defaultMessagingURL)
-	assert.Equal(t, c.UserCreds, defaultMessagingUserCreds)
+	assert.Equal(t, c.Messenger.Urls, defaultMessagingURL)
+	assert.Equal(t, c.Messenger.UserCreds, defaultMessagingUserCreds)
 	assert.Equal(t, c.Precision, "ns")
-	assert.Equal(t, c.Inputs, *new(Inputs))
-	assert.Equal(t, c.Outputs, *new(Outputs))
+	assert.Equal(t, c.Ports.Inputs, *new(Inputs))
+	assert.Equal(t, c.Ports.Outputs, *new(Outputs))
 }
 
 func TestConfigWithArgs(t *testing.T) {
@@ -76,9 +76,9 @@ func TestConfigWithArgs(t *testing.T) {
 		Inputs{
 			In{IO: IO{Name: "water-level", Channel: "well-water-level", Type: DefaultType, Representation: DefaultRepresentation}, Default: `{"Body": {"Data": 0.}}`},
 			In{IO: IO{Name: "reference-water-level", Channel: "well-water-upper-level", Type: DefaultType, Representation: DefaultRepresentation}, Default: `{"Body": {"Data": 0.}}`}},
-		c.Inputs)
+		c.Ports.Inputs)
 	assert.Equal(t,
 		Outputs{
 			Out{IO: IO{Name: "level-state", Channel: "well-water-upper-level-state", Type: DefaultType, Representation: DefaultRepresentation}}},
-		c.Outputs)
+		c.Ports.Outputs)
 }

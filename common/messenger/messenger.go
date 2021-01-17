@@ -11,10 +11,10 @@ import (
 type Config struct {
 	Urls       string
 	UserCreds  string
-	ClientName string
-	ClusterID  string
-	ClientID   string
-	Logger     *logrus.Logger
+	ClientName string         `yaml:"-"`
+	ClusterID  string         `yaml:"-"`
+	ClientID   string         `yaml:"-"`
+	Logger     *logrus.Logger `yaml:"-"`
 }
 
 // AckHandler is used for Async Publishing to provide status of the ack.
