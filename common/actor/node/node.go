@@ -14,8 +14,8 @@ import (
 
 // Node represents the common core object of an actor-node application
 type Node struct {
-	MessengerConfig messenger.Config
-	Name            string
+	Messenger messenger.Config
+	Name      string
 	//	Inputs    Inputs
 	//	Outputs   Outputs
 }
@@ -24,8 +24,8 @@ type Node struct {
 // which represents the common core component of an actor-node application
 func NewNode(config config.Node) Node {
 	node := Node{
-		MessengerConfig: config.Config,
-		Name:            config.Name,
+		Messenger: config.Messenger,
+		Name:      config.Name,
 	}
 	return node
 }
@@ -37,7 +37,11 @@ func (n Node) Start() {
 	logger.Infof("Start '%s' actor node", n.Name)
 
 	// Connect to messaging
-	m := messengerImpl.NewMessenger(n.MessengerConfig)
+	n.Messenger.Logger = log.Logger
+	n.Messenger.ClientID = n.Name
+	n.Messenger.ClientName = n.Name
+	n.Messenger.ClusterID = "test-cluster"
+	m := messengerImpl.NewMessenger(n.Messenger)
 	defer m.Close()
 
 	// Use a WaitGroup to wait for the processes of the node

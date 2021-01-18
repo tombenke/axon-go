@@ -14,6 +14,7 @@ type AppConfigFromFile struct {
 	ExtDescription string `yaml:"extDescription"`
 }
 
+// YAML converts the content of the AppConfigFromFile structure to YAML format
 func (c AppConfigFromFile) YAML() ([]byte, error) {
 	return yaml.Marshal(&c)
 }
@@ -86,6 +87,7 @@ func TestReadConfigFile(t *testing.T) {
 	assert.Equal(t, expectedAppConfigFromFile, appConfigFromFile)
 }
 
+// ReadConfigFromFile Reads the the config parameters from a file
 func ReadAppConfigFromFile(path string) (AppConfigFromFile, error) {
 	c := AppConfigFromFile{}
 	var err error

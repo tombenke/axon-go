@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-// Registers an observer go routine to get notifed when termination signals arrive,
+// Register is an observer go routine to get notifed when termination signals arrive,
 // then call the `cb` callback function with the signal and finishes the go routine.
 func Register(wg *sync.WaitGroup, cb func(os.Signal)) {
 
