@@ -60,6 +60,8 @@ func GetDefaultFlagSet(defaultNodeName string, config *Node) *flag.FlagSet {
 	fs.StringVar(&(*config).Messenger.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, (*config).Messenger.UserCreds), messagingUserCredsHelp)
 	fs.StringVar(&(*config).Messenger.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, (*config).Messenger.UserCreds), messagingUserCredsHelp)
 
+	fs.StringVar(&(*config).ConfigFileName, "config", "config.yml", "Config file name")
+
 	fs.Var(&(*config).Ports.Inputs, "in", inputsHelp)
 	fs.Var(&(*config).Ports.Outputs, "out", outputsHelp)
 

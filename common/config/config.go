@@ -14,7 +14,7 @@ type Node struct {
 	Name string `yaml:"name"`
 
 	// Type is the symbolic name of the node type, that refers to how the node is working.
-	Type string `yaml:-`
+	Type string `yaml:"-"`
 
 	// ConfigFileName is the name of the config file to load
 	// the configuration parameters of the application.

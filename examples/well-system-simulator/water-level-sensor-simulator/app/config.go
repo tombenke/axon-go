@@ -16,6 +16,9 @@ type Config struct {
 	// Node holds the config parameters that every actor node needs
 	Node config.Node `yaml:"node"`
 
+	// Show the help of the application
+	ShowHelp bool
+
 	// PrintConfig if true, then prints the resulting configuration to the console
 	PrintConfig bool `yaml:"printConfig"`
 
@@ -37,7 +40,7 @@ func GetConfig(appName string, hardCodedConfigContent Config, args []string) Con
 	}
 
 	// Get config file name from CLI parameter, or use the default one
-	configFileName := getConfigFileName(args)
+	configFileName := getConfigFileName(appName, defaultConfig, args)
 
 	// Read the configuration from config file, if it is found
 	configFileContent, _ := readConfigFromFile(defaultConfig, configFileName)
@@ -52,16 +55,12 @@ func GetConfig(appName string, hardCodedConfigContent Config, args []string) Con
 }
 
 // getDefaultConfigFileName returns with the path to the config file
-func getConfigFileName(args []string) string {
-	// Check the CLI parameter
-	// TODO
+func getConfigFileName(appName string, defaultConfig Config, args []string) string {
 
-	var configFileName string
-	fs := flag.NewFlagSet("find-configfile-name", flag.ContinueOnError)
-	fs.StringVar(&configFileName, "config", "config.yml", "Config file name")
+	fs := GetAppFlagSet(appName, &defaultConfig)
 	fs.Parse(args)
 
-	return configFileName
+	return defaultConfig.Node.ConfigFileName
 }
 
 // parseCliArgs parses the command line arguments and returns with the results as a structure
@@ -69,18 +68,7 @@ func parseCliArgs(configFileContent Config, appName string, args []string) Confi
 
 	appConfig := configFileContent
 
-	// Get the dafault CLI args
-	fs := config.GetDefaultFlagSet(appName, &appConfig.Node)
-
-	// Extend the default set with node specific arguments
-	var showHelp bool
-	fs.BoolVar(&showHelp, "h", false, "Show help message")
-	fs.BoolVar(&showHelp, "help", false, "Show help message")
-
-	fs.BoolVar(&appConfig.PrintConfig, "p", false, "Print configuration parameters")
-	fs.BoolVar(&appConfig.PrintConfig, "print-config", false, "Print configuration parameters")
-
-	//TODO Add additional CLI flags if needed here
+	fs := GetAppFlagSet(appName, &appConfig)
 
 	// Add usage printer function
 	fs.Usage = usage(fs, appName)
@@ -88,11 +76,26 @@ func parseCliArgs(configFileContent Config, appName string, args []string) Confi
 	fs.Parse(args)
 
 	// Handle the -h flag
-	if showHelp {
+	if appConfig.ShowHelp {
 		showUsageAndExit(fs, appName, 0)
 	}
 
 	return appConfig
+}
+
+// GetAppFlagSet returns with the flag-set of the application to parse the CLI parameters
+func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
+	fs := config.GetDefaultFlagSet(appName, &cfg.Node)
+
+	fs.BoolVar(&cfg.ShowHelp, "h", false, "Show help message")
+	fs.BoolVar(&cfg.ShowHelp, "help", false, "Show help message")
+
+	fs.BoolVar(&cfg.PrintConfig, "p", false, "Print configuration parameters")
+	fs.BoolVar(&cfg.PrintConfig, "print-config", false, "Print configuration parameters")
+
+	//TODO Add additional CLI flags if needed here
+
+	return fs
 }
 
 // Show usage info then exit

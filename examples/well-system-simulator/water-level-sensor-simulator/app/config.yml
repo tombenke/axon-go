@@ -2,7 +2,6 @@ node:
   # legend:
   # C = Configurable
   # H = Hard-coded, non-configurable
-  type: water-level-sensor-simulator # [H]
   name: well-water-upper-level-sensor-simulator # [C]
   logLevel: debug # [C]
   logFormat: json # [C]

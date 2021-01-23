@@ -28,7 +28,7 @@ func TestReadConfigFile(t *testing.T) {
 				UserCreds: defaultMessagingUserCreds,
 			},
 			Name:           "well-water-upper-level-sensor-simulator",
-			Type:           "water-level-sensor-simulator",
+			Type:           "",
 			ConfigFileName: "config.yml",
 			LogLevel:       "debug",
 			LogFormat:      "text",

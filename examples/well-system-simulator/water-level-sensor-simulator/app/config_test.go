@@ -31,7 +31,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 				UserCreds: "",
 			},
 			Name:           "well-water-upper-level-sensor-simulator",
-			Type:           "water-level-sensor-simulator",
+			Type:           "untyped",
 			ConfigFileName: "config.yml",
 			LogLevel:       "debug",
 			LogFormat:      "json",
@@ -166,7 +166,7 @@ func TestReadConfigFromFile_Partial(t *testing.T) {
 }
 
 func TestGetConfigFileName_Default(t *testing.T) {
-	assert.Equal(t, "config.yml", getConfigFileName([]string{}))
+	assert.Equal(t, "config.yml", getConfigFileName("", Config{}, []string{}))
 }
 
 func TestGetConfigFileName_ByArgs(t *testing.T) {
@@ -175,5 +175,5 @@ func TestGetConfigFileName_ByArgs(t *testing.T) {
 	args = append(args, "-config")
 	args = append(args, expectedConfigFileName)
 
-	assert.Equal(t, expectedConfigFileName, getConfigFileName(args))
+	assert.Equal(t, expectedConfigFileName, getConfigFileName("", Config{}, args))
 }
