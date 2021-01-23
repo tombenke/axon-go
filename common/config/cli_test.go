@@ -16,7 +16,10 @@ type Config struct {
 // It is a mock function that each of the implementations of the nodes includes.
 func parseCliArgs(defaultNodeName string, args []string) Config {
 
-	config := Config{}
+	config := Config{
+		Node:      GetDefaultNode(),
+		Precision: "",
+	}
 
 	// Get the dafault CLI args
 	fs := GetDefaultFlagSet(defaultNodeName, &config.Node)
@@ -43,14 +46,14 @@ func parseCliArgs(defaultNodeName string, args []string) Config {
 func TestParseCliArgsWithDefaults(t *testing.T) {
 	defaultNodeName := "node-name"
 	c := parseCliArgs(defaultNodeName, []string{})
-	assert.Equal(t, c.Name, defaultNodeName)
-	assert.Equal(t, c.LogLevel, defaultLogLevel)
-	assert.Equal(t, c.LogFormat, defaultLogFormat)
-	assert.Equal(t, c.Messenger.Urls, defaultMessagingURL)
-	assert.Equal(t, c.Messenger.UserCreds, defaultMessagingUserCreds)
-	assert.Equal(t, c.Precision, "ns")
-	assert.Equal(t, c.Ports.Inputs, *new(Inputs))
-	assert.Equal(t, c.Ports.Outputs, *new(Outputs))
+	assert.Equal(t, defaultNodeName, c.Name)
+	assert.Equal(t, defaultLogLevel, c.LogLevel)
+	assert.Equal(t, defaultLogFormat, c.LogFormat)
+	assert.Equal(t, defaultMessagingURL, c.Messenger.Urls)
+	assert.Equal(t, defaultMessagingUserCreds, c.Messenger.UserCreds)
+	assert.Equal(t, "ns", c.Precision)
+	assert.Equal(t, *new(Inputs), c.Ports.Inputs)
+	assert.Equal(t, *new(Outputs), c.Ports.Outputs)
 }
 
 func TestConfigWithArgs(t *testing.T) {
@@ -70,8 +73,8 @@ func TestConfigWithArgs(t *testing.T) {
 	args = append(args, "level-state|well-water-upper-level-state")
 
 	c := parseCliArgs(nodeName, args)
-	assert.Equal(t, c.Name, nodeName)
-	assert.Equal(t, c.LogLevel, logLevel)
+	assert.Equal(t, nodeName, c.Name)
+	assert.Equal(t, logLevel, c.LogLevel)
 	assert.Equal(t,
 		Inputs{
 			In{IO: IO{Name: "water-level", Channel: "well-water-level", Type: DefaultType, Representation: DefaultRepresentation}, Default: `{"Body": {"Data": 0.}}`},

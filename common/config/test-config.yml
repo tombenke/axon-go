@@ -7,9 +7,6 @@ node:
   logLevel: debug # [C]
   logFormat: text # [C]
   configFileName: config.yml # [C]
-  configure: # [H]
-    extend: true # Add new extensional property
-    modify: true # Change the value of the public properties of the config
   ports:
     configure: # [H]
       extend: false # Add new I/O port
@@ -39,6 +36,13 @@ node:
     sendingCompleted: sending-completed
     receiveAndProcess: receive-and-process
     processingCompleted: processing-completed
+    channels:
+      statusRequest: status-request
+      statusReport: status-report
+      sendResults: send-results
+      sendingCompleted: sending-completed
+      receiveAndProcess: receive-and-process
+      processingCompleted: processing-completed
   messenger: # [C]
     urls: "localhost:4222"
     credentials: ""

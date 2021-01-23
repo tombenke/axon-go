@@ -6,9 +6,9 @@ import (
 )
 
 func main() {
-	// Create a new application instance
-	a := app.NewApplication()
+	// Create a new application instance using the CLI and config parameters
+	a := app.NewApplication(os.Args[1:])
 
-	// Start the axon node application using the CLI and config parameters
-	a.Start(os.Args[1:])
+	// Start the axon node application
+	a.Start()
 }

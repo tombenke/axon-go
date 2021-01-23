@@ -1,0 +1,20 @@
+node:
+  name: well-water-upper-level-sensor-simulator
+  ports:
+    inputs:
+      - name: reference-water-level
+        type: base/Float64
+        representation: application/json
+        channel: "" # Use the default value only
+        default: '{ "Body": { "Data": 0.75 } }'
+      - name: water-level
+        type: base/Float64
+        representation: application/json
+        channel: well-water-level
+        default: '{ "Body": { "Data": 0.0 } }'
+    outputs:
+      - name: water-level-state
+        type: base/Bool
+        representation: application/json
+        channel: well-water-upper-level-state
+

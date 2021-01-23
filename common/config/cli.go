@@ -27,7 +27,7 @@ const (
 
 	logFormatHelp    = "The log format: json | text"
 	logFormatEnvVar  = "LOG_FORMAT"
-	defaultLogFormat = "json"
+	defaultLogFormat = "text"
 
 	messagingUrlsEnvVar = "MESSAGING_URL"
 	messagingUrlsHelp   = "The Messaging server's URLs (separated by comma)"
@@ -43,22 +43,22 @@ const (
 
 // GetDefaultFlagSet returns with the default values of the generic configuration parameters
 func GetDefaultFlagSet(defaultNodeName string, config *Node) *flag.FlagSet {
-	fs := flag.NewFlagSet("fs-name", flag.PanicOnError)
+	fs := flag.NewFlagSet("fs-name", flag.ContinueOnError)
 
 	fs.StringVar(&(*config).Name, "n", GetEnvWithDefault(nodeNameEnvVar, defaultNodeName), nodeNameHelp)
 	fs.StringVar(&(*config).Name, "name", GetEnvWithDefault(nodeNameEnvVar, defaultNodeName), nodeNameHelp)
 
-	fs.StringVar(&(*config).LogLevel, "l", GetEnvWithDefault(logLevelEnvVar, defaultLogLevel), logLevelHelp)
-	fs.StringVar(&(*config).LogLevel, "log-level", GetEnvWithDefault(logLevelEnvVar, defaultLogLevel), logLevelHelp)
+	fs.StringVar(&(*config).LogLevel, "l", GetEnvWithDefault(logLevelEnvVar, (*config).LogLevel), logLevelHelp)
+	fs.StringVar(&(*config).LogLevel, "log-level", GetEnvWithDefault(logLevelEnvVar, (*config).LogLevel), logLevelHelp)
 
-	fs.StringVar(&(*config).LogFormat, "f", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
-	fs.StringVar(&(*config).LogFormat, "log-format", GetEnvWithDefault(logFormatEnvVar, defaultLogFormat), logFormatHelp)
+	fs.StringVar(&(*config).LogFormat, "f", GetEnvWithDefault(logFormatEnvVar, (*config).LogFormat), logFormatHelp)
+	fs.StringVar(&(*config).LogFormat, "log-format", GetEnvWithDefault(logFormatEnvVar, (*config).LogFormat), logFormatHelp)
 
-	fs.StringVar(&(*config).Messenger.Urls, "u", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
-	fs.StringVar(&(*config).Messenger.Urls, "messaging-urls", GetEnvWithDefault(messagingUrlsEnvVar, defaultMessagingURL), messagingUrlsHelp)
+	fs.StringVar(&(*config).Messenger.Urls, "u", GetEnvWithDefault(messagingUrlsEnvVar, (*config).Messenger.Urls), messagingUrlsHelp)
+	fs.StringVar(&(*config).Messenger.Urls, "messaging-urls", GetEnvWithDefault(messagingUrlsEnvVar, (*config).Messenger.Urls), messagingUrlsHelp)
 
-	fs.StringVar(&(*config).Messenger.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
-	fs.StringVar(&(*config).Messenger.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, defaultMessagingUserCreds), messagingUserCredsHelp)
+	fs.StringVar(&(*config).Messenger.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, (*config).Messenger.UserCreds), messagingUserCredsHelp)
+	fs.StringVar(&(*config).Messenger.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, (*config).Messenger.UserCreds), messagingUserCredsHelp)
 
 	fs.Var(&(*config).Ports.Inputs, "in", inputsHelp)
 	fs.Var(&(*config).Ports.Outputs, "out", outputsHelp)

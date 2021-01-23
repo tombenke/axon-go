@@ -16,7 +16,7 @@ import (
 type Node struct {
 	Messenger messenger.Config
 	Name      string
-	//	Inputs    Inputs
+	//  Inputs    Inputs
 	//	Outputs   Outputs
 }
 

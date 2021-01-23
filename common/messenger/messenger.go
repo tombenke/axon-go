@@ -9,8 +9,8 @@ import (
 
 // Config holds the configuration parameters of the Messenger clients
 type Config struct {
-	Urls       string
-	UserCreds  string
+	Urls       string         `yaml:urls`
+	UserCreds  string         `yaml:"credentials"`
 	ClientName string         `yaml:"-"`
 	ClusterID  string         `yaml:"-"`
 	ClientID   string         `yaml:"-"`

@@ -1,6 +1,7 @@
 package config
 
 import (
+	//"fmt"
 	"github.com/tombenke/axon-go/common/messenger"
 )
 
@@ -13,7 +14,7 @@ type Node struct {
 	Name string `yaml:"name"`
 
 	// Type is the symbolic name of the node type, that refers to how the node is working.
-	Type string `yaml:"type"`
+	Type string `yaml:-`
 
 	// ConfigFileName is the name of the config file to load
 	// the configuration parameters of the application.
@@ -28,12 +29,10 @@ type Node struct {
 	// LogFormat the log format of the application
 	LogFormat string `yaml:"logFormat"`
 
-	// Configure holds the properties that determine how the node configuration properties
-	// might be changed, during the configuration process
-	Configure Configure `yaml:"configure"`
-
 	// Ports holds the I/O port definitions
 	Ports Ports `yaml:"ports"`
+
+	Orchestration Orchestration `yaml:"orchestration"`
 }
 
 // Ports structure is an aggregate that holds the I/O port definitions
@@ -52,16 +51,13 @@ type Ports struct {
 // Configure is a generic structure that holds the flags that control either the node level,
 // and/or the port-level configurability
 type Configure struct {
-	// Extends is a flag, that determines if the node and/or port can be extended.
-	// In case of Node `true` means, it is allowed to add extensional properties
-	// to the configuration of the application.
-	// If `false`, there is only the predefined application config can be used.
-	// In case of ports `true` means, it is possible to add new I/O ports to the node.
+	// Extends is a flag, that determines if the set of ports can be extended.
+	// If it is `true`, then it is possible to add new I/O ports to the node.
 	// if `false` there is only the predefined ports can be used.
-
 	Extend bool `yaml:"extend"`
+
 	// Modify is a flag that determines if the values of the configuration properties of
-	// the node and/or port can be changed or not. If `true` the properties can be changed,
+	// the ports can be changed or not. If `true` the properties can be changed,
 	// othewise only the predefined values can be used.
 	Modify bool `yaml:"modify"`
 }
@@ -88,25 +84,25 @@ type Channels struct {
 	// StatusRequest is the name of the channel that the orchestrator uses
 	// to send status request message to the nodes of the network.
 	// The Nodes that uses the presence protocol must subscribe to this channel.
-	StatusRequest string `yaml:"StatusRequest"`
+	StatusRequest string `yaml:"statusRequest"`
 
 	// StatusReport is the name of the channel that the orchestrator uses
 	// to receive status response messages from the nodes of the network.
 	// The Nodes that uses the presence protocol must publish their status response messages to this
 	// this channel after they received a status request from the orchestrator.
-	StatusReport string `yaml:"StatusReport"`
+	StatusReport string `yaml:"statusReport"`
 
 	// SendResults is the name of the channel that the orchestrator uses
 	// to notify the nodes of the network to send their processing results.
 	// The Nodes that work in synchronous mode must subscribe to this channel,
 	// and they have to publish their results after receiving this message.
-	SendResults string `yaml:"SendResults"`
+	SendResults string `yaml:"sendResults"`
 
 	// SendingCompleted is the name of the channel that the orchestrator subscribes to
 	// in order to get notified by those Nodes that completed the sending of their processing results.
 	// The Nodes that work in synchronous mode must publish to this channel
 	// the sending-completed message, which includes the ID of the Node.
-	SendingCompleted string `yaml:"SendingCompleted"`
+	SendingCompleted string `yaml:"sendingCompleted"`
 
 	// ReceiveAndProcess is the name of the channel that the orchestrator uses
 	// to notify the nodes of the network to collect the messages they have received via the intput ports,
@@ -121,22 +117,78 @@ type Channels struct {
 	ProcessingCompleted string `yaml:"processingCompleted"`
 }
 
-// NewNode returns with a new Node configuration object
-func NewNode(nodeName string, nodeType string, extend bool, modify bool) Node {
+// GetDefaultNode returns with a new Node structure with default values
+func GetDefaultNode() Node {
 	return Node{
-		Name: nodeName,
-		Type: nodeType,
-		Configure: Configure{
-			Extend: extend,
-			Modify: modify,
+		Messenger: messenger.Config{
+			Urls:      defaultMessagingURL,
+			UserCreds: defaultMessagingUserCreds,
+		},
+		Name:           "anonymous",
+		Type:           "untyped",
+		ConfigFileName: "config.yml",
+		LogLevel:       defaultLogLevel,
+		LogFormat:      defaultLogFormat,
+		Ports: Ports{
+			Configure: Configure{
+				Extend: true,
+				Modify: true,
+			},
+		},
+		Orchestration: Orchestration{
+			Presence:        true,
+			Synchronization: true,
+			Channels: Channels{
+				StatusRequest:       "status-request",
+				StatusReport:        "status-report",
+				SendResults:         "send-results",
+				SendingCompleted:    "sending-completed",
+				ReceiveAndProcess:   "receive-and-process",
+				ProcessingCompleted: "processing-completed",
+			},
 		},
 	}
 }
 
-// SetPorts sets the predefined ports of the node, including their configurability settings
-func (n *Node) SetPorts(inputs Inputs, outputs Outputs, extend bool, modify bool) {
-	n.Ports.Inputs = inputs
-	n.Ports.Outputs = outputs
+// NewNode returns with a new Node configuration object
+func NewNode(nodeName string, nodeType string, extend bool, modify bool) Node {
+	return Node{
+		Name:  nodeName,
+		Type:  nodeType,
+		Ports: Ports{},
+	}
+}
+
+// SetPortsConfigurability sets if the I/O ports can be extended and/or modified
+func (n *Node) SetPortsConfigurability(extend bool, modify bool) {
 	n.Ports.Configure.Extend = extend
 	n.Ports.Configure.Modify = modify
+}
+
+// AddInputPort Add a new input port to the Node
+func (n *Node) AddInputPort(portName string, portType string, representation string, channel string, defaultMsg string) {
+	input := In{IO: IO{Name: portName, Channel: channel, Type: portType, Representation: representation}, Default: defaultMsg}
+	n.Ports.Inputs = append(n.Ports.Inputs, input)
+}
+
+// AddOutputPort Add a new output port to the Node
+func (n *Node) AddOutputPort(portName string, portType string, representation string, channel string) {
+	output := Out{IO: IO{Name: portName, Channel: channel, Type: portType, Representation: representation}}
+	n.Ports.Outputs = append(n.Ports.Outputs, output)
+}
+
+// MergeNodeConfigs returns with the resulting config parameters set of the Node
+// after merging the coming from the three sources
+func MergeNodeConfigs(hardCoded Node, cli Node, configFile Node) Node {
+	resulting := hardCoded
+
+	//TODO: Implement
+	resulting.Name = cli.Name
+	resulting.LogLevel = cli.LogLevel
+	resulting.LogFormat = cli.LogFormat
+	resulting.Messenger = cli.Messenger
+	//resulting.Orchestration = cli.Orchestration
+
+	//fmt.Println("MergeConfig:", hardCoded, cli, configFile, "=>", resulting)
+	return resulting
 }

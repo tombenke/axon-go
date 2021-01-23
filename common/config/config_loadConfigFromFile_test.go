@@ -24,18 +24,14 @@ func TestReadConfigFile(t *testing.T) {
 	expectedAppConfigFromFile := AppConfigFromFile{
 		Node: Node{
 			Messenger: messenger.Config{
-				Urls:      "localhost:4222",
-				UserCreds: "",
+				Urls:      defaultMessagingURL,
+				UserCreds: defaultMessagingUserCreds,
 			},
 			Name:           "well-water-upper-level-sensor-simulator",
 			Type:           "water-level-sensor-simulator",
 			ConfigFileName: "config.yml",
 			LogLevel:       "debug",
 			LogFormat:      "text",
-			Configure: Configure{
-				Extend: true,
-				Modify: true,
-			},
 			Ports: Ports{
 				Inputs: Inputs{
 					In{
@@ -70,6 +66,18 @@ func TestReadConfigFile(t *testing.T) {
 				Configure: Configure{
 					Extend: false,
 					Modify: true,
+				},
+			},
+			Orchestration: Orchestration{
+				Presence:        true,
+				Synchronization: true,
+				Channels: Channels{
+					StatusRequest:       "status-request",
+					StatusReport:        "status-report",
+					SendResults:         "send-results",
+					SendingCompleted:    "sending-completed",
+					ReceiveAndProcess:   "receive-and-process",
+					ProcessingCompleted: "processing-completed",
 				},
 			},
 		},

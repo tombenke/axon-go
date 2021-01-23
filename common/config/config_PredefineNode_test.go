@@ -28,10 +28,6 @@ func TestPredefineNode(t *testing.T) {
 		Node: Node{
 			Name: nodeName,
 			Type: nodeType,
-			Configure: Configure{
-				Extend: extend,
-				Modify: modify,
-			},
 		},
 		ExtDescription: extDescriptionValue,
 	}
