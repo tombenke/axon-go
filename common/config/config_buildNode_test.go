@@ -5,21 +5,6 @@ import (
 	"testing"
 )
 
-func TestSetPortsConfigurability(t *testing.T) {
-	node := GetDefaultNode()
-
-	assert.True(t, node.Ports.Configure.Extend)
-	assert.True(t, node.Ports.Configure.Modify)
-
-	node.SetPortsConfigurability(false, true)
-	assert.False(t, node.Ports.Configure.Extend)
-	assert.True(t, node.Ports.Configure.Modify)
-
-	node.SetPortsConfigurability(true, false)
-	assert.True(t, node.Ports.Configure.Extend)
-	assert.False(t, node.Ports.Configure.Modify)
-}
-
 func TestAddInputPort(t *testing.T) {
 	node := GetDefaultNode()
 	assert.Equal(t, 0, len(node.Ports.Inputs))

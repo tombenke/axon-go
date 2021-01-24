@@ -17,7 +17,7 @@ type Config struct {
 	Node config.Node `yaml:"node"`
 
 	// Show the help of the application
-	ShowHelp bool
+	ShowHelp bool `yaml:"showHelp"`
 
 	// PrintConfig if true, then prints the resulting configuration to the console
 	PrintConfig bool `yaml:"printConfig"`
@@ -48,8 +48,8 @@ func GetConfig(appName string, hardCodedConfigContent Config, args []string) Con
 	// Parse the CLI config parameters on top of the config-file content
 	cliConfigContent := parseCliArgs(configFileContent, appName, args)
 
-	// Merges the content of the three sources of configuration parameters into one
-	resultingConfig := mergeConfigs(hardCodedConfigContent, cliConfigContent, configFileContent)
+	// Merges the configurations into a resulting one
+	resultingConfig := mergeConfigs(hardCodedConfigContent, cliConfigContent)
 
 	return resultingConfig
 }
@@ -148,14 +148,29 @@ func LoadFile(path string) ([]byte, error) {
 	return content, nil
 }
 
-// mergeConfigs returns with the resulting config parameters set after merging the coming from the three sources
-func mergeConfigs(hardCodedConfigContent Config, cliConfigContent Config, configFileContent Config) Config {
+// mergeConfigs returns with the resulting config parameters set after merging them
+//
+// `hardCodedConfigContent` holds the configuration that the application defined as a baseline,
+// `cliConfigContent` holds those configuration parameters, that origins from the default values,
+// then extended by the config file, if there is any, then finally these were extended by the
+// parameters from the environment and the CLI arguments.
+// The most complex task of merging the I/O ports are done by the `config.MergeNodeConfigs()` function
+// according to the values of `Extend` and `Modify` flags defined by the `hardCodedConfigContent`.
+// The application needs to implement the merging of properties added by itself, on top of the Node parameters.
+func mergeConfigs(hardCodedConfigContent Config, cliConfigContent Config) Config {
 	resultingConfig := hardCodedConfigContent
 
-	//TODO: Implement
-	resultingConfig.PrintConfig = cliConfigContent.PrintConfig
-	resultingConfig.Node = config.MergeNodeConfigs(hardCodedConfigContent.Node, cliConfigContent.Node, configFileContent.Node)
+	// Let the internal config module to manage the merging of the Node parameters
+	resultingNode, err := config.MergeNodeConfigs(hardCodedConfigContent.Node, cliConfigContent.Node)
+	if err != nil {
+		fmt.Printf(err.Error())
+		os.Exit(1)
+	}
+	resultingConfig.Node = resultingNode
 
-	//fmt.Println("mergeConfig:", hardCodedConfigContent, cliConfigContent, configFileContent, "=>", resultingConfig)
+	//TODO: Add application-level merging tasks here if there is any
+	resultingConfig.ShowHelp = cliConfigContent.ShowHelp
+	resultingConfig.PrintConfig = cliConfigContent.PrintConfig
+
 	return resultingConfig
 }

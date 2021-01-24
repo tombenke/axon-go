@@ -1,7 +1,8 @@
 package config
 
 import (
-	//"fmt"
+	"errors"
+	"fmt"
 	"github.com/tombenke/axon-go/common/messenger"
 )
 
@@ -150,18 +151,15 @@ func GetDefaultNode() Node {
 	}
 }
 
-// NewNode returns with a new Node configuration object with the given name and type
-func NewNode(nodeName string, nodeType string) Node {
+// NewNode returns with a new Node configuration object with the given name and type.
+// It also sets if the I/O ports can be extended and/or modified.
+func NewNode(nodeName string, nodeType string, extend bool, modify bool) Node {
 	newNode := GetDefaultNode()
 	newNode.Name = nodeName
 	newNode.Type = nodeType
+	newNode.Ports.Configure.Extend = extend
+	newNode.Ports.Configure.Modify = modify
 	return newNode
-}
-
-// SetPortsConfigurability sets if the I/O ports can be extended and/or modified
-func (n *Node) SetPortsConfigurability(extend bool, modify bool) {
-	n.Ports.Configure.Extend = extend
-	n.Ports.Configure.Modify = modify
 }
 
 // AddInputPort Add a new input port to the Node
@@ -178,7 +176,7 @@ func (n *Node) AddOutputPort(portName string, portType string, representation st
 
 // MergeNodeConfigs returns with the resulting config parameters set of the Node
 // after merging the coming from the three sources
-func MergeNodeConfigs(hardCoded Node, cli Node, configFile Node) Node {
+func MergeNodeConfigs(hardCoded Node, cli Node) (Node, error) {
 	resulting := hardCoded
 
 	resulting.Name = cli.Name
@@ -187,13 +185,72 @@ func MergeNodeConfigs(hardCoded Node, cli Node, configFile Node) Node {
 	resulting.Messenger = cli.Messenger
 	resulting.Orchestration = cli.Orchestration
 
-	if hardCoded.Ports.Configure.Extend {
-		// TODO: Add new I/O ports
+	if wouldExtend(resulting, cli) {
+		if resulting.Ports.Configure.Extend {
+			// Add new I/O ports
+			(&(resulting.Ports.Inputs)).ExtendWith(cli.Ports.Inputs)
+			(&(resulting.Ports.Outputs)).ExtendWith(cli.Ports.Outputs)
+		} else {
+			return hardCoded, errors.New("Port extension is disabled.")
+		}
 	}
 
-	if hardCoded.Ports.Configure.Modify {
-		// TODO: Modify I/O ports' properties
+	if wouldModify(resulting, cli) {
+		if hardCoded.Ports.Configure.Modify {
+			// Modify I/O ports' properties
+			resulting.Ports.Inputs.ModifyWith(cli.Ports.Inputs)
+			resulting.Ports.Outputs.ModifyWith(cli.Ports.Outputs)
+		} else {
+			return hardCoded, errors.New("Port modification is disabled.")
+		}
 	}
 
-	return resulting
+	return resulting, nil
+}
+
+// wouldExtend returns true if the `src` Node has more I/O ports than the `dst` Node
+func wouldExtend(dst Node, src Node) bool {
+	// Check input ports
+	for s := range src.Ports.Inputs {
+		if _, found := dst.Ports.Inputs.FindByName(src.Ports.Inputs[s].Name); !found {
+
+			// src has a port that dst does not, so it is an extension
+			return true
+		}
+	}
+
+	// Check output ports
+	for s := range src.Ports.Outputs {
+		fmt.Println("s:", src.Ports.Outputs[s].Name)
+		if _, found := dst.Ports.Outputs.FindByName(src.Ports.Outputs[s].Name); !found {
+
+			// src has a port that dst does not, so it is an extension
+			return true
+		}
+	}
+
+	return false
+}
+
+// wouldModify returns true if the `src` Node has modifications to the I/O ports of `dst` node
+func wouldModify(dst Node, src Node) bool {
+	// Check input ports
+	for s := range src.Ports.Inputs {
+		if portFound, found := dst.Ports.Inputs.FindByName(src.Ports.Inputs[s].Name); found {
+			if (*portFound).WouldModify(src.Ports.Inputs[s]) {
+				return true
+			}
+		}
+	}
+
+	// Check output ports
+	for s := range src.Ports.Outputs {
+		if portFound, found := dst.Ports.Outputs.FindByName(src.Ports.Outputs[s].Name); found {
+			if (*portFound).WouldModify(src.Ports.Outputs[s]) {
+				return true
+			}
+		}
+	}
+
+	return false
 }

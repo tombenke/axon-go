@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	////"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/tombenke/axon-go/common/messenger"
 	"gopkg.in/yaml.v2"
@@ -88,8 +88,8 @@ func TestReadConfigFile(t *testing.T) {
 	path := cwd + "/test-config.yml"
 	appConfigFromFile, err := ReadAppConfigFromFile(path)
 	assert.Nil(t, err)
-	appConfigFromFileYAML, err := appConfigFromFile.YAML()
-	fmt.Printf("appConfigFromFile:\n%s\n", appConfigFromFileYAML)
+	////appConfigFromFileYAML, err := appConfigFromFile.YAML()
+	////fmt.Printf("appConfigFromFile:\n%s\n", appConfigFromFileYAML)
 	assert.Nil(t, err)
 
 	assert.Equal(t, expectedAppConfigFromFile, appConfigFromFile)

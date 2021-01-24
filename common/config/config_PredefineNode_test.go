@@ -30,7 +30,7 @@ func TestPredefineNode(t *testing.T) {
 	expectedAppConfigPredefined.Node.Type = nodeType
 
 	appConfigPredefined := AppConfigPredefined{
-		Node:           NewNode(nodeName, nodeType),
+		Node:           NewNode(nodeName, nodeType, true, true),
 		ExtDescription: extDescriptionValue,
 	}
 	fmt.Printf("appConfigPredefined:\n%v\n", appConfigPredefined)
