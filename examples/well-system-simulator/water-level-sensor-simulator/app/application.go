@@ -41,7 +41,7 @@ func NewApplication(args []string) Application {
 // makeHardCodedConfig returns with the built-in configuration of the application
 func makeHardCodedConfig() Config {
 	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, true, true)
+	node := config.NewNode(actorName, actorName)
 	// Set the configurability of the I/O ports
 	node.SetPortsConfigurability(false, true)
 

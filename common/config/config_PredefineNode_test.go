@@ -20,19 +20,17 @@ func TestPredefineNode(t *testing.T) {
 
 	nodeName := "app-node"
 	nodeType := "app-node-type"
-	extend := true
-	modify := false
 	extDescriptionValue := "This is an extensional property..."
 
 	expectedAppConfigPredefined := AppConfigPredefined{
-		Node: Node{
-			Name: nodeName,
-			Type: nodeType,
-		},
+		Node:           GetDefaultNode(),
 		ExtDescription: extDescriptionValue,
 	}
+	expectedAppConfigPredefined.Node.Name = nodeName
+	expectedAppConfigPredefined.Node.Type = nodeType
+
 	appConfigPredefined := AppConfigPredefined{
-		Node:           NewNode(nodeName, nodeType, extend, modify),
+		Node:           NewNode(nodeName, nodeType),
 		ExtDescription: extDescriptionValue,
 	}
 	fmt.Printf("appConfigPredefined:\n%v\n", appConfigPredefined)

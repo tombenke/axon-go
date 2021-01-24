@@ -150,13 +150,12 @@ func GetDefaultNode() Node {
 	}
 }
 
-// NewNode returns with a new Node configuration object
-func NewNode(nodeName string, nodeType string, extend bool, modify bool) Node {
-	return Node{
-		Name:  nodeName,
-		Type:  nodeType,
-		Ports: Ports{},
-	}
+// NewNode returns with a new Node configuration object with the given name and type
+func NewNode(nodeName string, nodeType string) Node {
+	newNode := GetDefaultNode()
+	newNode.Name = nodeName
+	newNode.Type = nodeType
+	return newNode
 }
 
 // SetPortsConfigurability sets if the I/O ports can be extended and/or modified
@@ -182,13 +181,19 @@ func (n *Node) AddOutputPort(portName string, portType string, representation st
 func MergeNodeConfigs(hardCoded Node, cli Node, configFile Node) Node {
 	resulting := hardCoded
 
-	//TODO: Implement
 	resulting.Name = cli.Name
 	resulting.LogLevel = cli.LogLevel
 	resulting.LogFormat = cli.LogFormat
 	resulting.Messenger = cli.Messenger
-	//resulting.Orchestration = cli.Orchestration
+	resulting.Orchestration = cli.Orchestration
 
-	//fmt.Println("MergeConfig:", hardCoded, cli, configFile, "=>", resulting)
+	if hardCoded.Ports.Configure.Extend {
+		// TODO: Add new I/O ports
+	}
+
+	if hardCoded.Ports.Configure.Modify {
+		// TODO: Modify I/O ports' properties
+	}
+
 	return resulting
 }
