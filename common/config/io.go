@@ -48,6 +48,8 @@ func (in *In) ModifyWith(mod In) {
 // Inputs is an array of the input CLI parameters
 type Inputs []In
 
+// FindByName finds an input by its name, and returns with a pointer to it.
+// A true value is also returned if found. If not found, returns with `nil, false`.
 func (inputs Inputs) FindByName(name string) (*In, bool) {
 	for i := range inputs {
 		if inputs[i].Name == name {
@@ -57,6 +59,7 @@ func (inputs Inputs) FindByName(name string) (*In, bool) {
 	return nil, false
 }
 
+// ExtendWith extends the array of inputs with the outputs from the `ext` array based on their `Name`s.
 func (inputs *Inputs) ExtendWith(ext Inputs) {
 	for e := range ext {
 		if _, found := inputs.FindByName(ext[e].Name); !found {
@@ -67,6 +70,8 @@ func (inputs *Inputs) ExtendWith(ext Inputs) {
 	}
 }
 
+// ModifyWith overwrites the properties of inputs with the properties of inputs from the `ext` array
+// that has the same `Name`.
 func (inputs Inputs) ModifyWith(mod Inputs) {
 	for m := range mod {
 		if i, found := inputs.FindByName(mod[m].Name); found {
@@ -103,6 +108,8 @@ func (out *Out) ModifyWith(mod Out) {
 // Outputs is an array of the output CLI parameters
 type Outputs []Out
 
+// FindByName finds an output by its name, and returns with a pointer to it.
+// A true value is also returned if found. If not found, returns with `nil, false`.
 func (outputs Outputs) FindByName(name string) (*Out, bool) {
 	for o := range outputs {
 		if outputs[o].Name == name {
@@ -112,6 +119,7 @@ func (outputs Outputs) FindByName(name string) (*Out, bool) {
 	return nil, false
 }
 
+// ExtendWith extends the array of outputs with the outputs from the `ext` array based on their `Name`s.
 func (outputs *Outputs) ExtendWith(ext Outputs) {
 	for e := range ext {
 		if _, found := outputs.FindByName(ext[e].Name); !found {
@@ -122,6 +130,8 @@ func (outputs *Outputs) ExtendWith(ext Outputs) {
 	}
 }
 
+// ModifyWith overwrites the properties of outputs with the properties of outputs from the `ext` array
+// that has the same `Name`.
 func (outputs Outputs) ModifyWith(mod Outputs) {
 	for m := range mod {
 		if o, found := outputs.FindByName(mod[m].Name); found {

@@ -191,7 +191,7 @@ func MergeNodeConfigs(hardCoded Node, cli Node) (Node, error) {
 			(&(resulting.Ports.Inputs)).ExtendWith(cli.Ports.Inputs)
 			(&(resulting.Ports.Outputs)).ExtendWith(cli.Ports.Outputs)
 		} else {
-			return hardCoded, errors.New("Port extension is disabled.")
+			return hardCoded, errors.New("port extension is disabled")
 		}
 	}
 
@@ -201,7 +201,7 @@ func MergeNodeConfigs(hardCoded Node, cli Node) (Node, error) {
 			resulting.Ports.Inputs.ModifyWith(cli.Ports.Inputs)
 			resulting.Ports.Outputs.ModifyWith(cli.Ports.Outputs)
 		} else {
-			return hardCoded, errors.New("Port modification is disabled.")
+			return hardCoded, errors.New("port modification is disabled")
 		}
 	}
 

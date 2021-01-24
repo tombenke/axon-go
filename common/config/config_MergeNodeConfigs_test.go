@@ -89,7 +89,7 @@ func TestMergeNodeConfigs_noExt_noMod_Add(t *testing.T) {
 	cli := makeNode("test-node", "test-node-type", false, false, hcInputs, hcOutputs)
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.NotNil(t, err)
-	assert.Equal(t, "Port extension is disabled.", err.Error())
+	assert.Equal(t, "port extension is disabled", err.Error())
 	assert.Equal(t, hardCoded, resulting)
 }
 
@@ -123,7 +123,7 @@ func TestMergeNodeConfigs_noExt_noMod_Mod(t *testing.T) {
 
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.NotNil(t, err)
-	assert.Equal(t, "Port modification is disabled.", err.Error())
+	assert.Equal(t, "port modification is disabled", err.Error())
 	assert.Equal(t, hardCoded, resulting)
 }
 
