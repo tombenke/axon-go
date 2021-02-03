@@ -4,6 +4,7 @@ import (
 	"github.com/tombenke/axon-go/common/actor/node"
 	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/log"
+	"sync"
 )
 
 const (
@@ -14,11 +15,15 @@ const (
 type Application struct {
 	Node   node.Node
 	config Config
+	done   chan bool
 }
 
 // NewApplication creates a new actor-node application object
 func NewApplication(args []string) Application {
 	app := Application{}
+
+	// Create the channel to notify if the application must shut down
+	app.done = make(chan bool)
 
 	// Merge hard-coded configuration with CLI and file config if there is any
 	app.config = GetConfig(actorName, makeHardCodedConfig(), args)
@@ -33,7 +38,7 @@ func NewApplication(args []string) Application {
 	}
 
 	// Create the Node
-	app.Node = node.NewNode(app.config.Node)
+	app.Node = node.NewNode(app.config.Node, ProcessorFun)
 
 	return app
 }
@@ -54,11 +59,30 @@ func makeHardCodedConfig() Config {
 }
 
 // Start initializes and starts new actor-node application according to its configuration
-func (a Application) Start() {
+func (a Application) Start(appWg *sync.WaitGroup) {
 
+	appWg.Add(1)
 	// Start the additional components, if there is any
 	// TODO
 
 	// Start the node
-	a.Node.Start()
+	nodeWg := sync.WaitGroup{}
+	go a.Node.Start(&nodeWg)
+
+	go func() {
+		for {
+			select {
+			case <-a.done:
+				log.Logger.Infof("%s is shutting down", actorName)
+				a.Node.Shutdown()
+				nodeWg.Wait()
+				appWg.Done()
+			}
+		}
+	}()
+}
+
+// Shutdown stops the application process
+func (a Application) Shutdown() {
+	a.done <- true
 }

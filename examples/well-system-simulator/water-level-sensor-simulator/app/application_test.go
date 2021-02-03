@@ -1,6 +1,10 @@
 package app
 
 import (
+	"github.com/tombenke/axon-go/common/gsd"
+	"os"
+	"sync"
+	"syscall"
 	"testing"
 )
 
@@ -11,6 +15,15 @@ func TestApplication(t *testing.T) {
 	// Create a new application instance
 	a := NewApplication(testArgs)
 
-	// Start the application
-	a.Start()
+	// Start the axon node application
+	wg := sync.WaitGroup{}
+	/* TODO: Implement
+	a.Start(&wg)
+	*/
+
+	gsd.Register(&wg, func(s os.Signal) {
+		a.Shutdown()
+	})
+	syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
+	wg.Wait()
 }

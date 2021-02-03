@@ -63,7 +63,7 @@ func setupDefaultConnOptions(opts []nats.Option, logger *logrus.Logger) []nats.O
 		logger.Infof("reconnected [%s]", nc.ConnectedUrl())
 	}))
 	opts = append(opts, nats.ClosedHandler(func(nc *nats.Conn) {
-		logger.Errorf("exiting: %s", nc.LastError())
+		logger.Errorf("exiting: %v", nc.LastError())
 	}))
 	return opts
 }
