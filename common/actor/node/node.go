@@ -9,6 +9,7 @@ import (
 	"github.com/tombenke/axon-go/common/actor/processor"
 	"github.com/tombenke/axon-go/common/actor/status"
 	"github.com/tombenke/axon-go/common/config"
+	"github.com/tombenke/axon-go/common/io"
 	"github.com/tombenke/axon-go/common/log"
 	"github.com/tombenke/axon-go/common/messenger"
 	messengerImpl "github.com/tombenke/axon-go/common/messenger/nats"
@@ -55,17 +56,28 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 
 	doneInputsRcvCh := make(chan bool)
 	var inputsRcvStoppedCh chan bool
+	var inputsCh chan io.Inputs
+	doneProcessorCh := make(chan bool)
+	var processorStoppedCh chan bool
+	//doneOutputsCh := make(chan bool)
+	//var outputsStoppedCh chan bool
 	if n.config.Orchestration.Synchronization {
 		// Start the core components in synchronous mode
-		_, inputsRcvStoppedCh = inputs.SyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
+		inputsCh, inputsRcvStoppedCh = inputs.SyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
+		_, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
 	} else {
 		// Start the core components in asynchronous mode
-		_, inputsRcvStoppedCh = inputs.AsyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
+		inputsCh, inputsRcvStoppedCh = inputs.AsyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
+		_, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
 	}
 
 	// Start waiting for the shutdown signal
 	nodeWg.Add(1)
 	go func() {
+		logger.Infof("Node started.")
+		defer logger.Infof("Node stopped.")
+		defer nodeWg.Done()
+
 		for {
 			select {
 			case <-n.done:
@@ -73,11 +85,17 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 				// Stop status
 				close(doneStatusCh)
 				<-statusStoppedCh
+
+				// Stop processor
+				close(doneProcessorCh)
+				<-processorStoppedCh
+
 				// Stop inputs receiver
 				close(doneInputsRcvCh)
 				<-inputsRcvStoppedCh
+
 				n.messenger.Close()
-				nodeWg.Done()
+				return
 			}
 		}
 	}()
