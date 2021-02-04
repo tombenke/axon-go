@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/tombenke/axon-go/common/actor/inputs"
+	"github.com/tombenke/axon-go/common/actor/outputs"
 	"github.com/tombenke/axon-go/common/actor/processor"
 	"github.com/tombenke/axon-go/common/actor/status"
 	"github.com/tombenke/axon-go/common/config"
@@ -50,25 +51,34 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 	logger := log.Logger
 	logger.Infof("Start '%s' actor node", n.config.Name)
 
-	// Start the status component to communicate with the orchestrator
+	// Create channels to control the shut down of the components
 	doneStatusCh := make(chan bool)
+	doneInputsRcvCh := make(chan bool)
+	doneProcessorCh := make(chan bool)
+	doneOutputsCh := make(chan bool)
+
+	// Declare the channels through which the components notify that they have stopped
+	var inputsRcvStoppedCh chan bool
+	var processorStoppedCh chan bool
+	var outputsStoppedCh chan bool
+
+	// Declare the channels for communication among the componens
+	var inputsCh chan io.Inputs
+	var outputsCh chan io.Outputs
+
+	// Start the status component to communicate with the orchestrator
 	statusStoppedCh := status.Status(n.config.Name, doneStatusCh, nodeWg, n.messenger, log.Logger)
 
-	doneInputsRcvCh := make(chan bool)
-	var inputsRcvStoppedCh chan bool
-	var inputsCh chan io.Inputs
-	doneProcessorCh := make(chan bool)
-	var processorStoppedCh chan bool
-	//doneOutputsCh := make(chan bool)
-	//var outputsStoppedCh chan bool
 	if n.config.Orchestration.Synchronization {
 		// Start the core components in synchronous mode
 		inputsCh, inputsRcvStoppedCh = inputs.SyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
-		_, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
+		outputsCh, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
+		outputsStoppedCh = outputs.SyncSender(n.name, outputsCh, doneOutputsCh, nodeWg, n.messenger, log.Logger)
 	} else {
 		// Start the core components in asynchronous mode
 		inputsCh, inputsRcvStoppedCh = inputs.AsyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
-		_, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
+		outputsCh, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
+		outputsStoppedCh = outputs.AsyncSender(n.name, outputsCh, doneOutputsCh, nodeWg, n.messenger, log.Logger)
 	}
 
 	// Start waiting for the shutdown signal
@@ -85,6 +95,13 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 				// Stop status
 				close(doneStatusCh)
 				<-statusStoppedCh
+
+				// The components of the processing pipeline must be shut down in reverse order
+				// otherwise the channel close might cause problems
+
+				// Stop outputs
+				close(doneOutputsCh)
+				<-outputsStoppedCh
 
 				// Stop processor
 				close(doneProcessorCh)
