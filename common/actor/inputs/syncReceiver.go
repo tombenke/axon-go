@@ -38,8 +38,12 @@ func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGro
 		// Setup communication channels with the orchestrator
 		receiveAndProcessCh := make(chan []byte)
 		receiveAndProcessSubs := m.ChanSubscribe("receive-and-process", receiveAndProcessCh)
-		defer receiveAndProcessSubs.Unsubscribe()
-		defer close(receiveAndProcessCh)
+		defer func() {
+			if err := receiveAndProcessSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+			close(receiveAndProcessCh)
+		}()
 
 		// Create Input ports, and initialize with default messages
 		inputs := syncSetupInputPorts(inputsCfg, logger)
@@ -69,7 +73,9 @@ func SyncReceiver(inputsCfg config.Inputs, doneCh chan bool, appWg *sync.WaitGro
 			case messageBytes := <-receiveAndProcessCh:
 				logger.Infof("Receiver received 'receive-and-process' message from orchestrator")
 				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(0))
-				receiveAndProcessMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				if err := receiveAndProcessMsg.Decode(msgs.JSONRepresentation, messageBytes); err != nil {
+					panic(err)
+				}
 				inputs.SetMessage("_RAP", receiveAndProcessMsg)
 				inputsCh <- inputs
 				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")

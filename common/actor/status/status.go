@@ -19,12 +19,16 @@ func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.
 
 	wg.Add(1)
 	go func() {
-		defer statusRequestSubs.Unsubscribe()
-		defer close(statusRequestCh)
-		defer wg.Done()
+		defer func() {
+			if err := statusRequestSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+			close(statusRequestCh)
+			wg.Done()
 
-		defer logger.Infof("Status stopped.")
-		defer close(statusStoppedCh)
+			logger.Infof("Status stopped.")
+			close(statusStoppedCh)
+		}()
 
 		for {
 			select {
@@ -36,7 +40,9 @@ func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.
 				logger.Infof("Status received status-request message")
 				logger.Infof("Status sends status-report message")
 				statusReportMsg := orchestra.NewStatusReportMessage(actorName)
-				m.Publish("status-report", statusReportMsg.Encode(msgs.JSONRepresentation))
+				if err := m.Publish("status-report", statusReportMsg.Encode(msgs.JSONRepresentation)); err != nil {
+					panic(err)
+				}
 				// TODO: Make orchestra message representations and channel names configurable
 			}
 		}

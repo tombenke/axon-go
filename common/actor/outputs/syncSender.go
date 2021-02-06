@@ -23,11 +23,15 @@ func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, w
 		sendResultsCh := make(chan []byte)
 		sendResultsSubs := m.ChanSubscribe("send-results", sendResultsCh)
 
-		defer sendResultsSubs.Unsubscribe()
-		defer close(sendResultsCh)
-		defer logger.Infof("Sender stopped")
-		defer close(senderStoppedCh)
-		defer wg.Done()
+		defer func() {
+			if err := sendResultsSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+			close(sendResultsCh)
+			logger.Infof("Sender stopped")
+			close(senderStoppedCh)
+			wg.Done()
+		}()
 
 		for {
 			select {
@@ -56,7 +60,9 @@ func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, w
 func sendProcessingCompleted(actorName string, m messenger.Messenger) {
 	logger.Infof("Sender sends 'processing-completed' notification to orchestrator\n")
 	processingCompletedMsg := orchestra.NewProcessingCompletedMessage(actorName)
-	m.Publish("processing-completed", processingCompletedMsg.Encode(msgs.JSONRepresentation))
+	if err := m.Publish("processing-completed", processingCompletedMsg.Encode(msgs.JSONRepresentation)); err != nil {
+		panic(err)
+	}
 }
 
 func syncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger) {
@@ -66,10 +72,14 @@ func syncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger
 		message := outputs[o].Message
 		messageType := outputs[o].Type
 		logger.Infof("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
-		m.Publish(channel, message.Encode(representation))
+		if err := m.Publish(channel, message.Encode(representation)); err != nil {
+			panic(err)
+		}
 	}
 
 	logger.Infof("Sender sends 'sending-completed' notification to orchestrator\n")
 	sendingCompletedMsg := orchestra.NewSendingCompletedMessage(actorName)
-	m.Publish("sending-completed", sendingCompletedMsg.Encode(msgs.JSONRepresentation))
+	if err := m.Publish("sending-completed", sendingCompletedMsg.Encode(msgs.JSONRepresentation)); err != nil {
+		panic(err)
+	}
 }

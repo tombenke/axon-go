@@ -75,7 +75,6 @@ func (msg *Any) ParseJSON(jsonBytes []byte) error {
 
 // NewAnyMessage returns with a new `Any` message. The header will contain the current time in `Nanoseconds` precision.
 func NewAnyMessage(data map[string]interface{}) msgs.Message {
-	var msg Any
-	msg = data
+	var msg Any = data
 	return &msg
 }

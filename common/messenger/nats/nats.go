@@ -10,16 +10,14 @@ import (
 func (m connections) Publish(subject string, msg []byte) error {
 	subj := subject
 
-	m.nc.Publish(subj, msg)
+	if err := m.nc.Publish(subj, msg); err != nil {
+		m.logger.Fatalf("Messenger error: '%s'", err.Error())
+		return err
+	}
 	m.nc.Flush()
 
-	err := m.nc.LastError()
-	if err != nil {
-		m.logger.Error(err)
-	}
-
 	m.logger.Infof("Messenger published message to '%s'", subj)
-	return err
+	return nil
 }
 
 // Subscriber structure holds the subscriptions
@@ -83,13 +81,20 @@ func (m connections) Request(subject string, msg []byte, timeout time.Duration) 
 // Subscribe to the `subject` topic, and calls the `service` call-back function with the inbound messages,
 // then respond with the return value of the `service` function through the `Reply` subject.
 func (m connections) Response(subject string, service func([]byte) ([]byte, error)) {
-	m.nc.Subscribe(subject, func(msg *nats.Msg) {
+	_, err := m.nc.Subscribe(subject, func(msg *nats.Msg) {
 		resp, err := service(msg.Data)
 		if err != nil {
-			m.nc.Publish(msg.Reply, []byte(err.Error()))
+			if err := m.nc.Publish(msg.Reply, []byte(err.Error())); err != nil {
+				panic(err)
+			}
 		} else {
-			m.nc.Publish(msg.Reply, resp)
+			if err := m.nc.Publish(msg.Reply, resp); err != nil {
+				panic(err)
+			}
 		}
 	})
+	if err != nil {
+		panic(err)
+	}
 	m.nc.Flush()
 }

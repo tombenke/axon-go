@@ -24,11 +24,13 @@ func TestPubSub(t *testing.T) {
 	s = m.Subscribe(testSubject, func(content []byte) {
 		defer wg.Done()
 		require.EqualValues(t, content, testMsgContent)
-		s.Unsubscribe()
+		err := s.Unsubscribe()
+		require.Nil(t, err)
 	})
 
 	// Send a message
-	m.Publish(testSubject, testMsgContent)
+	err := m.Publish(testSubject, testMsgContent)
+	require.Nil(t, err)
 
 	// Wait for the message to come in
 	wg.Wait()

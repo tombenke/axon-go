@@ -192,7 +192,9 @@ func startMockOrchestrator(reportCh chan string, doneCh chan bool, wg *sync.Wait
 
 			case <-triggerOrchCh:
 				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(1.0))
-				m.Publish("receive-and-process", receiveAndProcessMsg.Encode(msgs.JSONRepresentation))
+				if err := m.Publish("receive-and-process", receiveAndProcessMsg.Encode(msgs.JSONRepresentation)); err != nil {
+					panic(err)
+				}
 				logger.Infof("Mock Orchestrator sent 'receive-and-process' message.")
 				reportCh <- checkSendReceiveAndProcess
 			}

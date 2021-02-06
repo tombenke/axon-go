@@ -28,10 +28,14 @@ func newPortObserver(input io.Input, inputsMuxCh chan io.Input, doneCh chan bool
 	wg.Add(1)
 	go func() {
 		logger.Infof("Receiver's '%s' port observer started", input.Name)
-		defer logger.Infof("Receiver's '%s' port observer stopped", input.Name)
-		defer inMsgSubs.Unsubscribe()
-		defer close(inMsgCh)
-		defer wg.Done()
+		defer func() {
+			logger.Infof("Receiver's '%s' port observer stopped", input.Name)
+			if err := inMsgSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+			close(inMsgCh)
+			wg.Done()
+		}()
 
 		for {
 			select {
@@ -41,12 +45,12 @@ func newPortObserver(input io.Input, inputsMuxCh chan io.Input, doneCh chan bool
 
 			case inputMsg := <-inMsgCh:
 				logger.Infof("Receiver's '%s' port observer received message", input.Name)
-				input.Message.Decode(input.Representation, inputMsg)
+				if err := input.Message.Decode(input.Representation, inputMsg); err != nil {
+					panic(err)
+				}
 				inputsMuxCh <- input
 				logger.Infof("Receiver's '%s' port observer sent message to inputMuxCh channel", input.Name)
 			}
 		}
 	}()
-
-	return
 }

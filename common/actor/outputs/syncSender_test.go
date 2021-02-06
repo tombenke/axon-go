@@ -98,12 +98,18 @@ func startMockOrchestrator(t *testing.T, reportCh chan string, doneCh chan bool,
 
 	wg.Add(1)
 	go func() {
-		defer processingCompletedSubs.Unsubscribe()
-		defer close(processingCompletedCh)
-		defer sendingCompletedSubs.Unsubscribe()
-		defer close(sendingCompletedCh)
-		defer close(orchStoppedCh)
-		defer wg.Done()
+		defer func() {
+			if err := processingCompletedSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+			close(processingCompletedCh)
+			if err := sendingCompletedSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+			close(sendingCompletedCh)
+			close(orchStoppedCh)
+			wg.Done()
+		}()
 
 		for {
 			select {
@@ -115,18 +121,21 @@ func startMockOrchestrator(t *testing.T, reportCh chan string, doneCh chan bool,
 				logger.Infof("MockOrchestrator received 'processing-completed' message.")
 				// Check if the right actorName was sent in the message
 				processingCompletedMsg := orchestra.NewProcessingCompletedMessage("")
-				processingCompletedMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				err := processingCompletedMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				assert.Nil(t, err)
 				assert.Equal(t, processingCompletedMsg.(*orchestra.ProcessingCompleted).Body.Data, actorName)
 
 				logger.Infof("MockOrchestrator sends 'send-results' message.")
 				sendResultsMsg := orchestra.NewSendResultsMessage()
-				m.Publish("send-results", sendResultsMsg.Encode(msgs.JSONRepresentation))
+				err = m.Publish("send-results", sendResultsMsg.Encode(msgs.JSONRepresentation))
+				assert.Nil(t, err)
 
 			case messageBytes := <-sendingCompletedCh:
 				logger.Infof("MockOrchestrator received 'sending-completed' message.")
 				// Check if the right actorName was sent in the message
 				sendingCompletedMsg := orchestra.NewSendingCompletedMessage("")
-				sendingCompletedMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				err := sendingCompletedMsg.Decode(msgs.JSONRepresentation, messageBytes)
+				assert.Nil(t, err)
 				assert.Equal(t, sendingCompletedMsg.(*orchestra.SendingCompleted).Body.Data, actorName)
 				reportCh <- checkSendingCompleted
 			}

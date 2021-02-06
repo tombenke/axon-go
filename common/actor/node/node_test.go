@@ -45,6 +45,7 @@ func init() {
 
 func TestNodeStartStop(t *testing.T) {
 
+	log.Logger.Infof("\nTestNodeStartStop ==========")
 	n := node.NewNode(makeNodeTestConfig(), ProcessorFun)
 	assert.NotNil(t, n)
 	nwg := sync.WaitGroup{}
@@ -54,6 +55,7 @@ func TestNodeStartStop(t *testing.T) {
 }
 
 func TestNodeStatus(t *testing.T) {
+	log.Logger.Infof("\nTestNodeStatus ==========")
 	// Create and start Node to test
 	n := node.NewNode(makeNodeTestConfig(), ProcessorFun)
 	assert.NotNil(t, n)
@@ -141,7 +143,11 @@ func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh cha
 	wg.Add(1)
 	go func() {
 		defer logger.Infof("MockOrchestrator stopped.")
-		defer statusReportSubs.Unsubscribe()
+		defer func() {
+			if err := statusReportSubs.Unsubscribe(); err != nil {
+				panic(err)
+			}
+		}()
 		defer close(statusReportCh)
 		defer close(orcStoppedCh)
 		defer wg.Done()
@@ -156,7 +162,9 @@ func startMockOrchestrator(reportCh chan string, triggerCh chan bool, doneCh cha
 				logger.Infof("MockOrchestrator received 'start-trigger'.")
 				logger.Infof("MockOrchestrator sends 'status-request' message.")
 				statusRequestMsg := orchestra.NewStatusRequestMessage()
-				m.Publish("status-request", statusRequestMsg.Encode(msgs.JSONRepresentation))
+				if err := m.Publish("status-request", statusRequestMsg.Encode(msgs.JSONRepresentation)); err != nil {
+					panic(err)
+				}
 				// TODO: Make orchestra message representations and channel names configurable
 				reportCh <- checkSendStatusRequest
 

@@ -21,13 +21,11 @@ func Register(wg *sync.WaitGroup, cb func(os.Signal)) {
 
 	wg.Add(1)
 	go func() {
-		select {
-		case s := <-sigs:
-			// Block until a signal is received.
-			log.Logger.Infof("Got '%s' signal", s)
-			close(sigs)
-			wg.Done()
-			cb(s)
-		}
+		// Block until a signal is received.
+		s := <-sigs
+		log.Logger.Infof("Got '%s' signal", s)
+		close(sigs)
+		wg.Done()
+		cb(s)
 	}()
 }

@@ -88,33 +88,28 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 		defer logger.Infof("Node stopped.")
 		defer nodeWg.Done()
 
-		for {
-			select {
-			case <-n.done:
-				logger.Infof("Node is shutting down")
-				// Stop status
-				close(doneStatusCh)
-				<-statusStoppedCh
+		<-n.done
+		logger.Infof("Node is shutting down")
+		// Stop status
+		close(doneStatusCh)
+		<-statusStoppedCh
 
-				// The components of the processing pipeline must be shut down in reverse order
-				// otherwise the channel close might cause problems
+		// The components of the processing pipeline must be shut down in reverse order
+		// otherwise the channel close might cause problems
 
-				// Stop outputs
-				close(doneOutputsCh)
-				<-outputsStoppedCh
+		// Stop outputs
+		close(doneOutputsCh)
+		<-outputsStoppedCh
 
-				// Stop processor
-				close(doneProcessorCh)
-				<-processorStoppedCh
+		// Stop processor
+		close(doneProcessorCh)
+		<-processorStoppedCh
 
-				// Stop inputs receiver
-				close(doneInputsRcvCh)
-				<-inputsRcvStoppedCh
+		// Stop inputs receiver
+		close(doneInputsRcvCh)
+		<-inputsRcvStoppedCh
 
-				n.messenger.Close()
-				return
-			}
-		}
+		n.messenger.Close()
 	}()
 }
 

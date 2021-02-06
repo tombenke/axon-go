@@ -85,6 +85,9 @@ func TestReadConfigFile(t *testing.T) {
 	}
 	//emptyAppConfig := AppConfig{}
 	cwd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
 	path := cwd + "/test-config.yml"
 	appConfigFromFile, err := ReadAppConfigFromFile(path)
 	assert.Nil(t, err)

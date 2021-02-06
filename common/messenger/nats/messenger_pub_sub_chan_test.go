@@ -29,18 +29,18 @@ func TestPubSubChan(t *testing.T) {
 	go func() {
 		defer wg.Done()
 		for i := numMessagesToSend; i > 0; i-- {
-			select {
-			case content := <-ch:
-				fmt.Printf("channel consumer got: '%v'\n", content)
-				require.EqualValues(t, content, testMsgContent)
-			}
+			content := <-ch
+			fmt.Printf("channel consumer got: '%v'\n", content)
+			require.EqualValues(t, content, testMsgContent)
 		}
-		s.Unsubscribe()
+		err := s.Unsubscribe()
+		require.Nil(t, err)
 	}()
 
 	// Send a message
 	for i := numMessagesToSend; i > 0; i-- {
-		m.Publish(testSubject, testMsgContent)
+		err := m.Publish(testSubject, testMsgContent)
+		require.Nil(t, err)
 	}
 
 	// Wait for the message to come in

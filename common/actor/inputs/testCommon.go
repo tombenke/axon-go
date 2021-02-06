@@ -136,7 +136,9 @@ func sendInputMessages(inputsCfg config.Inputs, inputs at.TestCaseMsgs, reportCh
 		representation := inputPorts[portName].Representation
 		logger.Infof("Mock Actor publishes message to '%s' channel.", channel)
 		//logger.Infof("Publish '%v' format message '%v' to '%s' channel.", representation, message, channel)
-		m.Publish(channel, message.Encode(representation))
+		if err := m.Publish(channel, message.Encode(representation)); err != nil {
+			panic(err)
+		}
 		logger.Infof("Mock Actor published message to '%s' channel.", channel)
 	}
 	reportCh <- checkSendMsgToInput

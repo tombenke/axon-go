@@ -47,6 +47,8 @@ func asyncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenge
 		message := outputs[o].Message
 		messageType := outputs[o].Type
 		logger.Infof("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
-		m.Publish(channel, message.Encode(representation))
+		if err := m.Publish(channel, message.Encode(representation)); err != nil {
+			panic(err)
+		}
 	}
 }

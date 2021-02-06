@@ -17,8 +17,10 @@ func TestReceiveAndProcessMessage(t *testing.T) {
 	prec := common.TimePrecision("ns")
 	m := NewReceiveAndProcessMessageAt(42, at, prec)
 	var n ReceiveAndProcess
-	n.ParseJSON(m.JSON())
-	n.ParseJSON([]byte(m.String()))
+	err := n.ParseJSON(m.JSON())
+	assert.Nil(t, err)
+	err = n.ParseJSON([]byte(m.String()))
+	assert.Nil(t, err)
 	assert.Equal(t, m, &n)
 }
 
@@ -27,7 +29,8 @@ func TestReceiveAndProcessMessageCodec(t *testing.T) {
 	prec := common.TimePrecision("ns")
 	m := NewReceiveAndProcessMessageAt(42, at, prec)
 	var n ReceiveAndProcess
-	n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
+	err := n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
+	assert.Nil(t, err)
 	assert.Equal(t, m, &n)
 }
 
@@ -42,7 +45,8 @@ func TestReceiveAndProcessMessageCodecPanic(t *testing.T) {
 				assert.Equal(t, r, errors.New("Decode error: unknown representational format 'wrong-representation'"))
 			}
 		}()
-		n.Decode(msgs.Representation("wrong-representation"), m.Encode(msgs.JSONRepresentation))
+		err := n.Decode(msgs.Representation("wrong-representation"), m.Encode(msgs.JSONRepresentation))
+		assert.Nil(t, err)
 	}()
 	func() {
 		defer func() {
@@ -50,12 +54,14 @@ func TestReceiveAndProcessMessageCodecPanic(t *testing.T) {
 				assert.Equal(t, r, errors.New("Encode error: unknown representational format 'wrong-representation'"))
 			}
 		}()
-		n.Decode(msgs.JSONRepresentation, m.Encode(msgs.Representation("wrong-representation")))
+		err := n.Decode(msgs.JSONRepresentation, m.Encode(msgs.Representation("wrong-representation")))
+		assert.Nil(t, err)
 	}()
 }
 
 func TestParseDefaultJSONValue(t *testing.T) {
 	var m ReceiveAndProcess
-	m.ParseJSON([]byte(`{"Body": { "Data": 42 }}`))
+	err := m.ParseJSON([]byte(`{"Body": { "Data": 42 }}`))
+	assert.Nil(t, err)
 	assert.Equal(t, float64(42), m.Body.Data)
 }

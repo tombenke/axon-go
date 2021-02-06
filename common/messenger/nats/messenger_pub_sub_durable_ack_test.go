@@ -21,7 +21,8 @@ func TestPubSubDurableWithAck(t *testing.T) {
 	testMsgContent := []byte("Some text to send...")
 	m.SubscribeDurableWithAck(testChannelDurable, func(content []byte, ackCb func() error) {
 		defer wg.Done()
-		ackCb()
+		err := ackCb()
+		require.Nil(t, err)
 		require.EqualValues(t, content, testMsgContent)
 	})
 

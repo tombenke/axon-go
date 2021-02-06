@@ -34,22 +34,22 @@ tasks:
   coverage:
     desc: Open test coverage in browser
     cmds:
-      - go test ./... -coverprofile=c.out
+      - go test -coverprofile=c.out -coverpkg=./... -covermode=atomic ./...
       - go tool cover -html=c.out
 
   lint-display:
     desc: Call gofmt, go vet and go lint
     cmds:
-      - gofmt -d .
+      - test -z "$(find -path './vendor' -prune -false -o -name '*.go' | xargs gofmt -l -d)"
       - go vet ./...
-      - golint ./...
+      - golangci-lint run
 
   lint:
     desc: Test gofmt, go vet and go lint
     cmds:
-      - test -z $(gofmt -d .)
-      - test -z $(go vet ./...)
-      - test -z $(golint ./...)
+      - test -z "$(find -path './vendor' -prune -false -o -name '*.go' | xargs gofmt -l)"
+      - go vet ./...
+      - golangci-lint run
 
   build:
     desc: Build the go binary.

@@ -126,18 +126,14 @@ func startMockMessageReceivers(outputs io.Outputs, reportCh chan string, doneCh 
 		rcvDoneCh := make(chan bool)
 		startSubReceivers(outputs, reportCh, rcvDoneCh, &rcvWg, logger, m)
 
-		for {
-			select {
-			case <-doneCh:
-				logger.Infof("Receiver master shuts down.")
-				close(rcvDoneCh)
-				logger.Infof("Receiver master closed the 'rcvDoneCh'.")
-				logger.Infof("Receiver master starts waiting for sub-receivers to stop")
-				rcvWg.Wait()
-				logger.Infof("Receiver master's sub-receivers stopped")
-				return
-			}
-		}
+		// Waits until receives a done signal
+		<-doneCh
+		logger.Infof("Receiver master shuts down.")
+		close(rcvDoneCh)
+		logger.Infof("Receiver master closed the 'rcvDoneCh'.")
+		logger.Infof("Receiver master starts waiting for sub-receivers to stop")
+		rcvWg.Wait()
+		logger.Infof("Receiver master's sub-receivers stopped")
 	}()
 
 	defer logger.Infof("Receiver master started.")
@@ -156,10 +152,14 @@ func startSubReceivers(outputs io.Outputs, reportCh chan string, doneCh chan boo
 			messageReceivedCh := make(chan []byte)
 			messageReceivedSubs := m.ChanSubscribe(channel, messageReceivedCh)
 
-			defer logger.Infof("Message Receiver '%s' stopped.", channel)
-			defer messageReceivedSubs.Unsubscribe()
-			defer close(messageReceivedCh)
-			defer wg.Done()
+			defer func() {
+				logger.Infof("Message Receiver '%s' stopped.", channel)
+				if err := messageReceivedSubs.Unsubscribe(); err != nil {
+					panic(err)
+				}
+				close(messageReceivedCh)
+				wg.Done()
+			}()
 
 			for {
 				select {

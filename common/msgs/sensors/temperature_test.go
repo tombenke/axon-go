@@ -17,8 +17,10 @@ func TestTemperatureMessage(t *testing.T) {
 	prec := common.TimePrecision("ns")
 	m := NewTemperatureMessageAt(42., at, prec)
 	var n Temperature
-	n.ParseJSON(m.JSON())
-	n.ParseJSON([]byte(m.String()))
+	err := n.ParseJSON(m.JSON())
+	assert.Nil(t, err)
+	err = n.ParseJSON([]byte(m.String()))
+	assert.Nil(t, err)
 	assert.Equal(t, m, &n)
 }
 
@@ -27,7 +29,8 @@ func TestTemperatureMessageCodec(t *testing.T) {
 	prec := common.TimePrecision("ns")
 	m := NewTemperatureMessageAt(42., at, prec)
 	var n Temperature
-	n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
+	err := n.Decode(msgs.JSONRepresentation, m.Encode(msgs.JSONRepresentation))
+	assert.Nil(t, err)
 	assert.Equal(t, m, &n)
 }
 
@@ -42,7 +45,8 @@ func TestTemperatureMessageCodecPanic(t *testing.T) {
 				assert.Equal(t, r, errors.New("Decode error: unknown representational format 'wrong-representation'"))
 			}
 		}()
-		n.Decode(msgs.Representation("wrong-representation"), m.Encode(msgs.JSONRepresentation))
+		err := n.Decode(msgs.Representation("wrong-representation"), m.Encode(msgs.JSONRepresentation))
+		assert.Nil(t, err)
 	}()
 	func() {
 		defer func() {
@@ -50,6 +54,7 @@ func TestTemperatureMessageCodecPanic(t *testing.T) {
 				assert.Equal(t, r, errors.New("Encode error: unknown representational format 'wrong-representation'"))
 			}
 		}()
-		n.Decode(msgs.JSONRepresentation, m.Encode(msgs.Representation("wrong-representation")))
+		err := n.Decode(msgs.JSONRepresentation, m.Encode(msgs.Representation("wrong-representation")))
+		assert.Nil(t, err)
 	}()
 }

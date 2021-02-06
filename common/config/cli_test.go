@@ -1,8 +1,6 @@
 package config
 
 import (
-	//"flag"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -27,18 +25,9 @@ func parseCliArgs(defaultNodeName string, args []string) Config {
 	// Extend the default set with node specific arguments
 	fs.StringVar(&config.Precision, "p", "ns", "The precision of time value: ns, us, ms, s")
 
-	// Add usage printer function
-	// flag.Usage = func() { "Print usage..." }
-
-	fs.Parse(args)
-
-	// Handle the -h flag
-	// if fs.showHelp {
-	//     showUsageAndExit(0)
-	// }
-
-	fmt.Printf("parsed args: %v\n", fs.Args())
-	fmt.Printf("config: %v\n", config)
+	if err := fs.Parse(args); err != nil {
+		panic(err)
+	}
 
 	return config
 }

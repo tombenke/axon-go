@@ -19,7 +19,8 @@ func TestRegister(t *testing.T) {
 	})
 
 	// Sent TERM signal, then wait for termination
-	syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
+	err := syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
+	assert.Nil(t, err)
 	wg.Wait()
 
 	// Checks if callback was called

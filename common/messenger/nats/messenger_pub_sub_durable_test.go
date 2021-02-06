@@ -25,7 +25,8 @@ func TestPubSubDurable(t *testing.T) {
 	})
 
 	// Send a message
-	m.PublishDurable(testChannelDurable, testMsgContent)
+	err := m.PublishDurable(testChannelDurable, testMsgContent)
+	require.Nil(t, err)
 
 	// Wait for the message to come in
 	wg.Wait()
