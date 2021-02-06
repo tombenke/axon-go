@@ -26,6 +26,26 @@ tasks:
     cmds:
       - go test -bench=.
 
+  coverage:
+    desc: Open test coverage in browser
+    cmds:
+      - go test -coverprofile=c.out -coverpkg=./... -covermode=atomic ./...
+      - go tool cover -html=c.out
+
+  lint-display:
+    desc: Call gofmt, go vet and go lint
+    cmds:
+      - test -z "$(find -path './vendor' -prune -false -o -name '*.go' | xargs gofmt -l -d)"
+      - go vet ./...
+      - golangci-lint run
+
+  lint:
+    desc: Test gofmt, go vet and go lint
+    cmds:
+      - test -z "$(find -path './vendor' -prune -false -o -name '*.go' | xargs gofmt -l)"
+      - go vet ./...
+      - golangci-lint run
+
   build:
     desc: Build the go binary.
     cmds:
