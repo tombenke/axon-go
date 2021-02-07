@@ -40,7 +40,17 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 					Extend: false,
 					Modify: true,
 				},
-				Inputs: config.Inputs{},
+				Inputs: config.Inputs{
+					config.In{
+						IO: config.IO{
+							Name:           "trigger",
+							Type:           "base/Bool",
+							Representation: "application/json",
+							Channel:        "axon.cron.trigger",
+						},
+						Default: "",
+					},
+				},
 				Outputs: config.Outputs{
 					config.Out{
 						IO: config.IO{
@@ -66,6 +76,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 			},
 		},
 		PrintConfig: false,
+		CronDef:     "@every 20s",
 	}
 
 	config, err := readConfigFromFile(defaultConfig, "./config.yml")
@@ -74,7 +85,8 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 }
 
 func TestGetConfigFileName_Default(t *testing.T) {
-	assert.Equal(t, "config.yml", getConfigFileName("", Config{}, []string{}))
+	dfltConfig := Config{}
+	assert.Equal(t, defaultConfigFileName, getConfigFileName("", dfltConfig, []string{}))
 }
 
 func TestGetConfigFileName_ByArgs(t *testing.T) {

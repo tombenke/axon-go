@@ -67,10 +67,12 @@ func makeHardCodedConfig() Config {
 	node := config.NewNode(actorName, actorName, false, true)
 
 	// Add I/O ports
+	node.AddInputPort("trigger", "base/Bool", "application/json", "axon.cron.trigger", "")
 	node.AddOutputPort("cron", "base/Any", "application/json", "axon.cron")
 
 	return Config{
-		Node: node,
+		Node:    node,
+		CronDef: "@every 10s",
 	}
 }
 
@@ -86,15 +88,12 @@ func (a Application) Start(appWg *sync.WaitGroup) {
 	go a.Node.Start(&nodeWg)
 
 	go func() {
-		for {
-			select {
-			case <-a.done:
-				log.Logger.Infof("%s is shutting down", actorName)
-				a.Node.Shutdown()
-				nodeWg.Wait()
-				appWg.Done()
-			}
-		}
+		// Wait until the actor will be shut down
+		<-a.done
+		log.Logger.Infof("%s is shutting down", actorName)
+		a.Node.Shutdown()
+		nodeWg.Wait()
+		appWg.Done()
 	}()
 }
 

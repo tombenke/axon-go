@@ -9,6 +9,11 @@ import (
 	"os"
 )
 
+const (
+	defaultConfigFileName = "config.yml"
+	defaultCronDef        = "@every 10s"
+)
+
 // Config holds the configuration parameters of the actor node application
 // It must inherit the configuration of the core `Node` object,
 // and may contain other additional application-specific parameters.
@@ -23,6 +28,8 @@ type Config struct {
 	PrintConfig bool `yaml:"printConfig"`
 
 	// TODO: Add the additional config parameters of the applications
+	// CronDef is the settings for the cron-job
+	CronDef string `yaml:"cronDef"`
 }
 
 // YAML converts the content of the Config structure to YAML format
@@ -37,6 +44,7 @@ func GetConfig(appName string, hardCodedConfigContent Config, args []string) Con
 	defaultConfig := Config{
 		Node:        config.GetDefaultNode(),
 		PrintConfig: false,
+		CronDef:     defaultCronDef,
 	}
 
 	// Get config file name from CLI parameter, or use the default one
@@ -94,6 +102,7 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.BoolVar(&cfg.PrintConfig, "print-config", false, "Print configuration parameters")
 
 	//TODO Add additional CLI flags if needed here
+	fs.StringVar(&cfg.CronDef, "cron", cfg.CronDef, "Cron definition")
 
 	return fs
 }
@@ -171,6 +180,7 @@ func mergeConfigs(hardCodedConfigContent Config, cliConfigContent Config) Config
 	//TODO: Add application-level merging tasks here if there is any
 	resultingConfig.ShowHelp = cliConfigContent.ShowHelp
 	resultingConfig.PrintConfig = cliConfigContent.PrintConfig
+	resultingConfig.CronDef = cliConfigContent.CronDef
 
 	return resultingConfig
 }
