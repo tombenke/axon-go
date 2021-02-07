@@ -62,9 +62,15 @@ func TestNodeStatus(t *testing.T) {
 	wg := sync.WaitGroup{}
 	n.Start(&wg)
 
+	runStatusTest(t, n)
+	wg.Wait()
+}
+
+func runStatusTest(t *testing.T, n node.Node) {
 	// Connect to messaging
 	m := messengerImpl.NewMessenger(messengerCfg)
 	defer m.Close()
+	wg := sync.WaitGroup{}
 
 	// Create a trigger channel to start the test
 	triggerCh := make(chan bool)
@@ -89,20 +95,14 @@ func TestNodeStatus(t *testing.T) {
 	<-orcStoppedCh
 	log.Logger.Infof("Orchestrator stopped")
 
-	log.Logger.Infof("Stops Status")
+	log.Logger.Infof("Shut down the Node (incl. Status)")
 	n.Shutdown()
-	//close(doneStatusCh)
-	//log.Logger.Infof("Wait Status to stop")
-	//<-statusStoppedCh
-	//log.Logger.Infof("Status stopped")
 
 	log.Logger.Infof("Stops Checklist")
 	close(doneChkCh)
 	log.Logger.Infof("Wait Checklist to stop")
 	<-checklistStoppedCh
 	log.Logger.Infof("Checklist stopped")
-
-	wg.Wait()
 }
 
 // makeNodeTestConfig returns with a built-in configuration for the node test

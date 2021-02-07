@@ -3,7 +3,9 @@ package app
 import (
 	"github.com/tombenke/axon-go/common/actor/node"
 	"github.com/tombenke/axon-go/common/config"
+	"github.com/tombenke/axon-go/common/gsd"
 	"github.com/tombenke/axon-go/common/log"
+	"os"
 	"sync"
 )
 
@@ -16,6 +18,22 @@ type Application struct {
 	Node   node.Node
 	config Config
 	done   chan bool
+}
+
+// Run creates a new application instance, and starts it
+func Run(args []string) {
+	// Create a new application instance using the CLI and config parameters
+	a := NewApplication(args)
+
+	// Start the axon node application
+	wg := sync.WaitGroup{}
+	a.Start(&wg)
+
+	gsd.Register(&wg, func(s os.Signal) {
+		a.Shutdown()
+	})
+
+	wg.Wait()
 }
 
 // NewApplication creates a new actor-node application object
