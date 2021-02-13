@@ -23,7 +23,7 @@ func Register(wg *sync.WaitGroup, cb func(os.Signal)) {
 	go func() {
 		// Block until a signal is received.
 		s := <-sigs
-		log.Logger.Infof("Got '%s' signal", s)
+		log.Logger.Debugf("Got '%s' signal", s)
 		close(sigs)
 		wg.Done()
 		cb(s)

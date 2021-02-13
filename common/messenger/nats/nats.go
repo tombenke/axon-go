@@ -16,7 +16,7 @@ func (m connections) Publish(subject string, msg []byte) error {
 	}
 	m.nc.Flush()
 
-	m.logger.Infof("Messenger published message to '%s'", subj)
+	m.logger.Debugf("Messenger published message to '%s'", subj)
 	return nil
 }
 
@@ -53,7 +53,7 @@ func (m connections) Subscribe(subject string, cb func([]byte)) messenger.Subscr
 // You should not close the channel until sub.Unsubscribe() has been called.
 func (m connections) ChanSubscribe(subject string, ch chan []byte) messenger.Subscriber {
 	subscription, err := m.nc.Subscribe(subject, func(msg *nats.Msg) {
-		m.logger.Infof("Messenger received message from '%s'", subject)
+		m.logger.Debugf("Messenger received message from '%s'", subject)
 		ch <- msg.Data
 	})
 	if err != nil {
@@ -67,14 +67,14 @@ func (m connections) ChanSubscribe(subject string, ch chan []byte) messenger.Sub
 func (m connections) Request(subject string, msg []byte, timeout time.Duration) ([]byte, error) {
 	subj := subject
 
-	m.logger.Infof("Messenger sends request through '%s'", subj)
+	m.logger.Debugf("Messenger sends request through '%s'", subj)
 	resp, err := m.nc.Request(subj, msg, timeout)
 	if err != nil {
 		m.logger.Error(err)
 		return nil, err
 	}
 
-	m.logger.Infof("Messenger got response '%s'", resp.Data)
+	m.logger.Debugf("Messenger got response '%s'", resp.Data)
 	return resp.Data, err
 }
 

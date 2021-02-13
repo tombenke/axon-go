@@ -23,8 +23,8 @@ func AsyncReceiver(inputsCfg config.Inputs, resetCh chan bool, doneCh chan bool,
 
 	appWg.Add(1)
 	go func() {
-		logger.Infof("Receiver started in async mode.")
-		defer logger.Infof("Receiver stopped.")
+		logger.Debugf("Receiver started in async mode.")
+		defer logger.Debugf("Receiver stopped.")
 		defer close(inputsCh)
 		defer close(receiverStoppedCh)
 		defer appWg.Done()
@@ -46,25 +46,25 @@ func AsyncReceiver(inputsCfg config.Inputs, resetCh chan bool, doneCh chan bool,
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Receiver shuts down.")
+				logger.Debugf("Receiver shuts down.")
 				close(obsDoneCh)
-				logger.Infof("Receiver closed the 'obsDoneCh'.")
-				logger.Infof("Receiver starts waiting for observers to stop")
+				logger.Debugf("Receiver closed the 'obsDoneCh'.")
+				logger.Debugf("Receiver starts waiting for observers to stop")
 				obsWg.Wait()
-				logger.Infof("Receiver's observers stopped")
+				logger.Debugf("Receiver's observers stopped")
 				return
 
 			case <-resetCh:
-				logger.Infof("Receiver got RESET signal")
+				logger.Debugf("Receiver got RESET signal")
 				inputsCh <- inputs
-				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")
+				logger.Debugf("Receiver sent 'inputs' to 'inputsCh'")
 
 			case input := <-inputsMuxCh:
-				logger.Infof("Receiver got message to '%s' port", input.Name)
+				logger.Debugf("Receiver got message to '%s' port", input.Name)
 				inputs.SetMessage(input.Name, input.Message)
 				// Immediately forward to the processor if not in synchronized mode
 				inputsCh <- inputs
-				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")
+				logger.Debugf("Receiver sent 'inputs' to 'inputsCh'")
 			}
 		}
 	}()
@@ -75,7 +75,7 @@ func AsyncReceiver(inputsCfg config.Inputs, resetCh chan bool, doneCh chan bool,
 // asyncSetupInputPorts creates inputs ports, and initilizes them with their default messages
 func asyncSetupInputPorts(inputsCfg config.Inputs, logger *logrus.Logger) io.Inputs {
 
-	logger.Infof("Receiver sets up input ports")
+	logger.Debugf("Receiver sets up input ports")
 
 	// Create input ports
 	inputs := io.NewInputs(inputsCfg)

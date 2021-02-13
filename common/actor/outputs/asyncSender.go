@@ -18,35 +18,35 @@ func AsyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, 
 
 	wg.Add(1)
 	go func() {
-		defer logger.Infof("Sender stopped")
+		defer logger.Debugf("Sender stopped")
 		defer close(senderStoppedCh)
 		defer wg.Done()
 
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Sender shuts down.")
+				logger.Debugf("Sender shuts down.")
 				return
 
 			case outputs = <-outputsCh:
-				logger.Infof("Sender received outputs")
+				logger.Debugf("Sender received outputs")
 				// In async mode it immediately sends the outputs whet it gets them
-				asyncSendOutputs(actorName, outputs, m)
+				asyncSendOutputs(actorName, outputs, m, logger)
 			}
 		}
 	}()
 
-	logger.Infof("Sender started in async mode.")
+	logger.Debugf("Sender started in async mode.")
 	return senderStoppedCh
 }
 
-func asyncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger) {
+func asyncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger, logger *logrus.Logger) {
 	for o := range outputs {
 		channel := outputs[o].Channel
 		representation := outputs[o].Representation
 		message := outputs[o].Message
 		messageType := outputs[o].Type
-		logger.Infof("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
+		logger.Debugf("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
 		if err := m.Publish(channel, message.Encode(representation)); err != nil {
 			panic(err)
 		}

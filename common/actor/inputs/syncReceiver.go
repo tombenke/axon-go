@@ -25,8 +25,8 @@ func SyncReceiver(inputsCfg config.Inputs, resetCh chan bool, doneCh chan bool, 
 
 	appWg.Add(1)
 	go func() {
-		logger.Infof("Receiver started in sync mode.")
-		defer logger.Infof("Receiver stopped.")
+		logger.Debugf("Receiver started in sync mode.")
+		defer logger.Debugf("Receiver stopped.")
 		defer close(inputsCh)
 		defer close(receiverStoppedCh)
 		defer appWg.Done()
@@ -58,34 +58,34 @@ func SyncReceiver(inputsCfg config.Inputs, resetCh chan bool, doneCh chan bool, 
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Receiver shuts down.")
+				logger.Debugf("Receiver shuts down.")
 				close(obsDoneCh)
-				logger.Infof("Receiver closed the 'obsDoneCh'.")
-				logger.Infof("Receiver starts waiting for observers to stop")
+				logger.Debugf("Receiver closed the 'obsDoneCh'.")
+				logger.Debugf("Receiver starts waiting for observers to stop")
 				obsWg.Wait()
-				logger.Infof("Receiver's observers stopped")
+				logger.Debugf("Receiver's observers stopped")
 				return
 
 			case <-resetCh:
-				logger.Infof("Receiver got RESET signal")
+				logger.Debugf("Receiver got RESET signal")
 				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(0))
 				inputs.SetMessage("_RAP", receiveAndProcessMsg)
 				inputsCh <- inputs
-				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")
+				logger.Debugf("Receiver sent 'inputs' to 'inputsCh'")
 
 			case input := <-inputsMuxCh:
-				logger.Infof("Receiver got message to '%s' port", input.Name)
+				logger.Debugf("Receiver got message to '%s' port", input.Name)
 				inputs.SetMessage(input.Name, input.Message)
 
 			case messageBytes := <-receiveAndProcessCh:
-				logger.Infof("Receiver received 'receive-and-process' message from orchestrator")
+				logger.Debugf("Receiver received 'receive-and-process' message from orchestrator")
 				receiveAndProcessMsg := orchestra.NewReceiveAndProcessMessage(float64(0))
 				if err := receiveAndProcessMsg.Decode(msgs.JSONRepresentation, messageBytes); err != nil {
 					panic(err)
 				}
 				inputs.SetMessage("_RAP", receiveAndProcessMsg)
 				inputsCh <- inputs
-				logger.Infof("Receiver sent 'inputs' to 'inputsCh'")
+				logger.Debugf("Receiver sent 'inputs' to 'inputsCh'")
 			}
 		}
 	}()
@@ -96,7 +96,7 @@ func SyncReceiver(inputsCfg config.Inputs, resetCh chan bool, doneCh chan bool, 
 // setupInputPorts creates inputs ports, and initilizes them with their default messages
 func syncSetupInputPorts(inputsCfg config.Inputs, logger *logrus.Logger) io.Inputs {
 
-	logger.Infof("Receiver sets up input ports")
+	logger.Debugf("Receiver sets up input ports")
 
 	if findPortCfgByName(inputsCfg, "_RAP") {
 		panic("Can not define an input port with the '_RAP' reserved name.")

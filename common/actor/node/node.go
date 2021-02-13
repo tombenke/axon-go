@@ -60,6 +60,10 @@ func NewNode(config config.Node, procFun func(processor.Context) error) Node {
 		wg:              &sync.WaitGroup{},
 	}
 
+	// Configure the global logger of the application according to the configuration
+	log.SetLevelStr(config.LogLevel)
+	log.SetFormatterStr(config.LogFormat)
+
 	// Connect to messaging
 	node.config.Messenger.Logger = log.Logger
 	node.config.Messenger.ClientID = node.name
@@ -67,7 +71,7 @@ func NewNode(config config.Node, procFun func(processor.Context) error) Node {
 	node.config.Messenger.ClusterID = "test-cluster"
 	node.messenger = messengerImpl.NewMessenger(node.config.Messenger)
 
-	log.Logger.Infof("Start '%s' actor node's internal components", node.config.Name)
+	log.Logger.Debugf("Start '%s' actor node's internal components", node.config.Name)
 	// Start the status component to communicate with the orchestrator
 	node.statusStoppedCh = status.Status(node.config.Name, node.doneStatusCh, node.wg, node.messenger, log.Logger)
 
@@ -94,12 +98,12 @@ func (n Node) Start() {
 	// Start waiting for the shutdown signal
 	n.wg.Add(1)
 	go func() {
-		log.Logger.Infof("Node started.")
-		defer log.Logger.Infof("Node stopped.")
+		log.Logger.Debugf("Node started.")
+		defer log.Logger.Debugf("Node stopped.")
 		defer n.wg.Done()
 
 		<-n.doneCh
-		log.Logger.Infof("Node is shutting down")
+		log.Logger.Debugf("Node is shutting down")
 
 		// Stop status
 		close(n.doneStatusCh)
@@ -147,7 +151,7 @@ func (n Node) Shutdown() {
 
 // Next Injects the `inputs` messages into the inputs channel, like it were received by the input ports.
 func (n Node) Next(inputs io.Inputs) {
-	log.Logger.Infof("Node.Next() is called\n")
+	log.Logger.Debugf("Node.Next() is called\n")
 	n.inputsCh <- inputs
 }
 

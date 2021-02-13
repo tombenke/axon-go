@@ -9,11 +9,7 @@ node:
     configure:
       extend: false # Can NOT add new I/O port
       modify: true # Can configure the existing I/O port parameters
-    inputs:
-      - name: trigger
-        type: base/Bool
-        representation: application/json
-        channel: axon.cron.trigger
+    inputs: []
     outputs:
       - name: cron
         type: base/Any

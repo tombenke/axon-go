@@ -40,17 +40,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 					Extend: false,
 					Modify: true,
 				},
-				Inputs: config.Inputs{
-					config.In{
-						IO: config.IO{
-							Name:           "trigger",
-							Type:           "base/Bool",
-							Representation: "application/json",
-							Channel:        "axon.cron.trigger",
-						},
-						Default: "",
-					},
-				},
+				Inputs: config.Inputs{},
 				Outputs: config.Outputs{
 					config.Out{
 						IO: config.IO{

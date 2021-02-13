@@ -1,9 +1,7 @@
 package main
 
 import (
-	"github.com/tombenke/axon-go/common/gsd"
-	"os"
-	"sync"
+	"github.com/stretchr/testify/assert"
 	"syscall"
 	"testing"
 )
@@ -16,14 +14,12 @@ func TestApplicationStartStop(t *testing.T) {
 	a := NewApplication(testArgs)
 
 	// Start the axon node application
-	wg := sync.WaitGroup{}
-	/* TODO: Implement
-	a.Start(&wg)
-	*/
+	a.Start()
 
-	gsd.Register(&wg, func(s os.Signal) {
-		a.Shutdown()
-	})
-	syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
-	wg.Wait()
+	// Stop the application
+	err := syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
+	assert.Nil(t, err)
+
+	// Wait until the app really stops
+	a.Wait()
 }

@@ -26,19 +26,19 @@ func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.
 			close(statusRequestCh)
 			wg.Done()
 
-			logger.Infof("Status stopped.")
+			logger.Debugf("Status stopped.")
 			close(statusStoppedCh)
 		}()
 
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Status shuts down.")
+				logger.Debugf("Status shuts down.")
 				return
 
 			case <-statusRequestCh:
-				logger.Infof("Status received status-request message")
-				logger.Infof("Status sends status-report message")
+				logger.Debugf("Status received status-request message")
+				logger.Debugf("Status sends status-report message")
 				statusReportMsg := orchestra.NewStatusReportMessage(actorName)
 				if err := m.Publish("status-report", statusReportMsg.Encode(msgs.JSONRepresentation)); err != nil {
 					panic(err)
@@ -47,6 +47,6 @@ func Status(actorName string, doneCh chan bool, wg *sync.WaitGroup, m messenger.
 			}
 		}
 	}()
-	logger.Infof("Status started")
+	logger.Debugf("Status started")
 	return statusStoppedCh
 }

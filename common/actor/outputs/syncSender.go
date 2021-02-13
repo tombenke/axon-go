@@ -28,7 +28,7 @@ func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, w
 				panic(err)
 			}
 			close(sendResultsCh)
-			logger.Infof("Sender stopped")
+			logger.Debugf("Sender stopped")
 			close(senderStoppedCh)
 			wg.Done()
 		}()
@@ -36,29 +36,29 @@ func SyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, w
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Sender shuts down.")
+				logger.Debugf("Sender shuts down.")
 				return
 
 			case outputs = <-outputsCh:
-				logger.Infof("Sender received outputs")
+				logger.Debugf("Sender received outputs")
 				// In sync mode notifies the orchestrator about that it is ready to send
 				sendProcessingCompleted(actorName, m)
 
 			case <-sendResultsCh:
-				logger.Infof("Sender received orchestrator trigger to send outputs")
+				logger.Debugf("Sender received orchestrator trigger to send outputs")
 				syncSendOutputs(actorName, outputs, m)
 			}
 		}
 	}()
 
-	logger.Infof("Sender started in sync mode.")
+	logger.Debugf("Sender started in sync mode.")
 	return senderStoppedCh
 }
 
 // sendProcessingCompleted sends a message to the orchestrator about that
 // the agent completed the processing and it is ready to send outputs.
 func sendProcessingCompleted(actorName string, m messenger.Messenger) {
-	logger.Infof("Sender sends 'processing-completed' notification to orchestrator\n")
+	logger.Debugf("Sender sends 'processing-completed' notification to orchestrator\n")
 	processingCompletedMsg := orchestra.NewProcessingCompletedMessage(actorName)
 	if err := m.Publish("processing-completed", processingCompletedMsg.Encode(msgs.JSONRepresentation)); err != nil {
 		panic(err)
@@ -71,13 +71,13 @@ func syncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger
 		representation := outputs[o].Representation
 		message := outputs[o].Message
 		messageType := outputs[o].Type
-		logger.Infof("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
+		logger.Debugf("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
 		if err := m.Publish(channel, message.Encode(representation)); err != nil {
 			panic(err)
 		}
 	}
 
-	logger.Infof("Sender sends 'sending-completed' notification to orchestrator\n")
+	logger.Debugf("Sender sends 'sending-completed' notification to orchestrator\n")
 	sendingCompletedMsg := orchestra.NewSendingCompletedMessage(actorName)
 	if err := m.Publish("sending-completed", sendingCompletedMsg.Encode(msgs.JSONRepresentation)); err != nil {
 		panic(err)

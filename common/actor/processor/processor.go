@@ -19,8 +19,8 @@ func StartProcessor(procFun func(Context) error, outputsCfg config.Outputs, done
 
 	(*appWg).Add(1)
 	go func() {
-		logger.Infof("Processor started.")
-		defer logger.Infof("Processor stopped.")
+		logger.Debugf("Processor started.")
+		defer logger.Debugf("Processor stopped.")
 		defer close(outputsCh)
 		defer close(procStoppedCh)
 		defer appWg.Done()
@@ -31,11 +31,11 @@ func StartProcessor(procFun func(Context) error, outputsCfg config.Outputs, done
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Processor shuts down.")
+				logger.Debugf("Processor shuts down.")
 				return
 
 			case inputs := <-inputsCh:
-				logger.Infof("Processor got inputs")
+				logger.Debugf("Processor got inputs")
 				processInputs(inputs, outputs, procFun, outputsCh, logger)
 			}
 		}
@@ -47,12 +47,12 @@ func StartProcessor(procFun func(Context) error, outputsCfg config.Outputs, done
 func processInputs(inputs io.Inputs, outputs io.Outputs, procFun func(Context) error, outputsCh chan io.Outputs, logger *logrus.Logger) {
 	context := NewContext(logger, inputs, outputs)
 
-	logger.Infof("Processor calls processor-function")
+	logger.Debugf("Processor calls processor-function")
 	err := procFun(context)
 	if err != nil {
 		panic(err)
 	}
 
-	logger.Infof("Processor sends the results")
+	logger.Debugf("Processor sends the results")
 	outputsCh <- context.Outputs
 }

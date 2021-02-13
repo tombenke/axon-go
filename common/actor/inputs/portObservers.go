@@ -22,14 +22,14 @@ func startInPortsObservers(inputs io.Inputs, inputsMuxCh chan io.Input, doneCh c
 // The newPortObserver creates and returns with the `inCh` channel that the aggregator can consume.
 func newPortObserver(input io.Input, inputsMuxCh chan io.Input, doneCh chan bool, wg *sync.WaitGroup, m messenger.Messenger, logger *logrus.Logger) {
 	inMsgCh := make(chan []byte)
-	logger.Infof("Receiver's '%s' port observer subscribe to '%s' channel", input.Name, input.Channel)
+	logger.Debugf("Receiver's '%s' port observer subscribe to '%s' channel", input.Name, input.Channel)
 	inMsgSubs := m.ChanSubscribe(input.Channel, inMsgCh)
 
 	wg.Add(1)
 	go func() {
-		logger.Infof("Receiver's '%s' port observer started", input.Name)
+		logger.Debugf("Receiver's '%s' port observer started", input.Name)
 		defer func() {
-			logger.Infof("Receiver's '%s' port observer stopped", input.Name)
+			logger.Debugf("Receiver's '%s' port observer stopped", input.Name)
 			if err := inMsgSubs.Unsubscribe(); err != nil {
 				panic(err)
 			}
@@ -40,16 +40,16 @@ func newPortObserver(input io.Input, inputsMuxCh chan io.Input, doneCh chan bool
 		for {
 			select {
 			case <-doneCh:
-				logger.Infof("Receiver's '%s' port observer shut down", input.Name)
+				logger.Debugf("Receiver's '%s' port observer shut down", input.Name)
 				return
 
 			case inputMsg := <-inMsgCh:
-				logger.Infof("Receiver's '%s' port observer received message", input.Name)
+				logger.Debugf("Receiver's '%s' port observer received message", input.Name)
 				if err := input.Message.Decode(input.Representation, inputMsg); err != nil {
 					panic(err)
 				}
 				inputsMuxCh <- input
-				logger.Infof("Receiver's '%s' port observer sent message to inputMuxCh channel", input.Name)
+				logger.Debugf("Receiver's '%s' port observer sent message to inputMuxCh channel", input.Name)
 			}
 		}
 	}()

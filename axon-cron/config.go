@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	config "github.com/tombenke/axon-go/common/config"
+	"github.com/tombenke/axon-go/common/log"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -42,7 +43,7 @@ func (c Config) YAML() ([]byte, error) {
 // GetConfig returns with the configuration parameters of the application
 // It reads and parses the CLI parameters, loads the external configuration files if needed,
 // then merges these parameters. Returns with the resulting configuration set.
-func GetConfig(appName string, hardCodedConfigContent Config, args []string) Config {
+func GetConfig(appName string, builtInConfigContent Config, args []string) Config {
 	defaultConfig := Config{
 		Node:        config.GetDefaultNode(),
 		PrintConfig: false,
@@ -59,7 +60,7 @@ func GetConfig(appName string, hardCodedConfigContent Config, args []string) Con
 	cliConfigContent := parseCliArgs(configFileContent, appName, args)
 
 	// Merges the configurations into a resulting one
-	resultingConfig := mergeConfigs(hardCodedConfigContent, cliConfigContent)
+	resultingConfig := mergeConfigs(builtInConfigContent, cliConfigContent)
 
 	return resultingConfig
 }
@@ -68,7 +69,10 @@ func GetConfig(appName string, hardCodedConfigContent Config, args []string) Con
 func getConfigFileName(appName string, defaultConfig Config, args []string) string {
 
 	fs := GetAppFlagSet(appName, &defaultConfig)
-	fs.Parse(args)
+	err := fs.Parse(args)
+	if err != nil {
+		log.Logger.Warningf(err.Error())
+	}
 
 	return defaultConfig.Node.ConfigFileName
 }
@@ -83,7 +87,10 @@ func parseCliArgs(configFileContent Config, appName string, args []string) Confi
 	// Add usage printer function
 	fs.Usage = usage(fs, appName)
 
-	fs.Parse(args)
+	err := fs.Parse(args)
+	if err != nil {
+		log.Logger.Warningf(err.Error())
+	}
 
 	// Handle the -h flag
 	if appConfig.ShowHelp {
@@ -161,21 +168,20 @@ func LoadFile(path string) ([]byte, error) {
 
 // mergeConfigs returns with the resulting config parameters set after merging them
 //
-// `hardCodedConfigContent` holds the configuration that the application defined as a baseline,
+// `builtInConfigContent` holds the configuration that the application defined as a baseline,
 // `cliConfigContent` holds those configuration parameters, that origins from the default values,
 // then extended by the config file, if there is any, then finally these were extended by the
 // parameters from the environment and the CLI arguments.
 // The most complex task of merging the I/O ports are done by the `config.MergeNodeConfigs()` function
-// according to the values of `Extend` and `Modify` flags defined by the `hardCodedConfigContent`.
+// according to the values of `Extend` and `Modify` flags defined by the `builtInConfigContent`.
 // The application needs to implement the merging of properties added by itself, on top of the Node parameters.
-func mergeConfigs(hardCodedConfigContent Config, cliConfigContent Config) Config {
-	resultingConfig := hardCodedConfigContent
+func mergeConfigs(builtInConfigContent Config, cliConfigContent Config) Config {
+	resultingConfig := builtInConfigContent
 
 	// Let the internal config module to manage the merging of the Node parameters
-	resultingNode, err := config.MergeNodeConfigs(hardCodedConfigContent.Node, cliConfigContent.Node)
+	resultingNode, err := config.MergeNodeConfigs(builtInConfigContent.Node, cliConfigContent.Node)
 	if err != nil {
-		fmt.Printf(err.Error())
-		os.Exit(1)
+		panic(err.Error())
 	}
 	resultingConfig.Node = resultingNode
 
