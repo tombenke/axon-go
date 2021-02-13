@@ -17,17 +17,21 @@ func TestAsyncReceiverStartStop(t *testing.T) {
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
 	wg := sync.WaitGroup{}
 
+	// Create a channel for the RESET
+	resetCh := make(chan bool)
+
 	// Create a channel to shut down the processes if needed
 	doneCh := make(chan bool)
 
 	// Start the receiver process
-	AsyncReceiver(asyncInputsCfg, doneCh, &wg, m, logger)
+	AsyncReceiver(asyncInputsCfg, resetCh, doneCh, &wg, m, logger)
 
 	// Wait until test is completed, then stop the processes
 	close(doneCh)
 
 	// Wait for the message to come in
 	wg.Wait()
+	close(resetCh)
 }
 
 // TestReceiveInputs sets up the input ports, and gets inputs to each ports, then a receive-and-process message,
@@ -40,16 +44,16 @@ func TestAsyncReceiverInputs(t *testing.T) {
 	// Use a WaitGroup to wait for the processes of the testbed to complete their mission
 	wg := sync.WaitGroup{}
 
-	// Create a channel to shut down the processes if needed
-	// doneCh := make(chan bool)
-
 	// Start the processes of the test-bed
 	doneCheckCh := make(chan bool)
 	reportCh, testCompletedCh, chkStoppedCh := at.ChecklistProcess(checklistAsync, doneCheckCh, &wg, logger)
 
+	// Create a channel for the RESET
+	resetCh := make(chan bool)
+
 	// Start the receiver process
 	doneRcvCh := make(chan bool)
-	inputsCh, rcvStoppedCh := AsyncReceiver(asyncInputsCfg, doneRcvCh, &wg, m, logger)
+	inputsCh, rcvStoppedCh := AsyncReceiver(asyncInputsCfg, resetCh, doneRcvCh, &wg, m, logger)
 
 	doneProcCh := make(chan bool)
 	procStoppedCh := startMockProcessor(inputsCh, reportCh, doneProcCh, &wg, logger)
@@ -69,10 +73,11 @@ func TestAsyncReceiverInputs(t *testing.T) {
 	<-procStoppedCh
 	logger.Infof("Mock Processor stopped")
 
-	logger.Infof("Stops Stops Receiver")
+	logger.Infof("Stops Receiver")
 	close(doneRcvCh)
 	logger.Infof("Wait Receiver to stop")
 	<-rcvStoppedCh
+	close(resetCh)
 	logger.Infof("Receiver stopped")
 
 	logger.Infof("Stops Checklist")

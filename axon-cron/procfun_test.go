@@ -23,8 +23,11 @@ var testCases at.TestCases = at.TestCases{
 
 func TestProcessorFun(t *testing.T) {
 	for _, tc := range testCases {
+		config := Config{
+			CronDef: "@every 20s",
+		}
 		context := processor.SetupContext(tc, inputsCfg, outputsCfg)
-		err := ProcessorFun(context)
+		err := getProcessorFun(config)(context)
 		assert.Nil(t, err)
 		fmt.Printf("\nOutputs: %v\n", context.Outputs)
 		//processor.CompareOutputsData(t, context.Outputs, tc)

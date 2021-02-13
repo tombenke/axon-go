@@ -22,7 +22,8 @@ type Node struct {
 	messenger messenger.Messenger
 	name      string
 	procFun   func(processor.Context) error
-	done      chan bool
+	doneCh    chan bool
+	resetCh   chan bool
 }
 
 // NewNode creates and returns with a new `Node` object
@@ -32,7 +33,8 @@ func NewNode(config config.Node, procFun func(processor.Context) error) Node {
 		config:  config,
 		name:    config.Name,
 		procFun: procFun,
-		done:    make(chan bool),
+		doneCh:  make(chan bool),
+		resetCh: make(chan bool),
 	}
 
 	// Connect to messaging
@@ -69,14 +71,15 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 	// Start the status component to communicate with the orchestrator
 	statusStoppedCh := status.Status(n.config.Name, doneStatusCh, nodeWg, n.messenger, log.Logger)
 
+	// Start the core components of the Node
 	if n.config.Orchestration.Synchronization {
 		// Start the core components in synchronous mode
-		inputsCh, inputsRcvStoppedCh = inputs.SyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
+		inputsCh, inputsRcvStoppedCh = inputs.SyncReceiver(n.config.Ports.Inputs, n.resetCh, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
 		outputsCh, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
 		outputsStoppedCh = outputs.SyncSender(n.name, outputsCh, doneOutputsCh, nodeWg, n.messenger, log.Logger)
 	} else {
 		// Start the core components in asynchronous mode
-		inputsCh, inputsRcvStoppedCh = inputs.AsyncReceiver(n.config.Ports.Inputs, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
+		inputsCh, inputsRcvStoppedCh = inputs.AsyncReceiver(n.config.Ports.Inputs, n.resetCh, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
 		outputsCh, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
 		outputsStoppedCh = outputs.AsyncSender(n.name, outputsCh, doneOutputsCh, nodeWg, n.messenger, log.Logger)
 	}
@@ -88,8 +91,9 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 		defer logger.Infof("Node stopped.")
 		defer nodeWg.Done()
 
-		<-n.done
+		<-n.doneCh
 		logger.Infof("Node is shutting down")
+
 		// Stop status
 		close(doneStatusCh)
 		<-statusStoppedCh
@@ -109,11 +113,22 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 		close(doneInputsRcvCh)
 		<-inputsRcvStoppedCh
 
+		// Close the RESET mechanism
+		close(n.resetCh)
+
 		n.messenger.Close()
 	}()
+
+	// RESET the Node
+	n.Reset()
+}
+
+// Reset triggers the RESET process in the components of the Node
+func (n Node) Reset() {
+	n.resetCh <- true
 }
 
 // Shutdown stops the Node process
 func (n Node) Shutdown() {
-	n.done <- true
+	close(n.doneCh)
 }

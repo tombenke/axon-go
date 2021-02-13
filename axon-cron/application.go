@@ -56,7 +56,7 @@ func NewApplication(args []string) Application {
 	}
 
 	// Create the Node
-	app.Node = node.NewNode(app.config.Node, ProcessorFun)
+	app.Node = node.NewNode(app.config.Node, getProcessorFun(app.config))
 
 	return app
 }

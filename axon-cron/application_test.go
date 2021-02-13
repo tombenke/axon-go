@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestApplication(t *testing.T) {
+func TestApplicationStartStop(t *testing.T) {
 	// Create the axon node application with the test parameters
 	testArgs := []string{}
 
