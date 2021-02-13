@@ -35,6 +35,7 @@ func StartProcessor(procFun func(Context) error, outputsCfg config.Outputs, done
 				return
 
 			case inputs := <-inputsCh:
+				logger.Infof("Processor got inputs")
 				processInputs(inputs, outputs, procFun, outputsCh, logger)
 			}
 		}

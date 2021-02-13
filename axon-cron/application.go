@@ -84,15 +84,18 @@ func (a Application) Start(appWg *sync.WaitGroup) {
 	// TODO
 
 	// Start the node
-	nodeWg := sync.WaitGroup{}
-	go a.Node.Start(&nodeWg)
+	go a.Node.Start()
+
+	cronDoneCh := make(chan bool)
+	go startCron(a.Node, a.config.CronDef, appWg, cronDoneCh)
 
 	go func() {
 		// Wait until the actor will be shut down
 		<-a.done
 		log.Logger.Infof("%s is shutting down", actorName)
+		close(cronDoneCh)
 		a.Node.Shutdown()
-		nodeWg.Wait()
+		a.Node.Wait()
 		appWg.Done()
 	}()
 }

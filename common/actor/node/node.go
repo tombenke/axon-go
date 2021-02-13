@@ -24,6 +24,22 @@ type Node struct {
 	procFun   func(processor.Context) error
 	doneCh    chan bool
 	resetCh   chan bool
+
+	doneStatusCh    chan bool
+	doneInputsRcvCh chan bool
+	doneProcessorCh chan bool
+	doneOutputsCh   chan bool
+
+	// Declare the channels for communication among the componens
+	inputsCh  chan io.Inputs
+	outputsCh chan io.Outputs
+
+	// Declare the channels through which the components notify that they have stopped
+	inputsRcvStoppedCh chan bool
+	processorStoppedCh chan bool
+	outputsStoppedCh   chan bool
+	statusStoppedCh    chan bool
+	wg                 *sync.WaitGroup
 }
 
 // NewNode creates and returns with a new `Node` object
@@ -35,6 +51,13 @@ func NewNode(config config.Node, procFun func(processor.Context) error) Node {
 		procFun: procFun,
 		doneCh:  make(chan bool),
 		resetCh: make(chan bool),
+
+		// Create channels to control the shut down of the components
+		doneStatusCh:    make(chan bool),
+		doneInputsRcvCh: make(chan bool),
+		doneProcessorCh: make(chan bool),
+		doneOutputsCh:   make(chan bool),
+		wg:              &sync.WaitGroup{},
 	}
 
 	// Connect to messaging
@@ -44,74 +67,58 @@ func NewNode(config config.Node, procFun func(processor.Context) error) Node {
 	node.config.Messenger.ClusterID = "test-cluster"
 	node.messenger = messengerImpl.NewMessenger(node.config.Messenger)
 
+	log.Logger.Infof("Start '%s' actor node's internal components", node.config.Name)
+	// Start the status component to communicate with the orchestrator
+	node.statusStoppedCh = status.Status(node.config.Name, node.doneStatusCh, node.wg, node.messenger, log.Logger)
+
+	// Start the core components of the Node
+	if node.config.Orchestration.Synchronization {
+		// Start the core components in synchronous mode
+		node.inputsCh, node.inputsRcvStoppedCh = inputs.SyncReceiver(node.config.Ports.Inputs, node.resetCh, node.doneInputsRcvCh, node.wg, node.messenger, log.Logger)
+		node.outputsCh, node.processorStoppedCh = processor.StartProcessor(node.procFun, node.config.Ports.Outputs, node.doneProcessorCh, node.wg, node.inputsCh, log.Logger)
+		node.outputsStoppedCh = outputs.SyncSender(node.name, node.outputsCh, node.doneOutputsCh, node.wg, node.messenger, log.Logger)
+	} else {
+		// Start the core components in asynchronous mode
+		node.inputsCh, node.inputsRcvStoppedCh = inputs.AsyncReceiver(node.config.Ports.Inputs, node.resetCh, node.doneInputsRcvCh, node.wg, node.messenger, log.Logger)
+		node.outputsCh, node.processorStoppedCh = processor.StartProcessor(node.procFun, node.config.Ports.Outputs, node.doneProcessorCh, node.wg, node.inputsCh, log.Logger)
+		node.outputsStoppedCh = outputs.AsyncSender(node.name, node.outputsCh, node.doneOutputsCh, node.wg, node.messenger, log.Logger)
+	}
 	return node
 }
 
 // Start starts the core engine of an actor-node application
-func (n Node) Start(nodeWg *sync.WaitGroup) {
+func (n Node) Start() {
 
-	logger := log.Logger
-	logger.Infof("Start '%s' actor node", n.config.Name)
-
-	// Create channels to control the shut down of the components
-	doneStatusCh := make(chan bool)
-	doneInputsRcvCh := make(chan bool)
-	doneProcessorCh := make(chan bool)
-	doneOutputsCh := make(chan bool)
-
-	// Declare the channels through which the components notify that they have stopped
-	var inputsRcvStoppedCh chan bool
-	var processorStoppedCh chan bool
-	var outputsStoppedCh chan bool
-
-	// Declare the channels for communication among the componens
-	var inputsCh chan io.Inputs
-	var outputsCh chan io.Outputs
-
-	// Start the status component to communicate with the orchestrator
-	statusStoppedCh := status.Status(n.config.Name, doneStatusCh, nodeWg, n.messenger, log.Logger)
-
-	// Start the core components of the Node
-	if n.config.Orchestration.Synchronization {
-		// Start the core components in synchronous mode
-		inputsCh, inputsRcvStoppedCh = inputs.SyncReceiver(n.config.Ports.Inputs, n.resetCh, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
-		outputsCh, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
-		outputsStoppedCh = outputs.SyncSender(n.name, outputsCh, doneOutputsCh, nodeWg, n.messenger, log.Logger)
-	} else {
-		// Start the core components in asynchronous mode
-		inputsCh, inputsRcvStoppedCh = inputs.AsyncReceiver(n.config.Ports.Inputs, n.resetCh, doneInputsRcvCh, nodeWg, n.messenger, log.Logger)
-		outputsCh, processorStoppedCh = processor.StartProcessor(n.procFun, n.config.Ports.Outputs, doneProcessorCh, nodeWg, inputsCh, log.Logger)
-		outputsStoppedCh = outputs.AsyncSender(n.name, outputsCh, doneOutputsCh, nodeWg, n.messenger, log.Logger)
-	}
+	log.Logger.Infof("Start '%s' actor node", n.config.Name)
 
 	// Start waiting for the shutdown signal
-	nodeWg.Add(1)
+	n.wg.Add(1)
 	go func() {
-		logger.Infof("Node started.")
-		defer logger.Infof("Node stopped.")
-		defer nodeWg.Done()
+		log.Logger.Infof("Node started.")
+		defer log.Logger.Infof("Node stopped.")
+		defer n.wg.Done()
 
 		<-n.doneCh
-		logger.Infof("Node is shutting down")
+		log.Logger.Infof("Node is shutting down")
 
 		// Stop status
-		close(doneStatusCh)
-		<-statusStoppedCh
+		close(n.doneStatusCh)
+		<-n.statusStoppedCh
 
 		// The components of the processing pipeline must be shut down in reverse order
 		// otherwise the channel close might cause problems
 
 		// Stop outputs
-		close(doneOutputsCh)
-		<-outputsStoppedCh
+		close(n.doneOutputsCh)
+		<-n.outputsStoppedCh
 
 		// Stop processor
-		close(doneProcessorCh)
-		<-processorStoppedCh
+		close(n.doneProcessorCh)
+		<-n.processorStoppedCh
 
 		// Stop inputs receiver
-		close(doneInputsRcvCh)
-		<-inputsRcvStoppedCh
+		close(n.doneInputsRcvCh)
+		<-n.inputsRcvStoppedCh
 
 		// Close the RESET mechanism
 		close(n.resetCh)
@@ -123,6 +130,11 @@ func (n Node) Start(nodeWg *sync.WaitGroup) {
 	n.Reset()
 }
 
+// Wait waits until the internal components of the Node terminates
+func (n Node) Wait() {
+	n.wg.Wait()
+}
+
 // Reset triggers the RESET process in the components of the Node
 func (n Node) Reset() {
 	n.resetCh <- true
@@ -131,4 +143,14 @@ func (n Node) Reset() {
 // Shutdown stops the Node process
 func (n Node) Shutdown() {
 	close(n.doneCh)
+}
+
+// Next Injects the `inputs` messages into the inputs channel, like it were received by the input ports.
+func (n Node) Next(inputs io.Inputs) {
+	log.Logger.Infof("Node.Next() is called\n")
+	n.inputsCh <- inputs
+}
+
+func (n Node) NewInputs() io.Inputs {
+	return io.NewInputs(n.config.Ports.Inputs)
 }

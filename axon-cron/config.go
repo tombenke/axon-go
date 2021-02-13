@@ -27,9 +27,11 @@ type Config struct {
 	// PrintConfig if true, then prints the resulting configuration to the console
 	PrintConfig bool `yaml:"printConfig"`
 
-	// TODO: Add the additional config parameters of the applications
 	// CronDef is the settings for the cron-job
 	CronDef string `yaml:"cronDef"`
+
+	// The precision of the time value: ns, us, ms, s
+	Precision string `yaml:"precision"`
 }
 
 // YAML converts the content of the Config structure to YAML format
@@ -101,8 +103,8 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.BoolVar(&cfg.PrintConfig, "p", false, "Print configuration parameters")
 	fs.BoolVar(&cfg.PrintConfig, "print-config", false, "Print configuration parameters")
 
-	//TODO Add additional CLI flags if needed here
 	fs.StringVar(&cfg.CronDef, "cron", cfg.CronDef, "Cron definition")
+	fs.StringVar(&cfg.Precision, "precision", "ns", "The precision of time value: ns, us, ms, s")
 
 	return fs
 }

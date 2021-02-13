@@ -77,6 +77,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 		},
 		PrintConfig: false,
 		CronDef:     "@every 20s",
+		Precision:   "ms",
 	}
 
 	config, err := readConfigFromFile(defaultConfig, "./config.yml")

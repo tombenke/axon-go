@@ -48,10 +48,9 @@ func TestNodeStartStop(t *testing.T) {
 	log.Logger.Infof("\nTestNodeStartStop ==========")
 	n := node.NewNode(makeNodeTestConfig(), ProcessorFun)
 	assert.NotNil(t, n)
-	nwg := sync.WaitGroup{}
-	n.Start(&nwg)
+	n.Start()
 	n.Shutdown()
-	nwg.Wait()
+	n.Wait()
 }
 
 func TestNodeStatus(t *testing.T) {
@@ -59,11 +58,10 @@ func TestNodeStatus(t *testing.T) {
 	// Create and start Node to test
 	n := node.NewNode(makeNodeTestConfig(), ProcessorFun)
 	assert.NotNil(t, n)
-	wg := sync.WaitGroup{}
-	n.Start(&wg)
+	n.Start()
 
 	runStatusTest(t, n)
-	wg.Wait()
+	n.Wait()
 }
 
 func runStatusTest(t *testing.T, n node.Node) {

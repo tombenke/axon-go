@@ -1,4 +1,5 @@
 cronDef: "@every 20s"
+precision: ms
 node:
   name: axon-cron
   logLevel: debug

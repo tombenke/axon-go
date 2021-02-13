@@ -84,15 +84,14 @@ func (a Application) Start(appWg *sync.WaitGroup) {
 	// TODO
 
 	// Start the node
-	nodeWg := sync.WaitGroup{}
-	go a.Node.Start(&nodeWg)
+	go a.Node.Start()
 
 	go func() {
 		// Wait until the actor will be shut down
 		<-a.done
 		log.Logger.Infof("%s is shutting down", actorName)
 		a.Node.Shutdown()
-		nodeWg.Wait()
+		a.Node.Wait()
 		appWg.Done()
 	}()
 }
