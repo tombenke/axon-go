@@ -63,9 +63,7 @@ func (inputs Inputs) FindByName(name string) (*In, bool) {
 func (inputs *Inputs) ExtendWith(ext Inputs) {
 	for e := range ext {
 		if _, found := inputs.FindByName(ext[e].Name); !found {
-			fmt.Println("before", *inputs)
 			*inputs = append(*inputs, ext[e])
-			fmt.Println("after", *inputs)
 		}
 	}
 }
@@ -75,9 +73,7 @@ func (inputs *Inputs) ExtendWith(ext Inputs) {
 func (inputs Inputs) ModifyWith(mod Inputs) {
 	for m := range mod {
 		if i, found := inputs.FindByName(mod[m].Name); found {
-			fmt.Println("before", inputs)
 			i.ModifyWith(mod[m])
-			fmt.Println("after", inputs)
 		}
 	}
 }

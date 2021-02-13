@@ -189,6 +189,7 @@ func mergeConfigs(builtInConfigContent Config, cliConfigContent Config) Config {
 	resultingConfig.ShowHelp = cliConfigContent.ShowHelp
 	resultingConfig.PrintConfig = cliConfigContent.PrintConfig
 	resultingConfig.CronDef = cliConfigContent.CronDef
+	resultingConfig.Precision = cliConfigContent.Precision
 
 	return resultingConfig
 }

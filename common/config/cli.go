@@ -37,8 +37,8 @@ const (
 	messagingUserCredsEnvVar  = "MESSAGING_CREDENTIALS"
 	defaultMessagingUserCreds = ""
 
-	inputsHelp  = "Input. Format: [<channel>]:<name>:[<default-value>]"
-	outputsHelp = "Output. Format: <name>:[<channel-name>]"
+	inputsHelp  = "Input. Format: <name>[|<channel>[|<type>|<representation>|<default>]]"
+	outputsHelp = "Output. Format: <name>[|<channel>[|<type>|<representation>]]"
 )
 
 // GetDefaultFlagSet returns with the default values of the generic configuration parameters
