@@ -32,7 +32,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 			},
 			Name:           "axon-cron",
 			Type:           "untyped",
-			ConfigFileName: "config.yml",
+			ConfigFileName: defaultConfigFileName,
 			LogLevel:       "debug",
 			LogFormat:      "json",
 			Ports: config.Ports{
@@ -66,8 +66,8 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 			},
 		},
 		PrintConfig: false,
-		CronDef:     "@every 20s",
-		Precision:   "ms",
+		CronDef:     defaultCronDef,
+		Precision:   defaultPrecision,
 	}
 
 	config, err := readConfigFromFile(defaultConfig, "./config.yml")

@@ -9,6 +9,7 @@ const (
 	actorName             = "axon-cron"
 	defaultConfigFileName = "config.yml"
 	defaultCronDef        = "@every 10s"
+	defaultPrecision      = "ms"
 )
 
 // Config holds the configuration parameters of the actor node application

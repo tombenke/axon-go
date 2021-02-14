@@ -1,4 +1,4 @@
-cronDef: "@every 20s"
+cronDef: "@every 10s"
 precision: ms
 node:
   name: axon-cron

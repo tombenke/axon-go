@@ -8,6 +8,7 @@ import (
 const (
 	actorName             = "axon-function-js"
 	defaultConfigFileName = "config.yml"
+	defaultScriptFileName = "function.js"
 )
 
 // Config holds the configuration parameters of the actor node application
@@ -52,7 +53,8 @@ func builtInConfig() Config {
 	node.AddOutputPort("output", "base/Any", "application/json", "axon-function-js.output")
 
 	return Config{
-		Node: node,
+		Node:       node,
+		ScriptFile: defaultScriptFileName,
 	}
 }
 

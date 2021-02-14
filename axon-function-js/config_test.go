@@ -25,7 +25,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 		PrintConfig: false,
 	}
 	expectedConfig := Config{
-		ScriptFile: "function.js",
+		ScriptFile: defaultScriptFileName,
 		Node: config.Node{
 			Messenger: messenger.Config{
 				Urls:      "localhost:4222",
