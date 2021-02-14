@@ -1,0 +1,28 @@
+scriptFile: function.js
+node:
+  name: axon-function-js
+  logLevel: debug
+  logFormat: json
+  configFileName: config.yml
+  ports:
+    configure:
+      extend: false # Can NOT add new I/O port
+      modify: true # Can configure the existing I/O port parameters
+    inputs:
+      - name: input
+        type: base/Any
+        representation: application/json
+        channel: axon-function-js.input
+    outputs:
+      - name: output
+        type: base/Any
+        representation: application/json
+        channel: axon-function-js.output
+  orchestration:
+    presence: true # Use the presence channels, must be `true` if `synchronization` is enabled
+    synchronization: false # The processing and message passing is NOT synchronized by the orchestrator
+    statusRequest: status-request
+    statusReport: status-report
+  messenger:
+    urls: "localhost:4222"
+    credentials: ""

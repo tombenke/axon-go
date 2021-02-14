@@ -141,7 +141,7 @@ func (n Node) Wait() {
 
 // Reset triggers the RESET process in the components of the Node
 func (n Node) Reset() {
-	n.resetCh <- true
+	//n.resetCh <- true
 }
 
 // Shutdown stops the Node process

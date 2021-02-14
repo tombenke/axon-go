@@ -36,18 +36,20 @@ func getProcessorFun(config Config) func(ctx processor.Context) error {
 			fallthrough
 		case "yml":
 			msgStr, err = yaml.Marshal(msg)
+			fmt.Printf("---\n%s", msgStr)
 		case "json":
 			msgStr, err = json.Marshal(msg)
+			fmt.Printf("%s\n", msgStr)
 		case "json-indent":
 			fallthrough
 		default:
 			msgStr, err = json.MarshalIndent(msg, "", "  ")
+			fmt.Printf("\n%s\n", msgStr)
 		}
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("\n%s\n", msgStr)
 		return nil
 	}
 }

@@ -1,8 +1,6 @@
 package config
 
-import (
-	"fmt"
-)
+import ()
 
 const (
 	// DefaultType is the default message-type for IO ports
@@ -119,9 +117,7 @@ func (outputs Outputs) FindByName(name string) (*Out, bool) {
 func (outputs *Outputs) ExtendWith(ext Outputs) {
 	for e := range ext {
 		if _, found := outputs.FindByName(ext[e].Name); !found {
-			fmt.Println("before", *outputs)
 			*outputs = append(*outputs, ext[e])
-			fmt.Println("after", *outputs)
 		}
 	}
 }
@@ -131,9 +127,7 @@ func (outputs *Outputs) ExtendWith(ext Outputs) {
 func (outputs Outputs) ModifyWith(mod Outputs) {
 	for m := range mod {
 		if o, found := outputs.FindByName(mod[m].Name); found {
-			fmt.Println("before", outputs)
 			o.ModifyWith(mod[m])
-			fmt.Println("after", outputs)
 		}
 	}
 }

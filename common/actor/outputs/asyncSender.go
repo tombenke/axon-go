@@ -42,13 +42,17 @@ func AsyncSender(actorName string, outputsCh chan io.Outputs, doneCh chan bool, 
 
 func asyncSendOutputs(actorName string, outputs io.Outputs, m messenger.Messenger, logger *logrus.Logger) {
 	for o := range outputs {
+		message := outputs[o].Message
 		channel := outputs[o].Channel
 		representation := outputs[o].Representation
-		message := outputs[o].Message
 		messageType := outputs[o].Type
-		logger.Debugf("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format\n", messageType, o, channel, representation)
-		if err := m.Publish(channel, message.Encode(representation)); err != nil {
-			panic(err)
+		if message != nil {
+			logger.Debugf("Sender sends '%v' type message of '%s' output port to '%s' channel in '%s' format", messageType, o, channel, representation)
+			if err := m.Publish(channel, message.Encode(representation)); err != nil {
+				panic(err)
+			}
+		} else {
+			logger.Errorf("Sender wants to send '%v' type message of '%s' output port to '%s' channel in '%s' format but message is nil", messageType, o, channel, representation)
 		}
 	}
 }
