@@ -22,8 +22,8 @@ var testCases at.TestCases = at.TestCases{
 
 func TestProcessorFun(t *testing.T) {
 	for _, tc := range testCases {
-		config := Config{}
-		context := processor.SetupContext(tc, inputsCfg, outputsCfg)
+		config := builtInConfig()
+		context := processor.SetupContext(tc, config.Node.Ports.Inputs, config.Node.Ports.Outputs)
 		err := getProcessorFun(config)(context)
 		assert.Nil(t, err)
 	}
