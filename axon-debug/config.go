@@ -2,15 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	config "github.com/tombenke/axon-go/common/config"
-	"github.com/tombenke/axon-go/common/log"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"os"
 )
 
 const (
+	actorName             = "axon-debug"
 	defaultConfigFileName = "config.yml"
 )
 
@@ -31,70 +27,6 @@ type Config struct {
 	DebugFormat string `yaml:"debugFormat"`
 }
 
-// YAML converts the content of the Config structure to YAML format
-func (c Config) YAML() ([]byte, error) {
-	return yaml.Marshal(&c)
-}
-
-// GetConfig returns with the configuration parameters of the application
-// It reads and parses the CLI parameters, loads the external configuration files if needed,
-// then merges these parameters. Returns with the resulting configuration set.
-func GetConfig(appName string, builtInConfigContent Config, args []string) Config {
-	defaultConfig := Config{
-		Node:        config.GetDefaultNode(),
-		PrintConfig: false,
-	}
-
-	// Get config file name from CLI parameter, or use the default one
-	configFileName := getConfigFileName(appName, defaultConfig, args)
-
-	// Read the configuration from config file, if it is found
-	configFileContent, _ := readConfigFromFile(defaultConfig, configFileName)
-
-	// Parse the CLI config parameters on top of the config-file content
-	cliConfigContent := parseCliArgs(configFileContent, appName, args)
-
-	// Merges the configurations into a resulting one
-	resultingConfig := mergeConfigs(builtInConfigContent, cliConfigContent)
-
-	return resultingConfig
-}
-
-// getDefaultConfigFileName returns with the path to the config file
-func getConfigFileName(appName string, defaultConfig Config, args []string) string {
-
-	fs := GetAppFlagSet(appName, &defaultConfig)
-	err := fs.Parse(args)
-	if err != nil {
-		log.Logger.Warningf(err.Error())
-	}
-
-	return defaultConfig.Node.ConfigFileName
-}
-
-// parseCliArgs parses the command line arguments and returns with the results as a structure
-func parseCliArgs(configFileContent Config, appName string, args []string) Config {
-
-	appConfig := configFileContent
-
-	fs := GetAppFlagSet(appName, &appConfig)
-
-	// Add usage printer function
-	fs.Usage = usage(fs, appName)
-
-	err := fs.Parse(args)
-	if err != nil {
-		log.Logger.Warningf(err.Error())
-	}
-
-	// Handle the -h flag
-	if appConfig.ShowHelp {
-		showUsageAndExit(fs, appName, 0)
-	}
-
-	return appConfig
-}
-
 // GetAppFlagSet returns with the flag-set of the application to parse the CLI parameters
 func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs := config.GetDefaultFlagSet(appName, &cfg.Node)
@@ -110,54 +42,17 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	return fs
 }
 
-// Show usage info then exit
-func showUsageAndExit(fs *flag.FlagSet, appName string, exitcode int) {
-	usage(fs, appName)()
-	os.Exit(exitcode)
-}
+// builtInConfig returns with the built-in configuration of the application
+func builtInConfig() Config {
+	// Create the new, empty node with its name and configurability parameters
+	node := config.NewNode(actorName, actorName, false, true)
 
-// Print usage information
-func usage(fs *flag.FlagSet, appName string) func() {
-	return func() {
-		fmt.Println("Usage: " + appName + " -h\n")
-		fs.PrintDefaults()
+	// Add I/O ports. The actor has no outputs.
+	node.AddInputPort("input", "base/Any", "application/json", "axon-debug.input", "")
+
+	return Config{
+		Node: node,
 	}
-}
-
-// printResultingConfig prints out the actual configuration of the application to the console
-func printResultingConfig(config Config) {
-	configYAML, _ := config.YAML()
-	fmt.Printf("Configuration:\n%s\n", configYAML)
-}
-
-// readConfigFromFile reads the config parameters from a file on top of the `defaultConfig`
-//
-// `defaultConfig` properties will provide the missing values, and the properties from the
-// config file will overwrite the default values if they defined.
-func readConfigFromFile(defaultConfig Config, path string) (Config, error) {
-	c := defaultConfig
-	var err error
-	content, err := LoadFile(path)
-	if err == nil {
-		err = yaml.Unmarshal([]byte(content), &c)
-	}
-	// TODO: Write warning about config not found
-	return c, err
-}
-
-// LoadFile loads []byte content from a file
-func LoadFile(path string) ([]byte, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return []byte(""), err
-	}
-	defer file.Close()
-	content, err := ioutil.ReadAll(file)
-	if err != nil {
-		return []byte(""), err
-	}
-
-	return content, nil
 }
 
 // mergeConfigs returns with the resulting config parameters set after merging them

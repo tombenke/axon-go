@@ -2,16 +2,13 @@ package main
 
 import (
 	"github.com/tombenke/axon-go/common/actor/node"
-	"github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/gsd"
 	"github.com/tombenke/axon-go/common/log"
 	"os"
 	"sync"
 )
 
-const (
-	actorName = "axon-debug"
-)
+const ()
 
 // Application struct represents the actor-node application
 type Application struct {
@@ -37,7 +34,7 @@ func Run(args []string) {
 func NewApplication(args []string) Application {
 	app := Application{
 		// Merge hard-coded configuration with CLI and file config if there is any
-		config: GetConfig(actorName, getBuiltInConfig(), args),
+		config: GetConfig(actorName, args),
 
 		// Create the channel to notify if the application must shut down
 		done: make(chan bool),
@@ -53,19 +50,6 @@ func NewApplication(args []string) Application {
 	app.Node = node.NewNode(app.config.Node, getProcessorFun(app.config))
 
 	return app
-}
-
-// getBuiltInConfig returns with the built-in configuration of the application
-func getBuiltInConfig() Config {
-	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, false, true)
-
-	// Add I/O ports. The actor has no outputs.
-	node.AddInputPort("input", "base/Any", "application/json", "axon-debug.input", "")
-
-	return Config{
-		Node: node,
-	}
 }
 
 // Start initializes and starts new actor-node application according to its configuration
