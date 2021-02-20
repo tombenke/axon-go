@@ -56,6 +56,11 @@ tasks:
       - env GOOS=windows GOARCH=amd64 go build -o {{.DIST}}/windows-amd64/{{.APPNAME}}.exe ./...
       - env GOOS=darwin GOARCH=amd64 go build -o {{.DIST}}/darwin-amd64/{{.APPNAME}} ./...
 
+  install:
+    desc: Install the binary on local machine
+    cmds:
+      - go install
+
   clean:
     desc: Clean temporary files and folders
     cmds:

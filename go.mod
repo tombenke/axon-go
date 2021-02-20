@@ -3,6 +3,7 @@ module github.com/tombenke/axon-go
 go 1.13
 
 require (
+	github.com/ddollar/forego v0.16.1 // indirect
 	github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d
 	github.com/nats-io/nats-streaming-server v0.19.0 // indirect
 	github.com/nats-io/nats.go v1.10.0

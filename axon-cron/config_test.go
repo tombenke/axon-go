@@ -30,7 +30,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 				Urls:      "localhost:4222",
 				UserCreds: "",
 			},
-			Name:           "axon-cron",
+			Name:           actorName,
 			Type:           "untyped",
 			ConfigFileName: defaultConfigFileName,
 			LogLevel:       "debug",
@@ -44,10 +44,10 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 				Outputs: config.Outputs{
 					config.Out{
 						IO: config.IO{
-							Name:           "cron",
+							Name:           "output",
 							Type:           "base/Any",
 							Representation: "application/json",
-							Channel:        "axon.cron",
+							Channel:        "axon-cron.output",
 						},
 					},
 				},

@@ -36,7 +36,7 @@ func getProcessorFun(config Config) func(ctx processor.Context) error {
 		)
 
 		// Set the output port value
-		ctx.SetOutputMessage("cron", cronMsg)
+		ctx.SetOutputMessage("output", cronMsg)
 		return nil
 	}
 }

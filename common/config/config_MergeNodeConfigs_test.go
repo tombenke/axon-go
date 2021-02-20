@@ -69,24 +69,24 @@ var cliExtOutputs = Outputs{
 	}},
 }
 
-func makeNode(nodeName string, nodeType string, extend bool, modify bool, inputs Inputs, outputs Outputs) Node {
-	node := NewNode(nodeName, nodeType, extend, modify)
+func makeNode(nodeName string, nodeType string, extend bool, modify bool, presence bool, sync bool, inputs Inputs, outputs Outputs) Node {
+	node := NewNode(nodeName, nodeType, extend, modify, presence, sync)
 	node.Ports.Inputs = inputs
 	node.Ports.Outputs = outputs
 	return node
 }
 
 func TestMergeNodeConfigs_noExt_noMod_noAdd(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", false, false, hcInputs, hcOutputs)
-	cli := makeNode("test-node", "test-node-type", false, false, Inputs{}, Outputs{})
+	hardCoded := makeNode("test-node", "test-node-type", false, false, true, true, hcInputs, hcOutputs)
+	cli := makeNode("test-node", "test-node-type", false, false, true, true, Inputs{}, Outputs{})
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.Nil(t, err)
 	assert.Equal(t, hardCoded, resulting)
 }
 
 func TestMergeNodeConfigs_noExt_noMod_Add(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", false, false, Inputs{}, Outputs{})
-	cli := makeNode("test-node", "test-node-type", false, false, hcInputs, hcOutputs)
+	hardCoded := makeNode("test-node", "test-node-type", false, false, true, true, Inputs{}, Outputs{})
+	cli := makeNode("test-node", "test-node-type", false, false, true, true, hcInputs, hcOutputs)
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.NotNil(t, err)
 	assert.Equal(t, "port extension is disabled", err.Error())
@@ -94,32 +94,32 @@ func TestMergeNodeConfigs_noExt_noMod_Add(t *testing.T) {
 }
 
 func TestMergeNodeConfigs_Ext_Mod_noAdd(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", true, true, hcInputs, hcOutputs)
-	cli := makeNode("test-node", "test-node-type", true, true, Inputs{}, Outputs{})
+	hardCoded := makeNode("test-node", "test-node-type", true, true, true, true, hcInputs, hcOutputs)
+	cli := makeNode("test-node", "test-node-type", true, true, true, true, Inputs{}, Outputs{})
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.Nil(t, err)
 	assert.Equal(t, hardCoded, resulting)
 }
 
 func TestMergeNodeConfigs_Ext_Mod_Add(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", true, true, Inputs{}, Outputs{})
-	cli := makeNode("test-node", "test-node-type", true, true, hcInputs, hcOutputs)
+	hardCoded := makeNode("test-node", "test-node-type", true, true, true, true, Inputs{}, Outputs{})
+	cli := makeNode("test-node", "test-node-type", true, true, true, true, hcInputs, hcOutputs)
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.Nil(t, err)
 	assert.Equal(t, cli, resulting)
 }
 
 func TestMergeNodeConfigs_Ext_Mod_Add2(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", true, true, Inputs{}, Outputs{})
-	cli := makeNode("test-node", "test-node-type", true, true, Inputs{}, cliExtOutputs)
+	hardCoded := makeNode("test-node", "test-node-type", true, true, true, true, Inputs{}, Outputs{})
+	cli := makeNode("test-node", "test-node-type", true, true, true, true, Inputs{}, cliExtOutputs)
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.Nil(t, err)
 	assert.Equal(t, cli, resulting)
 }
 
 func TestMergeNodeConfigs_noExt_noMod_Mod(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", false, false, hcInputs, hcOutputs)
-	cli := makeNode("test-node", "test-node-type", false, false, cliModInputs, cliModOutputs)
+	hardCoded := makeNode("test-node", "test-node-type", false, false, true, true, hcInputs, hcOutputs)
+	cli := makeNode("test-node", "test-node-type", false, false, true, true, cliModInputs, cliModOutputs)
 
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.NotNil(t, err)
@@ -128,8 +128,8 @@ func TestMergeNodeConfigs_noExt_noMod_Mod(t *testing.T) {
 }
 
 func TestMergeNodeConfigs_noExt_Mod_Mod(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", false, true, hcInputs, hcOutputs)
-	cli := makeNode("test-node", "test-node-type", false, true, cliModInputs, hcOutputs)
+	hardCoded := makeNode("test-node", "test-node-type", false, true, true, true, hcInputs, hcOutputs)
+	cli := makeNode("test-node", "test-node-type", false, true, true, true, cliModInputs, hcOutputs)
 
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.Nil(t, err)
@@ -137,8 +137,8 @@ func TestMergeNodeConfigs_noExt_Mod_Mod(t *testing.T) {
 }
 
 func TestMergeNodeConfigs_noExt_Mod_Mod2(t *testing.T) {
-	hardCoded := makeNode("test-node", "test-node-type", false, true, hcInputs, hcOutputs)
-	cli := makeNode("test-node", "test-node-type", false, true, hcInputs, cliModOutputs)
+	hardCoded := makeNode("test-node", "test-node-type", false, true, true, true, hcInputs, hcOutputs)
+	cli := makeNode("test-node", "test-node-type", false, true, true, true, hcInputs, cliModOutputs)
 
 	resulting, err := MergeNodeConfigs(hardCoded, cli)
 	assert.Nil(t, err)

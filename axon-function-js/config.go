@@ -11,6 +11,12 @@ const (
 	defaultScriptFileName = "function.js"
 )
 
+var defaultConfig = Config{
+	Node:        config.GetDefaultNode(),
+	PrintConfig: false,
+	ScriptFile:  defaultScriptFileName,
+}
+
 // Config holds the configuration parameters of the actor node application
 // It must inherit the configuration of the core `Node` object,
 // and may contain other additional application-specific parameters.
@@ -45,8 +51,9 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 
 // builtInConfig returns with the built-in configuration of the application
 func builtInConfig() Config {
-	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, false, true)
+	// Create the new, empty node with its name and configurability parameters:
+	// nodeName, nodeType, extend, modify, presence, sync
+	node := config.NewNode(actorName, actorName, true, true, true, false)
 
 	// Add I/O ports. The actor has no outputs.
 	node.AddInputPort("input", "base/Any", "application/json", "axon-function-js.input", "")

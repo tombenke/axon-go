@@ -37,8 +37,9 @@ func loadScript(scriptFile string) string {
 func (jsvm *JSVM) Run(ctx processor.Context) error {
 	// Set the context
 	if errVmSet := jsvm.vm.Set("GetInputMessage", func(call otto.FunctionCall) otto.Value {
-		fmt.Printf("Called GetInputMessage(%s)\n", call.Argument(0).String())
-		inputMsg := ctx.GetInputMessage("input").(*base.Any)
+		inputName := call.Argument(0).String()
+		log.Logger.Debugf("Called GetInputMessage(%s)\n", inputName)
+		inputMsg := ctx.GetInputMessage(inputName).(*base.Any)
 		inputMsgJSON, errJSON := json.Marshal(inputMsg)
 		if errJSON != nil {
 			panic(fmt.Sprintf("Fatal error in marshalling input message: %s", errJSON.Error()))
@@ -65,7 +66,7 @@ func (jsvm *JSVM) Run(ctx processor.Context) error {
 		if errExport != nil {
 			panic(fmt.Sprintf("Fatal error in exporting '%s' output message: %s", output, errExport.Error()))
 		}
-		fmt.Printf("Called SetOutputMessage(%s, %v)\n", call.Argument(0).String(), outputMsg)
+		log.Logger.Debugf("Called SetOutputMessage(%s, %v)\n", call.Argument(0).String(), outputMsg)
 
 		ctx.SetOutputMessage(output, base.NewAnyMessage(outputMsg.(map[string]interface{})))
 		return otto.Value{}

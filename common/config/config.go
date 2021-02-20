@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"github.com/tombenke/axon-go/common/messenger"
 )
 
@@ -153,12 +152,14 @@ func GetDefaultNode() Node {
 
 // NewNode returns with a new Node configuration object with the given name and type.
 // It also sets if the I/O ports can be extended and/or modified.
-func NewNode(nodeName string, nodeType string, extend bool, modify bool) Node {
+func NewNode(nodeName string, nodeType string, extend bool, modify bool, presence bool, sync bool) Node {
 	newNode := GetDefaultNode()
 	newNode.Name = nodeName
 	newNode.Type = nodeType
 	newNode.Ports.Configure.Extend = extend
 	newNode.Ports.Configure.Modify = modify
+	newNode.Orchestration.Presence = presence
+	newNode.Orchestration.Synchronization = sync
 	return newNode
 }
 
@@ -184,6 +185,8 @@ func MergeNodeConfigs(hardCoded Node, cli Node) (Node, error) {
 	resulting.LogFormat = cli.LogFormat
 	resulting.Messenger = cli.Messenger
 	resulting.Orchestration = cli.Orchestration
+	resulting.Orchestration.Presence = hardCoded.Orchestration.Presence
+	resulting.Orchestration.Synchronization = hardCoded.Orchestration.Synchronization
 
 	if wouldExtend(resulting, cli) {
 		if resulting.Ports.Configure.Extend {
@@ -221,7 +224,6 @@ func wouldExtend(dst Node, src Node) bool {
 
 	// Check output ports
 	for s := range src.Ports.Outputs {
-		fmt.Println("s:", src.Ports.Outputs[s].Name)
 		if _, found := dst.Ports.Outputs.FindByName(src.Ports.Outputs[s].Name); !found {
 
 			// src has a port that dst does not, so it is an extension

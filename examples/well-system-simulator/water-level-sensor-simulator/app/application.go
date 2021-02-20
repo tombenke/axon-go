@@ -64,7 +64,8 @@ func NewApplication(args []string) Application {
 // makeHardCodedConfig returns with the built-in configuration of the application
 func makeHardCodedConfig() Config {
 	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, false, true)
+	// nodeName, nodeType, extend, modify, presence, sync
+	node := config.NewNode(actorName, actorName, false, true, true, true)
 
 	// Add I/O ports
 	node.AddInputPort("reference-water-level", "base/Float64", "application/json", "", `{ "Body": { "Data": 0.75 } }`)

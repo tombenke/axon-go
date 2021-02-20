@@ -106,7 +106,7 @@ func runStatusTest(t *testing.T, n node.Node) {
 // makeNodeTestConfig returns with a built-in configuration for the node test
 func makeNodeTestConfig() config.Node {
 	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, false, true)
+	node := config.NewNode(actorName, actorName, false, true, true, true)
 
 	// Add I/O ports
 	node.AddInputPort("reference-water-level", "base/Float64", "application/json", "", `{ "Body": { "Data": 0.75 } }`)

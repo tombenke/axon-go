@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	config "github.com/tombenke/axon-go/common/config"
 	"github.com/tombenke/axon-go/common/file"
 	"github.com/tombenke/axon-go/common/log"
 	"gopkg.in/yaml.v2"
@@ -19,16 +18,15 @@ func (c Config) YAML() ([]byte, error) {
 // It reads and parses the CLI parameters, loads the external configuration files if needed,
 // then merges these parameters. Returns with the resulting configuration set.
 func GetConfig(appName string, args []string) Config {
-	defaultConfig := Config{
-		Node:        config.GetDefaultNode(),
-		PrintConfig: false,
-	}
 
 	// Get config file name from CLI parameter, or use the default one
 	configFileName := getConfigFileName(appName, defaultConfig, args)
 
 	// Read the configuration from config file, if it is found
-	configFileContent, _ := readConfigFromFile(defaultConfig, configFileName)
+	configFileContent, errLoadConfigfile := readConfigFromFile(defaultConfig, configFileName)
+	if errLoadConfigfile != nil {
+		log.Logger.Warning(errLoadConfigfile)
+	}
 
 	// Parse the CLI config parameters on top of the config-file content
 	cliConfigContent := parseCliArgs(configFileContent, appName, args)

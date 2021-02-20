@@ -1,14 +1,14 @@
 # Execute: forego start -f examples/th-sensor/Procfile -e examples/th-sensor/.env
 
 # Write the measurements coming from the `<axon-id>.log` subject, into the InfluxDB `home` database.
-influxdb-writer: axon-influxdb-writer -u $NATS_URL -s "${AXON_ID}.sensors" -db home
+#influxdb-writer: axon-influxdb-writer -u $NATS_URL -s "${AXON_ID}.sensors" -db home
 
 # Observe the `<axon-id>.measure` subject
-debug: axon-debug -u $NATS_URL -s "${AXON_ID}.sensors"
+debug: axon-debug -u $NATS_URL -in "input|${AXON_ID}.sensors"
 
 # Simulate the sensor
-sensor-simulator-42: axon-function-js -u $NATS_URL -s "${AXON_ID}.measure" -t "${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptparams '{"device":"424242-424242"}'
-sensor-simulator-21: axon-function-js -u $NATS_URL -s "${AXON_ID}.measure" -t "${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptparams '{"device":"212121-212121"}'
+sensor_simulator_42: axon-function-js -n simu42 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "device||base/Any|application/json|{\"id\":\"greenhouse-42\"}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
+sensor_simulator_21: axon-function-js -n simu12 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "device||base/Any|application/json|{\"id\":\"greenhouse-12\"}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
 
 # Send a "measure" type message incl. timestamp to the `<axon-id>.measure` subject in every 10 seconds with nanoseconds precision
-cron: axon-cron -u $NATS_URL -s "${AXON_ID}.measure" -t "measure" -cron "@every 10s" -p ns
+cron: axon-cron -u $NATS_URL -out "output|${AXON_ID}.measure" -cron "@every 1s" -p ns

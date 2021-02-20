@@ -60,6 +60,15 @@ tasks:
       - cd axon-function-js && task build
       - cd axon-influxdb-writer && task build
 
+  install:
+    desc: Install the binaries to the local machine
+    cmds:
+      - cd axon-cron && task install
+      - cd axon-debug && task install
+      - cd axon-file-reader && task install
+      - cd axon-function-js && task install
+      - cd axon-influxdb-writer && task install
+
   clean:
     desc: Clean temporary files and folders
     cmds:

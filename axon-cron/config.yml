@@ -11,10 +11,10 @@ node:
       modify: true # Can configure the existing I/O port parameters
     inputs: []
     outputs:
-      - name: cron
+      - name: output
         type: base/Any
         representation: application/json
-        channel: axon.cron
+        channel: axon-cron.output
   orchestration:
     presence: true # Use the presence channels, must be `true` if `synchronization` is enabled
     synchronization: false # The processing and message passing is NOT synchronized by the orchestrator

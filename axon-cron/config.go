@@ -12,6 +12,13 @@ const (
 	defaultPrecision      = "ms"
 )
 
+var defaultConfig = Config{
+	Node:        config.GetDefaultNode(),
+	PrintConfig: false,
+	CronDef:     defaultCronDef,
+	Precision:   defaultPrecision,
+}
+
 // Config holds the configuration parameters of the actor node application
 // It must inherit the configuration of the core `Node` object,
 // and may contain other additional application-specific parameters.
@@ -43,7 +50,7 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.BoolVar(&cfg.PrintConfig, "print-config", false, "Print configuration parameters")
 
 	fs.StringVar(&cfg.CronDef, "cron", cfg.CronDef, "Cron definition")
-	fs.StringVar(&cfg.Precision, "precision", "ns", "The precision of time value: ns, us, ms, s")
+	fs.StringVar(&cfg.Precision, "precision", cfg.Precision, "The precision of time value: ns, us, ms, s")
 
 	return fs
 }
@@ -51,10 +58,11 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 // builtInConfig returns with the built-in configuration of the application
 func builtInConfig() Config {
 	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, false, true)
+	// nodeName, nodeType, extend, modify, presence, sync
+	node := config.NewNode(actorName, actorName, false, true, true, false)
 
 	// Add I/O ports. The actor has no inputs.
-	node.AddOutputPort("cron", "base/Any", "application/json", "axon.cron")
+	node.AddOutputPort("output", "base/Any", "application/json", "axon-cron.output")
 
 	return Config{
 		Node:      node,

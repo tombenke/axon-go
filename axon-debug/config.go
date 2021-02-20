@@ -8,7 +8,14 @@ import (
 const (
 	actorName             = "axon-debug"
 	defaultConfigFileName = "config.yml"
+	defaultDebugFormat    = "json"
 )
+
+var defaultConfig = Config{
+	Node:        config.GetDefaultNode(),
+	PrintConfig: false,
+	DebugFormat: defaultDebugFormat,
+}
 
 // Config holds the configuration parameters of the actor node application
 // It must inherit the configuration of the core `Node` object,
@@ -37,7 +44,7 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.BoolVar(&cfg.PrintConfig, "p", false, "Print configuration parameters")
 	fs.BoolVar(&cfg.PrintConfig, "print-config", false, "Print configuration parameters")
 
-	fs.StringVar(&cfg.DebugFormat, "debug-format", "json-indent", "The printing format of the output. One of: json, json-indent, yaml, yml")
+	fs.StringVar(&cfg.DebugFormat, "debug-format", cfg.DebugFormat, "The printing format of the output. One of: json, json-indent, yaml, yml")
 
 	return fs
 }
@@ -45,13 +52,15 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 // builtInConfig returns with the built-in configuration of the application
 func builtInConfig() Config {
 	// Create the new, empty node with its name and configurability parameters
-	node := config.NewNode(actorName, actorName, false, true)
+	// nodeName, nodeType, extend, modify, presence, sync
+	node := config.NewNode(actorName, actorName, false, true, true, false)
 
 	// Add I/O ports. The actor has no outputs.
 	node.AddInputPort("input", "base/Any", "application/json", "axon-debug.input", "")
 
 	return Config{
-		Node: node,
+		Node:        node,
+		DebugFormat: defaultDebugFormat,
 	}
 }
 
