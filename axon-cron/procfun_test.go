@@ -12,11 +12,7 @@ import (
 var testCases at.TestCases = at.TestCases{
 	at.TestCase{
 		Outputs: at.TestCaseMsgs{
-			"output": base.NewAnyMessage(map[string]interface{}{
-				"time": int64(1612693423000521770),
-				"meta": map[string]interface{}{
-					"timePrecision": "ns",
-				}}),
+			"output": base.NewEmptyMessage(),
 		},
 	},
 }

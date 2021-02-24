@@ -8,7 +8,7 @@ import (
 const (
 	actorName             = "axon-cron"
 	defaultConfigFileName = "config.yml"
-	defaultCronDef        = "@every 10s"
+	defaultCronDef        = "@every 1s"
 	defaultPrecision      = "ms"
 )
 
@@ -62,7 +62,8 @@ func builtInConfig() Config {
 	node := config.NewNode(actorName, actorName, false, true, true, false)
 
 	// Add I/O ports. The actor has no inputs.
-	node.AddOutputPort("output", "base/Any", "application/json", "axon-cron.output")
+	//node.AddOutputPort("output", "base/Any", "application/json", "axon-cron.output")
+	node.AddOutputPort("output", "base/Empty", "application/json", "axon-cron.output")
 
 	return Config{
 		Node:      node,

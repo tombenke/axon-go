@@ -1,21 +1,16 @@
 input = GetInputMessage("input")
-// console.log("\ninput: ", input.time, input.meta.timePrecision)
+//console.log("\ninput: ", JSON.stringify(input))
 
-device = GetInputMessage("device")
-// console.log("\ndevice: ", JSON.stringify(device))
+max = GetInputMessage("max")
 
 // Create random values if it were measured
-temperature = 20. + Math.random() * 2
-humidity = 55. + Math.random() * 3
+temperature = Math.random() * max.value
 
 // Creates the output message object
 output = {
-    device: device.id,
-    time: input.time,
-    meta: input.meta,
-    body: {
-        humidity: humidity,
-        temperature: temperature
+    Header: input.Header,
+    Body: {
+        Data: temperature
     }
 }
 

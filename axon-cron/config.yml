@@ -1,4 +1,4 @@
-cronDef: "@every 10s"
+cronDef: "@every 1s"
 precision: ms
 node:
   name: axon-cron
@@ -12,7 +12,7 @@ node:
     inputs: []
     outputs:
       - name: output
-        type: base/Any
+        type: base/Empty
         representation: application/json
         channel: axon-cron.output
   orchestration:

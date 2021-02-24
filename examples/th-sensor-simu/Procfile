@@ -7,8 +7,8 @@
 debug: axon-debug -u $NATS_URL -in "input|${AXON_ID}.sensors"
 
 # Simulate the sensor
-sensor_simulator_42: axon-function-js -n simu42 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "device||base/Any|application/json|{\"id\":\"greenhouse-42\"}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
-sensor_simulator_21: axon-function-js -n simu12 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "device||base/Any|application/json|{\"id\":\"greenhouse-12\"}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
+sensor_simulator_42: axon-function-js -n simu42 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "max||base/Any|application/json|{\"value\":42}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
+sensor_simulator_21: axon-function-js -n simu12 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "max||base/Any|application/json|{\"value\":12}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
 
-# Send a "measure" type message incl. timestamp to the `<axon-id>.measure` subject in every 10 seconds with nanoseconds precision
+# Send a "measure" type message incl. timestamp to the `<axon-id>.measure` subject in every 1 seconds with nanoseconds precision
 cron: axon-cron -u $NATS_URL -out "output|${AXON_ID}.measure" -cron "@every 1s" -p ns

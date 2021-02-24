@@ -45,7 +45,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 					config.Out{
 						IO: config.IO{
 							Name:           "output",
-							Type:           "base/Any",
+							Type:           "base/Empty",
 							Representation: "application/json",
 							Channel:        "axon-cron.output",
 						},
