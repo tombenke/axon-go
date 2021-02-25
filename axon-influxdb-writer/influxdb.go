@@ -26,7 +26,7 @@ func NewInfluxDbConnection(cfg InfluxDbConfig) InfluxDb {
 }
 
 // WritePoint stores the given data point into the bucket of the time-series database
-func (i InfluxDb) WritePoint(data interface{}) error {
+func (i InfluxDb) WritePoint(data interface{}) {
 
 	log.Logger.Debugf("WritePoint: %v\n", data)
 
@@ -46,8 +46,6 @@ func (i InfluxDb) WritePoint(data interface{}) error {
 
 	// Force all unwritten data to be sent
 	i.writeAPI.Flush()
-
-	return nil
 }
 
 // Close closes the InfluxDb client

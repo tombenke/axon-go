@@ -29,5 +29,8 @@ func main() {
 
 	// Create the message to send
 	msg := NewMessage(*parameters.MessageType, *parameters.Precision, buf)
-	axon.SendMessage(nc, *parameters.Subject, msg)
+	err = axon.SendMessage(nc, *parameters.Subject, msg)
+	if err != nil {
+		panic(err)
+	}
 }
