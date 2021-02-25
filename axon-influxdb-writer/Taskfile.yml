@@ -7,6 +7,12 @@ vars:
   DIST: ../dist
 
 env:
+  INFLUXDB_USERNAME: admin
+  INFLUXDB_PASSWORD: axon_secret@@
+  INFLUXDB_ORG: axon
+  INFLUXDB_BUCKET: metrics
+  INFLUXDB_RETENTION: 1w
+  INFLUXDB_ADMIN_TOKEN: KMd17_5jXieiL9claBws_RjrLdmwUEuomdtj1sWNQFJ-FPsmF7WhheXtnUunGxOWXuWY2pbhNYsETYBfYtAJUg==
 
 tasks:
   default:
@@ -49,12 +55,12 @@ tasks:
   build:
     desc: Build the go binary.
     cmds:
-      - env GOOS=linux GOARCH=386 go build -o {{.DIST}}/linux-386/{{.APPNAME}} main.go cli.go
-      - env GOOS=linux GOARCH=amd64 go build -o {{.DIST}}/linux-amd64/{{.APPNAME}} main.go cli.go
-      - env GOOS=linux GOARCH=arm GOARM=5 go build -o {{.DIST}}/linux-arm5/{{.APPNAME}} main.go cli.go
-      - env GOOS=windows GOARCH=386 go build -o {{.DIST}}/windows-386/{{.APPNAME}}.exe main.go cli.go
-      - env GOOS=windows GOARCH=amd64 go build -o {{.DIST}}/windows-amd64/{{.APPNAME}}.exe main.go cli.go
-      - env GOOS=darwin GOARCH=amd64 go build -o {{.DIST}}/darwin-amd64/{{.APPNAME}} main.go cli.go
+      - env GOOS=linux GOARCH=386 go build -o {{.DIST}}/linux-386/{{.APPNAME}} ./...
+      - env GOOS=linux GOARCH=amd64 go build -o {{.DIST}}/linux-amd64/{{.APPNAME}} ./...
+      - env GOOS=linux GOARCH=arm GOARM=5 go build -o {{.DIST}}/linux-arm5/{{.APPNAME}} ./...
+      - env GOOS=windows GOARCH=386 go build -o {{.DIST}}/windows-386/{{.APPNAME}}.exe ./...
+      - env GOOS=windows GOARCH=amd64 go build -o {{.DIST}}/windows-amd64/{{.APPNAME}}.exe ./...
+      - env GOOS=darwin GOARCH=amd64 go build -o {{.DIST}}/darwin-amd64/{{.APPNAME}} ./...
 
   install:
     desc: Install the binary on local machine
@@ -71,3 +77,7 @@ tasks:
       - rm {{.DIST}}/windows-amd64/{{.APPNAME}}.exe
       - rm {{.DIST}}/darwin-amd64/{{.APPNAME}}
 
+  setup_influxdb:
+    desc: Setup InfluxDB
+    cmds:
+      - docker exec -it influxdb2 influx setup --username "${INFLUXDB_USERNAME}" --password "${INFLUXDB_PASSWORD}" --org "${INFLUXDB_ORG}" --bucket "${INFLUXDB_BUCKET}" --retention "${INFLUXDB_RETENTION}" --token "${INFLUXDB_ADMIN_TOKEN}" -f

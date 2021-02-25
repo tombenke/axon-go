@@ -5,6 +5,12 @@ version: "2"
 vars:
 
 env:
+  INFLUXDB_USERNAME: admin
+  INFLUXDB_PASSWORD: axon_secret@@
+  INFLUXDB_ORG: axon
+  INFLUXDB_BUCKET: metrics
+  INFLUXDB_RETENTION: 1w
+  INFLUXDB_ADMIN_TOKEN: KMd17_5jXieiL9claBws_RjrLdmwUEuomdtj1sWNQFJ-FPsmF7WhheXtnUunGxOWXuWY2pbhNYsETYBfYtAJUg==
 
 tasks:
   default:
@@ -78,3 +84,41 @@ tasks:
       - cd axon-function-js && task clean
       - cd axon-influxdb-writer && task clean
 
+  dc-up:
+    desc: Start OOM containers
+    cmds:
+      - docker-compose -f docker-compose-for-test.yml up
+      - sleep 10
+
+  dc-upd:
+    desc: Start OOM containers in the background
+    cmds:
+      - docker-compose -f docker-compose-for-test.yml up -d
+      - sleep 10
+      - task: setup_influxdb
+      - task:  dc-logsf
+
+  dc-stop:
+    desc: Stop OOM containers
+    cmds:
+      - docker-compose stop
+
+  dc-logs:
+    desc: Get all container logs
+    cmds:
+      - docker-compose -f docker-compose-for-test.yml logs
+
+  dc-logsf:
+    desc: Get all container logs and follow
+    cmds:
+      - docker-compose -f docker-compose-for-test.yml logs -f
+
+  dc-down:
+    desc: Clean up OOM containers
+    cmds:
+      - docker-compose -f docker-compose-for-test.yml down --volumes --remove-orphans
+
+  setup_influxdb:
+    desc: Setup InfluxDB
+    cmds:
+      - docker exec -it influxdb influx setup --username "${INFLUXDB_USERNAME}" --password "${INFLUXDB_PASSWORD}" --org "${INFLUXDB_ORG}" --bucket "${INFLUXDB_BUCKET}" --retention "${INFLUXDB_RETENTION}" --token "${INFLUXDB_ADMIN_TOKEN}" -f
