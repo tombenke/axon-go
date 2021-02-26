@@ -26,18 +26,18 @@ func NewInfluxDbConnection(cfg InfluxDbConfig) InfluxDb {
 }
 
 // WritePoint stores the given data point into the bucket of the time-series database
-func (i InfluxDb) WritePoint(data interface{}) {
+func (i InfluxDb) WritePoint(measurement string, fieldName string, data interface{}) {
 
 	log.Logger.Debugf("WritePoint: %v\n", data)
 
 	// create point
 	p := influxdb2.NewPoint(
-		i.config.Measurement,
+		measurement,
 		map[string]string{
-			"vendor": "AWS",
+			//"tagName": "tagValue",
 		},
 		map[string]interface{}{
-			"temperature": data,
+			fieldName: data,
 		},
 		time.Now())
 

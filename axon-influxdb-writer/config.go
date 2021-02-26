@@ -78,7 +78,7 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 func builtInConfig() Config {
 	// Create the new, empty node with its name and configurability parameters:
 	// nodeName, nodeType, extend, modify, presence, sync
-	node := config.NewNode(actorName, actorName, false, true, true, false)
+	node := config.NewNode(actorName, actorName, true, true, true, false)
 
 	// Add I/O ports. The actor has no outputs.
 	node.AddInputPort("input", "base/Float64", "application/json", "axon-influxdb-writer.input", "")
