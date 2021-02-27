@@ -132,7 +132,8 @@ tasks:
     desc: Setup InfluxDB
     cmds:
       # Wait for influxdb to start
-      - while ! docker exec -it influxdb influx ping > /dev/null; do echo "Waiting for InfluxDB startup" ; sleep 1; done;
+      sleep 10
+      # - while ! docker exec -it influxdb influx ping > /dev/null; do echo "Waiting for InfluxDB startup" ; sleep 1; done;
       # Setup the server
       - docker exec -it influxdb influx setup --username "${INFLUXDB_USERNAME}" --password "${INFLUXDB_PASSWORD}" --org "${INFLUXDB_ORG}" --bucket "${INFLUXDB_BUCKET}" --retention "${INFLUXDB_RETENTION}" --token "${INFLUXDB_ADMIN_TOKEN}" -f
 
