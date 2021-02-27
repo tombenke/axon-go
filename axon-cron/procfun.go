@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/tombenke/axon-go/common/actor/processor"
-	"github.com/tombenke/axon-go/common/msgs/base"
-	"github.com/tombenke/axon-go/common/msgs/common"
+	"github.com/tombenke/axon-go-common/actor/processor"
+	"github.com/tombenke/axon-go-common/msgs/base"
+	"github.com/tombenke/axon-go-common/msgs/common"
 	"time"
 )
 

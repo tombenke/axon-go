@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/tombenke/axon-go/common/actor/node"
-	"github.com/tombenke/axon-go/common/gsd"
-	"github.com/tombenke/axon-go/common/log"
+	"github.com/tombenke/axon-go-common/actor/node"
+	"github.com/tombenke/axon-go-common/gsd"
+	"github.com/tombenke/axon-go-common/log"
 	"os"
 	"sync"
 )

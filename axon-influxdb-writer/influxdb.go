@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	"github.com/tombenke/axon-go/common/log"
+	"github.com/tombenke/axon-go-common/log"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/tombenke/axon-go/common/actor/processor"
+	"github.com/tombenke/axon-go-common/actor/processor"
 )
 
 // getProcessorFun is the message processor function of the actor node

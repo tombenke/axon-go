@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/tombenke/axon-go/common/config"
-	"github.com/tombenke/axon-go/common/messenger"
+	"github.com/tombenke/axon-go-common/config"
+	"github.com/tombenke/axon-go-common/messenger"
 	"testing"
 )
 

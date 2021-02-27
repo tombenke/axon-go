@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/tombenke/axon-go/common/actor/processor"
-	"github.com/tombenke/axon-go/common/msgs/base"
+	"github.com/tombenke/axon-go-common/actor/processor"
+	"github.com/tombenke/axon-go-common/msgs/base"
 	"gopkg.in/yaml.v2"
 	"strings"
 )

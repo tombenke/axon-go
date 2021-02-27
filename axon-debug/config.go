@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	config "github.com/tombenke/axon-go/common/config"
+	config "github.com/tombenke/axon-go-common/config"
 )
 
 const (

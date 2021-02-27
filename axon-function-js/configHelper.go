@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/tombenke/axon-go/common/file"
-	"github.com/tombenke/axon-go/common/log"
+	"github.com/tombenke/axon-go-common/file"
+	"github.com/tombenke/axon-go-common/log"
 	"gopkg.in/yaml.v2"
 	"os"
 )

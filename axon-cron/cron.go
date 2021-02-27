@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/robfig/cron"
-	"github.com/tombenke/axon-go/common/actor/node"
-	"github.com/tombenke/axon-go/common/log"
+	"github.com/tombenke/axon-go-common/actor/node"
+	"github.com/tombenke/axon-go-common/log"
 	"sync"
 )
 

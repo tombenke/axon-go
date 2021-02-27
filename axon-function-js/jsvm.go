@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/robertkrimen/otto"
-	"github.com/tombenke/axon-go/common/actor/processor"
-	"github.com/tombenke/axon-go/common/file"
-	"github.com/tombenke/axon-go/common/log"
-	"github.com/tombenke/axon-go/common/msgs/base"
+	"github.com/tombenke/axon-go-common/actor/processor"
+	"github.com/tombenke/axon-go-common/file"
+	"github.com/tombenke/axon-go-common/log"
+	"github.com/tombenke/axon-go-common/msgs/base"
 )
 
 // JSVM is holds a JavaScript Virtual Machine to execute the processor function written in JavaScript
