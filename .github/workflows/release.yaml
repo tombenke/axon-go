@@ -20,6 +20,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Run go setup task
+        run: task setup
+
       - name: Run go test task
         run: task test-cold
           
