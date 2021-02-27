@@ -81,7 +81,7 @@ func builtInConfig() Config {
 	node := config.NewNode(actorName, actorName, true, true, true, false)
 
 	// Add I/O ports. The actor has no outputs.
-	node.AddInputPort("input", "base/Float64", "application/json", "axon-influxdb-writer.input", "")
+	//node.AddInputPort("input", "base/Float64", "application/json", "axon-influxdb-writer.input", "")
 
 	return Config{
 		Node: node,
