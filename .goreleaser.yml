@@ -8,26 +8,64 @@ before:
     - go generate ./...
 builds:
   - id: axon-cron
-    dir: axon-cron
-    main: main.go
+    dir: ./axon-cron/
+    main: .
     binary: axon-cron
-    env:
-      - CGO_ENABLED=0
     goos:
       - linux
-        #- windows
-        #- darwin
+      - windows
+      - darwin
     goarch:
       - 386
       - amd64
       - arm
     goarm:
-      - 6
-    # List of combinations of GOOS + GOARCH + GOARM to ignore.
-    # Default is empty.
-    ignore:
-      - goos: darwin
-        goarch: amd64
+      - 5
+
+  - id: axon-debug
+    dir: ./axon-debug/
+    main: .
+    binary: axon-debug
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-function-js
+    dir: ./axon-function-js/
+    main: .
+    binary: axon-function-js
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-influxdb-writer
+    dir: ./axon-influxdb-writer/
+    main: .
+    binary: axon-influxdb-writer
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
 
 archives:
   - replacements:

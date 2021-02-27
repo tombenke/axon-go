@@ -1,6 +1,6 @@
 module github.com/tombenke/axon-go
 
-go 1.16
+go 1.15
 
 require (
 	github.com/ddollar/forego v0.16.1 // indirect
