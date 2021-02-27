@@ -1,0 +1,86 @@
+# This is an example .goreleaser.yml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod download
+    # you may remove this if you don't need go generate
+    - go generate ./...
+builds:
+  - id: axon-cron
+    dir: ./axon-cron/
+    main: .
+    binary: axon-cron
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-debug
+    dir: ./axon-debug/
+    main: .
+    binary: axon-debug
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-function-js
+    dir: ./axon-function-js/
+    main: .
+    binary: axon-function-js
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-influxdb-writer
+    dir: ./axon-influxdb-writer/
+    main: .
+    binary: axon-influxdb-writer
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
