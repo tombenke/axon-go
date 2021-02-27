@@ -1,6 +1,9 @@
 axon-go
 =======
 
+[![Actions Status](https://github.com/tombenke/axon-go/workflows/Quality%20Check/badge.svg)](https://github.com/tombenke/axon-go)
+[![Actions Status](https://github.com/tombenke/axon-go/workflows/Release/badge.svg)](https://github.com/tombenke/axon-go)
+
 ## About
 
 The main motivation behind the creation of this project was to have a generic system integration concept and a handful set of agents that makes possible the implementation of IoT related solutions, such as [HVAC](https://en.wikipedia.org/wiki/Heating,_ventilation,_and_air_conditioning) for home, and [greenhouse](https://walipini.herokuapp.com/), [garden irrigation](https://github.com/tombenke/giri), robotics, etc. on a simple and easy way.

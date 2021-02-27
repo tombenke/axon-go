@@ -1,0 +1,27 @@
+name: Quality Check
+
+on:
+  push:
+    branches:
+      - "*" # matches every branch
+      - "*/*" # matches every branch containing a single '/'
+      - "!ci/*" # excludes ci branches
+      - "!master" # excludes master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.16"
+
+      - name: Setup task
+        uses: Arduino/actions/setup-taskfile@master
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run go test task
+        run: task test-cold

@@ -37,6 +37,16 @@ tasks:
       - gofmt -w .
       - go test ./... -run={{.CASE}} -v -count=1 
 
+
+  test-cold:
+    desc: Start docker compose for testing, run tests then stop compose
+    cmds:
+      - gofmt -w .
+      - task: lint
+      - task: dc-upd
+      - go test ./...
+      - task: dc-down
+
   coverage:
     desc: Open test coverage in browser
     cmds:
