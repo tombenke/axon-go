@@ -1,33 +1,18 @@
-// The inbound message is placed into the 'message' variable as a string
-// Parse the JSON format string of the input message
-input = JSON.parse(message)
-device = "default-device-id"
-if (parameters !== "") {
-    scriptParameters = JSON.parse(parameters)
-    if (scriptParameters["device"]) {
-        device = scriptParameters.device
-    }
-}
+input = GetInputMessage("input")
+//console.log("\ninput: ", JSON.stringify(input))
 
-// Create random values it it were measured
-temperature = 20. + Math.random() * 2
-humidity = 55. + Math.random() * 3
+max = GetInputMessage("max")
 
+// Create random values if it were measured
+temperature = Math.random() * max.value
 
 // Creates the output message object
 output = {
-    device: device,
-    time: input.time,
-    meta: input.meta,
-    body: {
-        humidity: humidity,
-        temperature: temperature
+    Header: input.Header,
+    Body: {
+        Data: temperature
     }
 }
 
-// Serialize the JSON object to string
-result = JSON.stringify(output)
-
-// The last expression will be the outbound message as a string
-result
-
+//console.log("\noutput: ", output.time)
+SetOutputMessage("output", output)

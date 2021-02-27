@@ -1,10 +1,14 @@
-# Execute: forego start -f examples/th-sensor-simu/Procfile -e examples/th-sensor-simu/.env
+# Execute: forego start -f examples/th-sensor/Procfile -e examples/th-sensor/.env
 
-# Write the measurements coming from the `<axon-id>.log` subject, into the InfluxDB `home` database.
-influxdb-writer: axon-influxdb-writer -u $NATS_URL -s "${AXON_ID}.sensors" -db home
+# Write the measurements coming from the `<axon-id>.sensors` subject, into the 'input' measurement of `metrics` bucket of InfluxDB.
+influxdb_writer: axon-influxdb-writer -in "input|${AXON_ID}.sensors|base/Float64|application/json|" -log-format text -influxdb-organization axon -influxdb-bucket metrics -influxdb-token KMd17_5jXieiL9claBws_RjrLdmwUEuomdtj1sWNQFJ-FPsmF7WhheXtnUunGxOWXuWY2pbhNYsETYBfYtAJUg== -influxdb-url http://localhost:8086
 
 # Observe the `<axon-id>.measure` subject
-debug: axon-debug -u $NATS_URL -s "${AXON_ID}.sensors"
+debug: axon-debug -u $NATS_URL -in "input|${AXON_ID}.sensors"
 
-# Send a "measure" type message incl. timestamp to the `<axon-id>.measure` subject in every 10 seconds with nanoseconds precision
-cron: axon-cron -u $NATS_URL -s "${AXON_ID}.measure" -t "measure" -cron "@every 10s" -p ns
+# Send a base/Empty type message incl. timestamp to the `<AXON_ID>.measure` subject in every 1 seconds with nanoseconds precision
+cron: axon-cron -u $NATS_URL -out "output|${AXON_ID}.measure" -cron "@every 1s" -p ns
+
+# NOTE: There is no simulated sensor configure here
+# so a real one needs to observe the `<AXON_ID>.measure` subject, then do the physical measurement
+# and send the result to the  `<AXON_ID>.sensors` subject, that will be saved into the database.

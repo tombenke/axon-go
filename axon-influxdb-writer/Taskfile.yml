@@ -1,0 +1,83 @@
+# https://taskfile.dev
+
+version: '2'
+
+vars:
+  APPNAME: axon-influxdb-writer
+  DIST: ../dist
+
+env:
+  INFLUXDB_USERNAME: admin
+  INFLUXDB_PASSWORD: axon_secret@@
+  INFLUXDB_ORG: axon
+  INFLUXDB_BUCKET: metrics
+  INFLUXDB_RETENTION: 1w
+  INFLUXDB_ADMIN_TOKEN: KMd17_5jXieiL9claBws_RjrLdmwUEuomdtj1sWNQFJ-FPsmF7WhheXtnUunGxOWXuWY2pbhNYsETYBfYtAJUg==
+
+tasks:
+  default:
+    desc: Executes all the tests then build the binary.
+    cmds:
+      - task: test
+      - task: build
+
+  test:
+    desc: Run all the go tests.
+    cmds:
+      - gofmt -w .
+      - go test ./...
+
+  benchmark:
+    desc: Run benchmark tests (INACCURATE, run directly from cli!)
+    cmds:
+      - go test -bench=.
+
+  coverage:
+    desc: Open test coverage in browser
+    cmds:
+      - go test -coverprofile=c.out -coverpkg=./... -covermode=atomic ./...
+      - go tool cover -html=c.out
+
+  lint-display:
+    desc: Call gofmt, go vet and go lint
+    cmds:
+      - test -z "$(find -path './vendor' -prune -false -o -name '*.go' | xargs gofmt -l -d)"
+      - go vet ./...
+      - golangci-lint run
+
+  lint:
+    desc: Test gofmt, go vet and go lint
+    cmds:
+      - test -z "$(find -path './vendor' -prune -false -o -name '*.go' | xargs gofmt -l)"
+      - go vet ./...
+      - golangci-lint run
+
+  build:
+    desc: Build the go binary.
+    cmds:
+      - env GOOS=linux GOARCH=386 go build -o {{.DIST}}/linux-386/{{.APPNAME}} ./...
+      - env GOOS=linux GOARCH=amd64 go build -o {{.DIST}}/linux-amd64/{{.APPNAME}} ./...
+      - env GOOS=linux GOARCH=arm GOARM=5 go build -o {{.DIST}}/linux-arm5/{{.APPNAME}} ./...
+      - env GOOS=windows GOARCH=386 go build -o {{.DIST}}/windows-386/{{.APPNAME}}.exe ./...
+      - env GOOS=windows GOARCH=amd64 go build -o {{.DIST}}/windows-amd64/{{.APPNAME}}.exe ./...
+      - env GOOS=darwin GOARCH=amd64 go build -o {{.DIST}}/darwin-amd64/{{.APPNAME}} ./...
+
+  install:
+    desc: Install the binary on local machine
+    cmds:
+      - go install
+
+  clean:
+    desc: Clean temporary files and folders
+    cmds:
+      - rm {{.DIST}}/linux-386/{{.APPNAME}}
+      - rm {{.DIST}}/linux-amd64/{{.APPNAME}}
+      - rm {{.DIST}}/linux-arm5/{{.APPNAME}}
+      - rm {{.DIST}}/windows-386/{{.APPNAME}}.exe
+      - rm {{.DIST}}/windows-amd64/{{.APPNAME}}.exe
+      - rm {{.DIST}}/darwin-amd64/{{.APPNAME}}
+
+  setup_influxdb:
+    desc: Setup InfluxDB
+    cmds:
+      - docker exec -it influxdb2 influx setup --username "${INFLUXDB_USERNAME}" --password "${INFLUXDB_PASSWORD}" --org "${INFLUXDB_ORG}" --bucket "${INFLUXDB_BUCKET}" --retention "${INFLUXDB_RETENTION}" --token "${INFLUXDB_ADMIN_TOKEN}" -f

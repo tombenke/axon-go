@@ -1,0 +1,18 @@
+version: "3.2"
+services:
+  nats:
+    container_name: axon-nats
+    image: nats-streaming:latest
+    command: -store file -dir datastore -m 8222 -V
+    restart: always
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+
+  influxdb:
+    container_name: influxdb
+    image: quay.io/influxdb/influxdb:v2.0.3
+    ports:
+      - '8086:8086'
+

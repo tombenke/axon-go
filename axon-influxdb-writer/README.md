@@ -1,46 +1,28 @@
-axon-influxdb-writer
-====================
+# axon-influxdb-writer
 
-The `axon-influxdb-writer` is a subscribe-only agent, that receives messages that contain at least a `time` field, and any number of other fields.
-The agent connects to an [`InfluxDB`](https://docs.influxdata.com/influxdb/v1.7/) time-series database, and writes a record into the database, that contains the data properties arrived in the `body`, and uses the `time` property as a timestamp.
+The `axon-influxdb-writer` is a consumer agent.
+It can receive any type of message that holds a numeric or boolean value.
+It saves the value into an InfluxDB time-series database.
 
-It is configured, what the database name has to be, where the records will be stored.
-
-This is an example that the `axon-cron` agent emits:
-
-```JavaScript
-    {
-        "type":"measurement",
-        "meta":{
-            "timePrecision":"ns"
-        },
-        "body":{
-            "time":1578563461000510976,
-            "device":"6cfde020-fcd8-493f-9f6c-d8415b4a3fd5",
-            "temperature":19.30,
-            "humidity":57.40
-        }
-    }
-```
+## Usage
 
 Execute the agent with the `-h` switch to get help:
 
 ```bash
-$ axon-influxdb-writer -h
-
-Usage: axon-influxdb-writer [-u server] [-creds file] [-s] <subject> [-t]
+$ go install && axon-influxdb-writer -h
+Usage: axon-influxdb-writer [-u server] [-creds file] [-s] <source-subject> [-t] <target-subject> -scriptfile <script-filename> -scriptparams <script-parameters>
   -creds string
     	User Credentials File
-  -db string
-    	The name of the InfluxDB database (default "axon")
   -h	Show help message
-  -i string
-    	InfluxDB URL (default "http://localhost:8086")
-  -icreds string
-    	User Credentials File for InfluxDB
   -s string
-    	The subject to subscribe for inbound messages (default "axon.log")
-  -t	Display timestamps
+    	The subject to subscribe for inbound messages (default "axon.func.in")
+  -scriptfile string
+    	The name of the JavaScript file that holds the function implementation. (default "function.js")
+  -scriptparams string
+    	THe parameters of the script.
+  -t string
+    	The subject to send the outbound messages into (default "axon.func.out")
   -u string
     	The nats server URLs (separated by comma) (default "nats://127.0.0.1:4222")
 ```
+
