@@ -77,7 +77,7 @@
 </map_styles>
 </hook>
 <node TEXT="notes:" POSITION="right" ID="ID_1775331280" CREATED="1458311884012" MODIFIED="1458312182392">
-<node TEXT="design" STYLE_REF="home" FOLDED="true" ID="ID_71273065" CREATED="1590331262082" MODIFIED="1605977742379">
+<node TEXT="design" STYLE_REF="home" ID="ID_71273065" CREATED="1590331262082" MODIFIED="1605977742379">
 <icon BUILTIN="idea"/>
 <node TEXT="node" ID="ID_1454386825" CREATED="1590331525634" MODIFIED="1590331528087">
 <node TEXT="azonos&#xed;t&#xe1;sa" ID="ID_748564640" CREATED="1590331280387" MODIFIED="1590331540496">
@@ -218,7 +218,7 @@
 </node>
 </node>
 <node TEXT="service discovery" ID="ID_201065228" CREATED="1590331763491" MODIFIED="1590331766933">
-<node TEXT="orchesctrator channel" ID="ID_1648747025" CREATED="1590331838083" MODIFIED="1605977475884"/>
+<node TEXT="orchestrator channel" ID="ID_1648747025" CREATED="1590331838083" MODIFIED="1614937958255"/>
 </node>
 <node TEXT="logging" FOLDED="true" ID="ID_327971549" CREATED="1590331849011" MODIFIED="1590339684303">
 <node TEXT="lehet t&#xf6;bbf&#xe9;le megold&#xe1;s" ID="ID_1033077446" CREATED="1590339684822" MODIFIED="1590341868519">
@@ -237,8 +237,11 @@
 </node>
 <node TEXT="orchestrator" ID="ID_1621068379" CREATED="1605984475298" MODIFIED="1605984477694">
 <node TEXT="A roscore-hoz hasonl&#xf3; funkci&#xf3;kat l&#xe1;t el." ID="ID_819124609" CREATED="1605984478111" MODIFIED="1605984489184"/>
+<node TEXT="processzeket ind&#xed;tja, fel&#xfc;gyeli" ID="ID_1663580991" CREATED="1614938025620" MODIFIED="1614938031385"/>
+<node TEXT="presence/status" ID="ID_1495453381" CREATED="1614938041613" MODIFIED="1614938045856">
 <node TEXT="presence &#xe9;s healthcheck" ID="ID_85392221" CREATED="1605984489551" MODIFIED="1605984516944"/>
 <node TEXT="node-okr&#xf3;l r&#xe9;szletes inform&#xe1;ci&#xf3;t tud k&#xe9;rni, &#xe9;s adni" ID="ID_1162487746" CREATED="1605984522816" MODIFIED="1605984538609"/>
+</node>
 <node TEXT="&#xfc;temez&#xe9;st v&#xe9;gez a real-time, szinkron &#xfc;zenetk&#xfc;ld&#xe9;s, feldolgoz&#xe1;si ciklusok &#xf6;sszehangol&#xe1;s&#xe1;hoz." ID="ID_420806540" CREATED="1605984540543" MODIFIED="1605984616730"/>
 </node>
 <node TEXT="bags" FOLDED="true" ID="ID_542310988" CREATED="1590388246801" MODIFIED="1590388250678">
@@ -251,7 +254,7 @@
 </node>
 </node>
 <node TEXT="glossary:" POSITION="right" ID="ID_651809646" CREATED="1605984859996" MODIFIED="1605984862330">
-<node TEXT="RTF" FOLDED="true" ID="ID_176189038" CREATED="1594879420846" MODIFIED="1594879424381">
+<node TEXT="RTF" ID="ID_176189038" CREATED="1594879420846" MODIFIED="1594879424381">
 <node TEXT="Real-Time Factor" ID="ID_600586515" CREATED="1594879427518" MODIFIED="1594879432478"/>
 <node TEXT="&quot;Real time&quot; refers to the actual time that is passing in real life as the simulator runs." ID="ID_395542448" CREATED="1594879425663" MODIFIED="1594879453284"/>
 <node TEXT="The relationship between the simulation time and real time is known as the &quot;real time factor&quot; (RTF)." ID="ID_414962148" CREATED="1594879454434" MODIFIED="1594879454434"/>

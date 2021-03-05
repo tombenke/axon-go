@@ -1,0 +1,71 @@
+@startuml
+
+title The controll message flow
+
+participant controller
+participant agent_1
+participant agent_2
+participant agent_n
+
+group Start with this phase, then repeat every `presence_dt`
+    == Registration Phase ==
+
+    note over of controller: Send status requests\nto the agents.
+    controller -> agent_1 : status-request
+    activate agent_1
+    controller -> agent_2 : status-request
+    activate agent_2
+    controller -> agent_n : status-request
+    activate agent_n
+
+    note left agent_1: Send status reports\nto controller.
+    agent_1 -> controller : status-report
+    destroy agent_1
+    agent_2 -> controller : status-report
+    destroy agent_2
+    agent_n -> controller : status-report
+    destroy agent_n
+end
+
+...
+
+group Repeat every `measure_dt`
+    == Receive and Process phase ==
+
+    note over of controller: Send command to agents\nto receive inputs\nthen process them.
+    controller -> agent_1 : receive-and-process
+    activate agent_1
+    controller -> agent_2 : receive-and-process
+    activate agent_2
+    controller -> agent_n : receive-and-process
+    activate agent_n
+
+    note left agent_1: Agents receive inputs\nexecute the processing function\nthen send status info to controller.
+    agent_1 -> controller : processing-completed
+    destroy agent_1
+    agent_2 -> controller : processing-completed
+    destroy agent_2
+    agent_n -> controller : processing-completed
+    destroy agent_n
+
+    == Send Results phase ==
+
+    note over of controller: Send command to agents\nto forward processing results\nto their targets.
+    controller -> agent_1 : send-results
+    activate agent_1
+    controller -> agent_2 : send-results
+    activate agent_2
+    controller -> agent_n : send-results
+    activate agent_n
+
+    note left agent_1: Agents sends the processing results\nthen send status info to controller.
+    agent_1 -> controller : sending-completed
+    destroy agent_1
+    agent_2 -> controller : sending-completed
+    destroy agent_2
+    agent_n -> controller : sending-completed
+    destroy agent_n
+...
+end
+
+@enduml
