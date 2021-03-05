@@ -126,8 +126,12 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.StringVar(&cfg.Name, "n", GetEnvWithDefault(appNameEnvVar, appName), appNameHelp)
 	fs.StringVar(&cfg.Name, "name", GetEnvWithDefault(appNameEnvVar, appName), appNameHelp)
 
-	//fs.Int64Var(&cfg.Heartbeat, "b", GetEnvWithDefault(heartbeatEnvVar, defaultHeartbeat), heartbeatHelp)
-	//fs.Int64Var(&cfg.Heartbeat, "heartbeat", GetEnvWithDefault(heartbeatEnvVar, defaultHeartbeat), heartbeatHelp)
+	heartbeatValue, err := time.ParseDuration(GetEnvWithDefault(heartbeatEnvVar, defaultHeartbeat.String()))
+	if err != nil {
+		panic(err)
+	}
+	fs.DurationVar(&cfg.Heartbeat, "b", heartbeatValue, heartbeatHelp)
+	fs.DurationVar(&cfg.Heartbeat, "heartbeat", heartbeatValue, heartbeatHelp)
 
 	// TODO: Add orchestration config properties
 
