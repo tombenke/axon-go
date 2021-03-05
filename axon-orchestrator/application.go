@@ -62,13 +62,13 @@ func NewApplication(args []string) Application {
 	messenger := messengerImpl.NewMessenger(config.Messenger)
 
 	// Create the Heartbeat Generator
-	heartbeatGenerator, heartbeatCh := heartbeat.NewGenerator(config.Heartbeat, messenger)
+	heartbeatGenerator, heartbeatCh := heartbeat.NewGenerator(config.Heartbeat, config.Orchestration.Channels.StatusRequest, messenger)
 
 	// Create the Application
 	app := Application{
 		messenger:           messenger,
 		heartbeatGenerator:  heartbeatGenerator,
-		actorStatusRegistry: actorStatus.NewRegistry(heartbeatCh, messenger),
+		actorStatusRegistry: actorStatus.NewRegistry(heartbeatCh, config.Orchestration.Channels.StatusReport, messenger),
 		config:              config,
 		doneCh:              make(chan struct{}),
 		wg:                  &sync.WaitGroup{},

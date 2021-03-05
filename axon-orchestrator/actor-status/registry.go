@@ -18,21 +18,27 @@ type Actors map[string]Actor
 
 // Registry represents the Actor Registry process and status registry
 type Registry struct {
-	actors         Actors
-	messenger      messenger.Messenger
-	heartbeatCh    chan heartbeat.Heartbeat
-	registryDoneCh chan struct{}
-	//statusReportCh chan struct{}
+	actors           Actors
+	messenger        messenger.Messenger
+	heartbeatCh      chan heartbeat.Heartbeat
+	statusReportCh   chan []byte
+	statusReportSubs messenger.Subscriber
+	registryDoneCh   chan struct{}
 }
 
 // NewRegistry creates a new Actor Registry
-func NewRegistry(heartbeatCh chan heartbeat.Heartbeat, messenger messenger.Messenger) Registry {
+func NewRegistry(heartbeatCh chan heartbeat.Heartbeat, channelName string, messenger messenger.Messenger) Registry {
+
+	statusReportCh := make(chan []byte)
+	statusReportSubs := messenger.ChanSubscribe(channelName, statusReportCh)
 
 	return Registry{
-		actors:         make(Actors, 0),
-		messenger:      messenger,
-		heartbeatCh:    heartbeatCh,
-		registryDoneCh: make(chan struct{}),
+		actors:           make(Actors, 0),
+		messenger:        messenger,
+		heartbeatCh:      heartbeatCh,
+		statusReportCh:   statusReportCh,
+		statusReportSubs: statusReportSubs,
+		registryDoneCh:   make(chan struct{}),
 	}
 }
 
@@ -50,8 +56,8 @@ func (r Registry) Start(wg *sync.WaitGroup) {
 			case hb := <-r.heartbeatCh:
 				r.ProcessHeartbeat(hb)
 
-				//			case statusReport := <-r.statusReportCh:
-				//				r.ProcessStatusReport(statusReport)
+			case statusReport := <-r.statusReportCh:
+				r.ProcessStatusReport(statusReport)
 			}
 		}
 	}()
@@ -63,8 +69,14 @@ func (r Registry) ProcessHeartbeat(hb heartbeat.Heartbeat) {
 	log.Logger.Debugf("Actor Registry processes Heartbeat")
 }
 
+func (r Registry) ProcessStatusReport(statusReport []byte) {
+	log.Logger.Debugf("Actor Registry processes status-report: %s", string(statusReport))
+}
+
 // Shutdown stops the Actor Registry process
 func (r Registry) Shutdown() {
 	log.Logger.Infof("Actor Registry is shutting down")
+	r.statusReportSubs.Unsubscribe()
+	close(r.statusReportCh)
 	close(r.registryDoneCh)
 }

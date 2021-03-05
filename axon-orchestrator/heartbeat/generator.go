@@ -14,23 +14,25 @@ type Heartbeat struct{}
 
 // Generator is the Heartbeat Generator of the Orchestrator application
 type Generator struct {
-	messenger   messenger.Messenger
-	heartbeat   time.Duration
-	cronDoneCh  chan struct{}
-	heartbeatCh chan Heartbeat
-	ticker      *time.Ticker
+	messenger                messenger.Messenger
+	statusRequestChannelName string
+	heartbeat                time.Duration
+	cronDoneCh               chan struct{}
+	heartbeatCh              chan Heartbeat
+	ticker                   *time.Ticker
 }
 
 // NewGenerator creates a new Heartbeat Generator
-func NewGenerator(heartbeat time.Duration, messenger messenger.Messenger) (Generator, chan Heartbeat) {
+func NewGenerator(heartbeat time.Duration, channelName string, messenger messenger.Messenger) (Generator, chan Heartbeat) {
 
 	heartbeatCh := make(chan Heartbeat)
 	generator := Generator{
-		messenger:   messenger,
-		heartbeat:   heartbeat,
-		cronDoneCh:  make(chan struct{}),
-		heartbeatCh: heartbeatCh,
-		ticker:      time.NewTicker(heartbeat),
+		messenger:                messenger,
+		statusRequestChannelName: channelName,
+		heartbeat:                heartbeat,
+		cronDoneCh:               make(chan struct{}),
+		heartbeatCh:              heartbeatCh,
+		ticker:                   time.NewTicker(heartbeat),
 	}
 
 	return generator, heartbeatCh
@@ -60,7 +62,7 @@ func (g Generator) SendStatusRequest() {
 	var hb Heartbeat
 	g.heartbeatCh <- hb
 	statusRequestMsg := orchestra.NewStatusRequestMessage()
-	if err := g.messenger.Publish("status-request", statusRequestMsg.Encode(msgs.JSONRepresentation)); err != nil {
+	if err := g.messenger.Publish(g.statusRequestChannelName, statusRequestMsg.Encode(msgs.JSONRepresentation)); err != nil {
 		panic(err)
 	}
 }

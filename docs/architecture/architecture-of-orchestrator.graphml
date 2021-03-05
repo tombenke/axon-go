@@ -223,7 +223,7 @@ subscriber<y:LabelModel>
           <data key="d6">
             <y:ShapeNode>
               <y:Geometry height="78.66214450867568" width="104.75199999999995" x="432.1080637015946" y="341.29335195882607"/>
-              <y:Fill color="#B7C9E3" transparent="false"/>
+              <y:Fill color="#FFFF99" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="2.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="65.072265625" x="19.839867187499976" y="23.36232225433787">HeartBeat
 Generator<y:LabelModel>
@@ -365,8 +365,8 @@ Synchronizer<y:LabelModel>
               <y:Geometry height="95.86214450867567" width="102.4559999999999" x="722.282411883226" y="380.54433987915246"/>
               <y:Fill color="#FFFF99" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="2.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="58.427734375" x="22.014132812499952" y="24.97794725433789">Actor
-Presense
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="53.6640625" x="24.395968749999952" y="24.977947254337835">Actor
+Status
 Registry<y:LabelModel>
                   <y:SmartNodeLabelModel distance="4.0"/>
                 </y:LabelModel>
@@ -485,7 +485,6 @@ topic<y:LabelModel>
       </data>
     </node>
     <node id="n7">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Artifact.withShadow">
           <y:Geometry height="55.0" width="35.0" x="264.2683347612674" y="574.9928945730659"/>
@@ -494,10 +493,10 @@ topic<y:LabelModel>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="eight_pos" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="93.595703125" x="-29.2978515625" y="59.0">epn-config.yml</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.DataObjectTypeEnum" name="com.yworks.bpmn.dataObjectType" value="DATA_OBJECT_TYPE_PLAIN"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="ARTIFACT_TYPE_DATA_OBJECT"/>
-            <y:Property class="com.yworks.yfiles.bpmn.view.DataObjectTypeEnum" name="com.yworks.bpmn.dataObjectType" value="DATA_OBJECT_TYPE_PLAIN"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -520,7 +519,6 @@ topic<y:LabelModel>
       </data>
     </node>
     <node id="n9">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Artifact.withShadow">
           <y:Geometry height="55.0" width="35.0" x="264.2683347612674" y="318.58262484685963"/>
@@ -529,10 +527,10 @@ topic<y:LabelModel>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" horizontalTextPosition="center" iconTextGap="4" modelName="eight_pos" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="145.076171875" x="-55.0380859375" y="59.0">orchestrator-config.yml</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.DataObjectTypeEnum" name="com.yworks.bpmn.dataObjectType" value="DATA_OBJECT_TYPE_PLAIN"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="ARTIFACT_TYPE_DATA_OBJECT"/>
-            <y:Property class="com.yworks.yfiles.bpmn.view.DataObjectTypeEnum" name="com.yworks.bpmn.dataObjectType" value="DATA_OBJECT_TYPE_PLAIN"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -658,7 +656,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e6" source="n4::n6" target="n4::n7">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-0.6190637015945413" sy="19.919915665988526" tx="0.0" ty="0.0"/>
@@ -669,7 +666,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e7" source="n4::n8" target="n4::n14">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-3.5594118832254935" ty="27.931072254337835"/>
@@ -680,7 +676,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e8" source="n4::n7" target="n4::n14">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-5.159411883225516" ty="-27.931072254337835"/>
@@ -691,7 +686,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e9" source="n4::n17" target="n4::n12">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -702,7 +696,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e10" source="n4::n14" target="n4::n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.4405881167745065" sy="-27.931072254337835" tx="0.0" ty="0.0"/>
@@ -713,7 +706,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e11" source="n4::n14" target="n4::n9">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="2.0405881167744155" sy="27.931072254337835" tx="0.0" ty="0.0"/>
@@ -724,7 +716,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e12" source="n4::n9" target="n4::n13">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="3.274872596811292" ty="-54.774807129216924">
@@ -740,7 +731,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e13" source="n4::n13" target="n4::n16">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-6.15941188322563" sy="-54.39243065200527" tx="0.0" ty="0.0"/>
@@ -751,7 +741,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e14" source="n4::n10" target="n4::n17">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-8.27612740318932" ty="-27.195470093898734">
@@ -765,7 +754,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e15" source="n4::n15" target="n4::n17">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -776,7 +764,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e16" source="n4::n11" target="n4::n15">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -787,7 +774,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="n4::e17" source="n4::n16" target="n4::n17">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="1.7238725968106792" ty="29.804529906101266">
@@ -801,7 +787,6 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="e6" source="n7" target="n4::n11">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -812,29 +797,26 @@ topic<y:LabelModel>
       </data>
     </edge>
     <edge id="e7" source="n4::n18" target="n8">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
+          <y:LineStyle color="#000000" type="dashed" width="2.0"/>
+          <y:Arrows source="none" target="delta"/>
+          <y:BendStyle smoothed="true"/>
         </y:PolyLineEdge>
       </data>
     </edge>
     <edge id="n4::e18" source="n4::n12" target="n4::n18">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
+          <y:LineStyle color="#000000" type="line" width="2.0"/>
+          <y:Arrows source="none" target="delta"/>
+          <y:BendStyle smoothed="true"/>
         </y:PolyLineEdge>
       </data>
     </edge>
     <edge id="e8" source="n9" target="n4">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-520.1130637015947" ty="-245.49012928654145"/>
