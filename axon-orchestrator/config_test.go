@@ -23,12 +23,14 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 		PrintConfig: false,
 	}
 	expectedConfig := Config{
-		Heartbeat:      defaultHeartbeat,
-		Name:           appName,
-		ConfigFileName: defaultConfigFileName,
-		LogLevel:       "debug",
-		LogFormat:      "text",
-		PrintConfig:    false,
+		Heartbeat:        defaultHeartbeat,
+		MaxResponseTime:  defaultMaxResponseTime,
+		EPNStatusChannel: defaultEPNStatusChannel,
+		Name:             appName,
+		ConfigFileName:   defaultConfigFileName,
+		LogLevel:         "debug",
+		LogFormat:        "text",
+		PrintConfig:      false,
 		Messenger: messenger.Config{
 			Urls:      "localhost:4222",
 			UserCreds: "",

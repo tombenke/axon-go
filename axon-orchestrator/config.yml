@@ -1,4 +1,6 @@
 heartbeat: 1000000000
+maxResponseTime: 1500000000
+epnStatusChannel: epn-status
 name: axon-orchestrator
 logLevel: debug
 logFormat: text

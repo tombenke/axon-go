@@ -2,37 +2,32 @@ package heartbeat
 
 import (
 	"github.com/tombenke/axon-go-common/log"
-	"github.com/tombenke/axon-go-common/messenger"
-	"github.com/tombenke/axon-go-common/msgs"
-	"github.com/tombenke/axon-go-common/msgs/orchestra"
 	"sync"
 	"time"
 )
 
 // Heartbeat represents the actual heartbeat sent by the generator through the heartbeatCh channel
-type Heartbeat struct{}
+type Heartbeat struct {
+	Timestamp time.Time
+}
 
 // Generator is the Heartbeat Generator of the Orchestrator application
 type Generator struct {
-	messenger                messenger.Messenger
-	statusRequestChannelName string
-	heartbeat                time.Duration
-	cronDoneCh               chan struct{}
-	heartbeatCh              chan Heartbeat
-	ticker                   *time.Ticker
+	heartbeat   time.Duration
+	cronDoneCh  chan struct{}
+	heartbeatCh chan Heartbeat
+	ticker      *time.Ticker
 }
 
 // NewGenerator creates a new Heartbeat Generator
-func NewGenerator(heartbeat time.Duration, channelName string, messenger messenger.Messenger) (Generator, chan Heartbeat) {
+func NewGenerator(heartbeat time.Duration) (Generator, chan Heartbeat) {
 
 	heartbeatCh := make(chan Heartbeat)
 	generator := Generator{
-		messenger:                messenger,
-		statusRequestChannelName: channelName,
-		heartbeat:                heartbeat,
-		cronDoneCh:               make(chan struct{}),
-		heartbeatCh:              heartbeatCh,
-		ticker:                   time.NewTicker(heartbeat),
+		heartbeat:   heartbeat,
+		cronDoneCh:  make(chan struct{}),
+		heartbeatCh: heartbeatCh,
+		ticker:      time.NewTicker(heartbeat),
 	}
 
 	return generator, heartbeatCh
@@ -42,6 +37,8 @@ func NewGenerator(heartbeat time.Duration, channelName string, messenger messeng
 func (g Generator) Start(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
+		defer close(g.heartbeatCh)
+
 		for {
 			select {
 			case <-g.cronDoneCh:
@@ -49,7 +46,7 @@ func (g Generator) Start(wg *sync.WaitGroup) {
 				return
 
 			case <-g.ticker.C:
-				g.SendStatusRequest()
+				g.SendHeartbeat()
 			}
 		}
 	}()
@@ -57,14 +54,10 @@ func (g Generator) Start(wg *sync.WaitGroup) {
 	log.Logger.Infof("Heartbeat Generator is started")
 }
 
-func (g Generator) SendStatusRequest() {
-	log.Logger.Debugf("Heartbeat Generator sends 'status-request' message.")
-	var hb Heartbeat
+func (g Generator) SendHeartbeat() {
+	log.Logger.Debugf("Heartbeat Generator sends Heartbeat.")
+	hb := Heartbeat{Timestamp: time.Now()}
 	g.heartbeatCh <- hb
-	statusRequestMsg := orchestra.NewStatusRequestMessage()
-	if err := g.messenger.Publish(g.statusRequestChannelName, statusRequestMsg.Encode(msgs.JSONRepresentation)); err != nil {
-		panic(err)
-	}
 }
 
 // Shutdown stops the heartbeat generator process
@@ -72,5 +65,4 @@ func (g Generator) Shutdown() {
 	log.Logger.Infof("Heartbeat Generator is shutting down")
 	g.ticker.Stop()
 	close(g.cronDoneCh)
-	close(g.heartbeatCh)
 }

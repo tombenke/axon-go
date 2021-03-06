@@ -19,6 +19,10 @@ const (
 	heartbeatEnvVar  = "HEARTBEAT"
 	defaultHeartbeat = time.Second
 
+	maxResponseTimeHelp    = "The duration in nanoseconds an actor must respond to the status requests message"
+	maxResponseTimeEnvVar  = "MAX_RESPONSE_TIME"
+	defaultMaxResponseTime = 1500 * time.Millisecond
+
 	logLevelHelp    = "The log level: panic | fatal | error | warning | info | debug | trace"
 	logLevelEnvVar  = "LOG_LEVEL"
 	defaultLogLevel = "info"
@@ -34,16 +38,22 @@ const (
 	messagingUserCredsHelp    = "User Credentials"
 	messagingUserCredsEnvVar  = "MESSAGING_CREDENTIALS"
 	defaultMessagingUserCreds = ""
+
+	EPNStatusChannelHelp    = "The name of the epn-status channel"
+	EPNStatusChannelEnvVar  = "EPN_STATUS_CHANNEL"
+	defaultEPNStatusChannel = "epn-status"
 )
 
 var defaultConfig = Config{
-	Heartbeat:      defaultHeartbeat,
-	Name:           appName,
-	ConfigFileName: defaultConfigFileName,
-	LogLevel:       "info",
-	LogFormat:      "text",
-	ShowHelp:       false,
-	PrintConfig:    false,
+	Heartbeat:        defaultHeartbeat,
+	MaxResponseTime:  defaultMaxResponseTime,
+	EPNStatusChannel: defaultEPNStatusChannel,
+	Name:             appName,
+	ConfigFileName:   defaultConfigFileName,
+	LogLevel:         defaultLogLevel,
+	LogFormat:        defaultLogFormat,
+	ShowHelp:         false,
+	PrintConfig:      false,
 	Messenger: messenger.Config{
 		Urls:      defaultMessagingURL,
 		UserCreds: defaultMessagingUserCreds,
@@ -69,6 +79,12 @@ type Config struct {
 
 	// Heartbeat the time period in nanoseconds the heartbeat generator sends the status requests
 	Heartbeat time.Duration `yaml:"heartbeat"`
+
+	// MaxResponseTime is the duration in nanoseconds an actor must respond to the status requests message
+	MaxResponseTime time.Duration `yaml:"maxResponseTime"`
+
+	// EPNStatusChannel is the name of the epn-status channel
+	EPNStatusChannel string `yaml:"epnStatusChannel"`
 
 	// Name is the name of the node. It should be unique in a specific network
 	Name string `yaml:"name"`
@@ -126,6 +142,7 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.StringVar(&cfg.Name, "n", GetEnvWithDefault(appNameEnvVar, appName), appNameHelp)
 	fs.StringVar(&cfg.Name, "name", GetEnvWithDefault(appNameEnvVar, appName), appNameHelp)
 
+	// Add orchestration relatad config parameters
 	heartbeatValue, err := time.ParseDuration(GetEnvWithDefault(heartbeatEnvVar, defaultHeartbeat.String()))
 	if err != nil {
 		panic(err)
@@ -133,7 +150,14 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 	fs.DurationVar(&cfg.Heartbeat, "b", heartbeatValue, heartbeatHelp)
 	fs.DurationVar(&cfg.Heartbeat, "heartbeat", heartbeatValue, heartbeatHelp)
 
-	// TODO: Add orchestration config properties
+	maxResponseTimeValue, err := time.ParseDuration(GetEnvWithDefault(maxResponseTimeEnvVar, defaultMaxResponseTime.String()))
+	if err != nil {
+		panic(err)
+	}
+	fs.DurationVar(&cfg.MaxResponseTime, "r", maxResponseTimeValue, maxResponseTimeHelp)
+	fs.DurationVar(&cfg.MaxResponseTime, "max-response-time", maxResponseTimeValue, maxResponseTimeHelp)
+
+	fs.StringVar(&cfg.EPNStatusChannel, "epn-status-channel", GetEnvWithDefault(EPNStatusChannelEnvVar, defaultEPNStatusChannel), EPNStatusChannelHelp)
 
 	return fs
 }
