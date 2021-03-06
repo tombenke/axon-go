@@ -118,6 +118,8 @@ github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5Cc
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/tombenke/axon-go-common v1.2.0 h1:M4+V+87GqnLMZSDLPUb1XyjZU8/jZFuqAQsgXLBk2C8=
 github.com/tombenke/axon-go-common v1.2.0/go.mod h1:dPdmqFoT0KJCndZOK9Q0MfP6t5KrT6a77wh7KglmHTo=
+github.com/tombenke/axon-go-common v1.3.0 h1:ob2IpqC83wiIj8No4xt0CSAWRzndXPWVabNXhXs+Mpo=
+github.com/tombenke/axon-go-common v1.3.0/go.mod h1:dPdmqFoT0KJCndZOK9Q0MfP6t5KrT6a77wh7KglmHTo=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=

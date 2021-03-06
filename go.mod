@@ -12,10 +12,10 @@ require (
 	github.com/robfig/cron v1.2.0
 	github.com/sirupsen/logrus v1.8.0 // indirect
 	github.com/stretchr/testify v1.7.0
-	github.com/tombenke/axon-go-common v1.2.0
+	github.com/tombenke/axon-go-common v1.3.0
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-replace github.com/tombenke/axon-go-common => ../axon-go-common
+// replace github.com/tombenke/axon-go-common => ../axon-go-common
