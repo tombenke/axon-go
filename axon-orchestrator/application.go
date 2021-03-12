@@ -114,8 +114,11 @@ func (a Application) Start() {
 // Shutdown stops the application process
 func (a Application) Shutdown() {
 	log.Logger.Infof("%s is shutting down", appName)
+
+	// Shuts down the internal processes of the application
 	a.actorStatusRegistry.Shutdown()
 	a.heartbeatGenerator.Shutdown()
+
 	close(a.doneCh)
 }
 
