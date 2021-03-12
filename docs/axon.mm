@@ -243,6 +243,16 @@
 <node TEXT="node-okr&#xf3;l r&#xe9;szletes inform&#xe1;ci&#xf3;t tud k&#xe9;rni, &#xe9;s adni" ID="ID_1162487746" CREATED="1605984522816" MODIFIED="1605984538609"/>
 </node>
 <node TEXT="&#xfc;temez&#xe9;st v&#xe9;gez a real-time, szinkron &#xfc;zenetk&#xfc;ld&#xe9;s, feldolgoz&#xe1;si ciklusok &#xf6;sszehangol&#xe1;s&#xe1;hoz." ID="ID_420806540" CREATED="1605984540543" MODIFIED="1605984616730"/>
+<node TEXT="axon-orchestrator" ID="ID_1218217424" CREATED="1614938104109" MODIFIED="1614938107122">
+<node TEXT="The `axon-orchestrator` plays a central role in an axon event processing network:" ID="ID_910341055" CREATED="1614938109804" MODIFIED="1614938119255"/>
+<node TEXT="" ID="ID_188699885" CREATED="1614938120101" MODIFIED="1614938120101">
+<node TEXT="- It acts as a process manager (start, stop, restart, etc. the actors that belong to a specific event processing network." ID="ID_461479555" CREATED="1614938120623" MODIFIED="1614938120623"/>
+<node TEXT="- It sends heart-beat messages and observes the presence of the actor notes based on their responses." ID="ID_1026340832" CREATED="1614938120623" MODIFIED="1614938120623"/>
+<node TEXT="- It synchronizes the communication of those actors that are working in `orchestration.synchronization` mode." ID="ID_24218060" CREATED="1614938120625" MODIFIED="1614938120625"/>
+</node>
+<node TEXT="Process Manager" ID="ID_1498503534" CREATED="1614938124580" MODIFIED="1614938141595"/>
+<node TEXT="Status" ID="ID_1040901547" CREATED="1614938142032" MODIFIED="1614938151262"/>
+</node>
 </node>
 <node TEXT="bags" FOLDED="true" ID="ID_542310988" CREATED="1590388246801" MODIFIED="1590388250678">
 <node TEXT="recording" ID="ID_12584282" CREATED="1590388251315" MODIFIED="1590388254122">

@@ -79,6 +79,8 @@ tasks:
       - cd axon-debug && task build
       - cd axon-function-js && task build
       - cd axon-influxdb-writer && task build
+      - cd axon-orchestrator && task build
+      - cd axon-tui && task build
 
   install:
     desc: Install the binaries to the local machine
@@ -87,6 +89,8 @@ tasks:
       - cd axon-debug && task install
       - cd axon-function-js && task install
       - cd axon-influxdb-writer && task install
+      - cd axon-orchestrator && task install
+      - cd axon-tui && task install
 
   clean:
     desc: Clean temporary files and folders

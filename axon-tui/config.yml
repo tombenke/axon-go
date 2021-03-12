@@ -1,0 +1,8 @@
+epnStatusChannel: epn-status
+name: axon-tui
+logLevel: debug
+logFormat: text
+configFileName: config.yml
+messenger:
+  urls: "localhost:4222"
+  credentials: ""
