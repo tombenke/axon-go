@@ -6,6 +6,7 @@ import (
 	"github.com/tombenke/axon-go-common/messenger"
 	messengerImpl "github.com/tombenke/axon-go-common/messenger/nats"
 	"github.com/tombenke/axon-go/axon-tui/epn"
+	"github.com/tombenke/axon-go/axon-tui/ui"
 	"os"
 	"sync"
 )
@@ -17,6 +18,9 @@ type Application struct {
 
 	// epnStatus is the EPN Status Observer
 	epnStatus epn.Status
+
+	// The UI part of the application
+	ui ui.UI
 
 	// doneCh is the channel to notify if the application must shut down
 	doneCh chan struct{}
@@ -59,12 +63,14 @@ func NewApplication(args []string) Application {
 
 	// Create the EPN Status Observer
 	epnStatus := epn.NewStatus(config.EPNStatusChannel, messenger)
+	ui := ui.New(&epnStatus)
 
 	// Create the Application
 	app := Application{
 		messenger: messenger,
 		config:    config,
 		epnStatus: epnStatus,
+		ui:        ui,
 		doneCh:    make(chan struct{}),
 		wg:        &sync.WaitGroup{},
 	}
@@ -87,6 +93,7 @@ func (a Application) Start() {
 
 	// Start the internal processes of the application
 	go a.epnStatus.Start(a.wg)
+	go a.ui.Start(a.wg)
 
 	// Let the application running
 	a.wg.Add(1)
@@ -105,6 +112,7 @@ func (a Application) Shutdown() {
 
 	// Shuts down the internal processes of the application
 	a.epnStatus.Shutdown()
+	a.ui.Shutdown()
 
 	close(a.doneCh)
 }
