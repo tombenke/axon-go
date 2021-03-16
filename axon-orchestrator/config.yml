@@ -18,3 +18,4 @@ orchestration:
 messenger:
   urls: "localhost:4222"
   credentials: ""
+  clusterID: ""

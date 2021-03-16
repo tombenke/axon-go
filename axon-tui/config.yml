@@ -6,3 +6,4 @@ configFileName: config.yml
 messenger:
   urls: "localhost:4222"
   credentials: ""
+  clusterID: ""

@@ -1,0 +1,5 @@
+# Procfile to build up a simple producer-consumer network using STAN
+# forego start -f Procfile.cli.cluster
+
+cron: axon-cron -u localhost:4222 -cron "@every 1s" -log-format text -messaging-cluster-id "test-cluster"
+debug: axon-debug -u localhost:4222 -in "input|axon-cron.output" -log-format text -debug-format json -messaging-cluster-id "test-cluster"

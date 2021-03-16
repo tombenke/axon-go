@@ -31,6 +31,7 @@ func TestReadConfigFromFile_Ok(t *testing.T) {
 		Messenger: messenger.Config{
 			Urls:      "localhost:4222",
 			UserCreds: "",
+			ClusterID: "",
 		},
 	}
 

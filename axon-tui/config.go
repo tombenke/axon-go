@@ -29,6 +29,10 @@ const (
 	messagingUserCredsEnvVar  = "MESSAGING_CREDENTIALS"
 	defaultMessagingUserCreds = ""
 
+	messagingClusterIDHelp    = "Cluster ID of messaging"
+	messagingClusterIDEnvVar  = "MESSAGING_CLUSTER_ID"
+	defaultMessagingClusterID = ""
+
 	EPNStatusChannelHelp    = "The name of the epn-status channel"
 	EPNStatusChannelEnvVar  = "EPN_STATUS_CHANNEL"
 	defaultEPNStatusChannel = "epn-status"
@@ -45,6 +49,7 @@ var defaultConfig = Config{
 	Messenger: messenger.Config{
 		Urls:      defaultMessagingURL,
 		UserCreds: defaultMessagingUserCreds,
+		ClusterID: defaultMessagingClusterID,
 	},
 }
 
@@ -103,6 +108,7 @@ func GetAppFlagSet(appName string, cfg *Config) *flag.FlagSet {
 
 	fs.StringVar(&cfg.Messenger.UserCreds, "c", GetEnvWithDefault(messagingUserCredsEnvVar, cfg.Messenger.UserCreds), messagingUserCredsHelp)
 	fs.StringVar(&cfg.Messenger.UserCreds, "creds", GetEnvWithDefault(messagingUserCredsEnvVar, cfg.Messenger.UserCreds), messagingUserCredsHelp)
+	fs.StringVar(&cfg.Messenger.ClusterID, "messaging-cluster-id", GetEnvWithDefault(messagingClusterIDEnvVar, cfg.Messenger.ClusterID), messagingClusterIDHelp)
 
 	fs.StringVar(&cfg.ConfigFileName, "config", "config.yml", "Config file name")
 
