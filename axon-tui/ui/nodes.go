@@ -34,7 +34,7 @@ func NewNodesWidget(epnStatus *epn.Status) *NodesWidget {
 			case status := <-nodes.epnStatusCh:
 				actors := []string{}
 				for _, actor := range status.Body.Actors {
-					actors = append(actors, actor.Name)
+					actors = append(actors, actor.Node.Name)
 				}
 				nodes.List.Rows = actors
 				log.Logger.Debugf("node.List.Rows: %v", nodes.List.Rows)

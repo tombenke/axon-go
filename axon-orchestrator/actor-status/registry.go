@@ -12,7 +12,7 @@ import (
 
 // Actor represents the actual status of an actor node of the EPN
 type Actor struct {
-	Name               string
+	Node               orchestra.StatusReportBody
 	LastStatusResponse time.Time
 	ResponseTime       time.Duration
 }
@@ -111,9 +111,9 @@ func (r *Registry) ProcessHeartbeat(hb heartbeat.Heartbeat) {
 func (r *Registry) SendEPNStatus() {
 	log.Logger.Debugf("Actor Registry sends EPN Status")
 	actors := make([]orchestra.Actor, 0)
-	for aName, actor := range r.actors {
+	for _, actor := range r.actors {
 		actors = append(actors, orchestra.Actor{
-			Name:         aName,
+			Node:         actor.Node,
 			ResponseTime: actor.ResponseTime,
 		})
 	}
@@ -138,7 +138,7 @@ func (r *Registry) ProcessStatusReport(statusReportBytes []byte) {
 	if err := (&statusReportMsg).Decode(msgs.JSONRepresentation, statusReportBytes); err != nil {
 		panic(err)
 	}
-	actorName := statusReportMsg.Body.Data
+	actorName := statusReportMsg.Body.Name
 
 	// Upsert into the registry
 	if actor, isInRegistry := r.actors[actorName]; isInRegistry {
@@ -148,7 +148,7 @@ func (r *Registry) ProcessStatusReport(statusReportBytes []byte) {
 		log.Logger.Debugf("Update the status of '%s' Actor: %v", actorName, r.actors[actorName])
 	} else {
 		actor := Actor{
-			Name:               actorName,
+			Node:               statusReportMsg.Body,
 			LastStatusResponse: arrivedAt,
 			ResponseTime:       responseTime,
 		}
