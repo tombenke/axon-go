@@ -8,7 +8,7 @@ require (
 	github.com/robertkrimen/otto v0.0.0-20191219234010-c382bd3c16ff
 	github.com/robfig/cron v1.2.0
 	github.com/stretchr/testify v1.7.0
-	github.com/tombenke/axon-go-common v1.5.0
+	github.com/tombenke/axon-go-common v1.5.2
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )

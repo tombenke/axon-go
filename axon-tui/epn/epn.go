@@ -48,7 +48,7 @@ func (s *Status) Start(wg *sync.WaitGroup) {
 		}
 	}()
 
-	log.Logger.Infof("EPN Status Observer is started")
+	log.Logger.Debugf("EPN Status Observer is started")
 }
 
 func (s *Status) ProcessEpnStatus(epnStatus []byte) {
@@ -69,7 +69,7 @@ func (s *Status) ProcessEpnStatus(epnStatus []byte) {
 
 // Shutdown stops the EPN Status Observer process
 func (s *Status) Shutdown() {
-	log.Logger.Infof("EPN Status Observer is shutting down")
+	log.Logger.Debugf("EPN Status Observer is shutting down")
 	if err := s.epnStatusSubs.Unsubscribe(); err != nil {
 		log.Logger.Errorf("Error in unsubscribe from epn-status channel: %s", err.Error())
 	}

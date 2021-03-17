@@ -25,7 +25,7 @@ func GetConfig(appName string, args []string) Config {
 	// Read the configuration from config file, if it is found
 	configFileContent, errLoadConfigfile := readConfigFromFile(defaultConfig, configFileName)
 	if errLoadConfigfile != nil {
-		log.Logger.Warning(errLoadConfigfile)
+		log.Logger.Debug(errLoadConfigfile)
 	}
 
 	// Parse the CLI config parameters on top of the config-file content
@@ -40,7 +40,7 @@ func getConfigFileName(appName string, defaultConfig Config, args []string) stri
 	fs := GetAppFlagSet(appName, &defaultConfig)
 	err := fs.Parse(args)
 	if err != nil {
-		log.Logger.Warningf(err.Error())
+		log.Logger.Debug(err.Error())
 	}
 
 	return defaultConfig.ConfigFileName
@@ -58,7 +58,7 @@ func parseCliArgs(configFileContent Config, appName string, args []string) Confi
 
 	err := fs.Parse(args)
 	if err != nil {
-		log.Logger.Warningf(err.Error())
+		log.Logger.Debug(err.Error())
 	}
 
 	// Handle the -h flag

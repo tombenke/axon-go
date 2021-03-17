@@ -103,12 +103,12 @@ func (a Application) Start() {
 		a.wg.Done()
 	}()
 
-	log.Logger.Infof("%s is started", appName)
+	log.Logger.Debugf("%s is started", appName)
 }
 
 // Shutdown stops the application process
 func (a Application) Shutdown() {
-	log.Logger.Infof("%s is shutting down", appName)
+	log.Logger.Debugf("%s is shutting down", appName)
 
 	// Shuts down the internal processes of the application
 	a.epnStatus.Shutdown()
