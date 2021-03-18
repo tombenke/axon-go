@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"fmt"
 	ui "github.com/gizak/termui/v3"
 	"github.com/tombenke/axon-go/axon-tui/epn"
 )
@@ -19,7 +18,7 @@ type NodesGridWidget struct {
 func NewNodesGridWidget(width, height, headerHeight int, epnStatus *epn.Status, eventsHub *EventsHub) *NodesGridWidget {
 	nodesGrid := &NodesGridWidget{
 		Grid:        ui.NewGrid(),
-		nodesTable:  NewNodesTableWidget(epnStatus),
+		nodesTable:  NewNodesTableWidget(epnStatus, eventsHub),
 		nodeDetails: NewNodeDetailsWidget(),
 		eventsCh:    eventsHub.Subscribe(),
 		visible:     true,
@@ -45,11 +44,7 @@ func NewNodesGridWidget(width, height, headerHeight int, epnStatus *epn.Status, 
 func (n *NodesGridWidget) controller() {
 	for e := range n.eventsCh {
 		switch e.ID {
-		case "u", "<Up>":
-			fmt.Println("UP")
-
-		case "d", "<Down>":
-			fmt.Println("DOWN")
+		//NOTE: Add control logic here
 		}
 	}
 }
