@@ -47,18 +47,20 @@ func Run(args []string) {
 // NewApplication creates a new actor-node application object
 func NewApplication(args []string) Application {
 
-	// Merge hard-coded configuration with CLI and file config if there is any
+	// Merge default configuration with CLI and file config if there is any
 	config := GetConfig(appName, args)
+
+	// Print config to the console in YAML format
+	if config.PrintConfig {
+		printResultingConfig(config)
+		os.Exit(0)
+	}
 
 	// Configure the global logger of the application according to the configuration
 	log.SetLevelStr(config.LogLevel)
 	log.SetFormatterStr(config.LogFormat)
 
 	// Setup Messenger and connect to messaging
-	config.Messenger.Logger = log.Logger
-	config.Messenger.ClientID = appName
-	config.Messenger.ClientName = appName
-	config.Messenger.ClusterID = "test-cluster"
 	messenger := messengerImpl.NewMessenger(config.Messenger)
 
 	// Create the EPN Status Observer
@@ -73,11 +75,6 @@ func NewApplication(args []string) Application {
 		ui:        ui,
 		doneCh:    make(chan struct{}),
 		wg:        &sync.WaitGroup{},
-	}
-
-	// Print config to the console in YAML format
-	if app.config.PrintConfig {
-		printResultingConfig(app.config)
 	}
 
 	return app
@@ -98,7 +95,7 @@ func (a Application) Start() {
 	// Let the application running
 	a.wg.Add(1)
 	go func() {
-		// Wait until the actor will be shut down
+		// Wait until the application will be shut down
 		<-a.doneCh
 		a.wg.Done()
 	}()

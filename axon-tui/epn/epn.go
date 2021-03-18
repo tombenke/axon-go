@@ -62,7 +62,7 @@ func (s *Status) ProcessEpnStatus(epnStatus []byte) {
 
 	// Send the actual status message to each subscribers
 	for _, subscriber := range s.subscribers {
-		log.Logger.Debugf("send status to subscribers: %v > %v", epnStatusMsg, subscriber)
+		log.Logger.Debugf("EPN Status Observer sends status to subscribers: %v > %v", epnStatusMsg, subscriber)
 		subscriber <- epnStatusMsg
 	}
 }
@@ -81,6 +81,6 @@ func (s *Status) Subscribe() chan orchestra.EPNStatus {
 	subscriber := make(chan orchestra.EPNStatus)
 	(*s).subscribers = append(s.subscribers, subscriber)
 
-	log.Logger.Debugf("Subscribers: %v", s.subscribers)
+	log.Logger.Debugf("EPNStatus subscribers: %v", s.subscribers)
 	return subscriber
 }

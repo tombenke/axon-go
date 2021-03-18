@@ -31,6 +31,10 @@ func GetConfig(appName string, args []string) Config {
 	// Parse the CLI config parameters on top of the config-file content
 	resultingConfig := parseCliArgs(configFileContent, appName, args)
 
+	resultingConfig.Messenger.Logger = log.Logger
+	resultingConfig.Messenger.ClientID = appName
+	resultingConfig.Messenger.ClientName = appName
+
 	return resultingConfig
 }
 
