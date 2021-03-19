@@ -36,6 +36,10 @@ func New(epnStatus *epn.Status) UI {
 func (u *UI) Start(appWg *sync.WaitGroup) {
 	u.eventsHub.Start()
 
+	// Make the main widget visible, and start processing the UI event
+	u.main.Visible = true
+	u.main.UseEvents = true
+
 	ui.Clear()
 	ui.Render(u.main)
 }

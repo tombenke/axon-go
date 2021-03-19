@@ -4,24 +4,19 @@ import (
 	ui "github.com/gizak/termui/v3"
 	"github.com/tombenke/axon-go-common/log"
 	"github.com/tombenke/axon-go-common/msgs/orchestra"
-	"github.com/tombenke/axon-go/axon-tui/epn"
+	"sort"
 )
 
 type NodesTableWidget struct {
 	*Table
-	visible     bool
-	inFocus     bool
-	epnStatusCh chan orchestra.EPNStatus
-	eventsCh    chan ui.Event
+	Control
+	eventsCh chan ui.Event
 }
 
-func NewNodesTableWidget(epnStatus *epn.Status, eventsHub *EventsHub) *NodesTableWidget {
-	epnStatusCh := epnStatus.Subscribe()
+func NewNodesTableWidget(eventsHub *EventsHub) *NodesTableWidget {
 	nodes := &NodesTableWidget{
-		Table:       NewTable(),
-		visible:     true,
-		epnStatusCh: epnStatusCh,
-		eventsCh:    eventsHub.Subscribe(),
+		Table:    NewTable(),
+		eventsCh: eventsHub.Subscribe(),
 	}
 
 	nodes.Title = "Actor Nodes"
@@ -29,6 +24,7 @@ func NewNodesTableWidget(epnStatus *epn.Status, eventsHub *EventsHub) *NodesTabl
 	nodes.ColGap = 2
 	nodes.PadLeft = 1
 	nodes.ShowCursor = true
+	nodes.ShowLocation = true
 	nodes.CursorColor = ui.ColorBlue
 	nodes.UniqueCol = 0
 	nodes.ColResizer = func() {
@@ -46,31 +42,52 @@ func NewNodesTableWidget(epnStatus *epn.Status, eventsHub *EventsHub) *NodesTabl
 	return nodes
 }
 
-func (nodes *NodesTableWidget) controller() {
-	for {
-		select {
-		case epnStatus := <-nodes.epnStatusCh:
-			nodes.update(epnStatus)
+// Draw draws the content of the widget into the `Buffer` object provided as an argument
+func (nodes *NodesTableWidget) Draw(buf *ui.Buffer) {
+	if nodes.Visible {
+		nodes.Table.Draw(buf)
+	}
+}
 
-		case e := <-nodes.eventsCh:
+func (nodes *NodesTableWidget) controller() {
+	for e := range nodes.eventsCh {
+		if nodes.UseEvents {
 			switch e.ID {
 			case "<Left>", "<Up>":
 				nodes.ScrollUp()
-				ui.Render(nodes)
 
 			case "<Right>", "<Down>":
 				nodes.ScrollDown()
-				ui.Render(nodes)
+
+			case "<PageUp>":
+				nodes.ScrollPageUp()
+
+			case "<PageDown>":
+				nodes.ScrollPageDown()
+
+			case "<Home>":
+				nodes.ScrollTop()
+
+			case "<End>":
+				nodes.ScrollBottom()
+
+			case "<MouseLeft>":
+				nodes.HandleClick(e.Payload.(ui.Mouse).X, e.Payload.(ui.Mouse).Y)
 			}
+			ui.Render(nodes)
 		}
 	}
 }
 
-func (nodes *NodesTableWidget) update(epnStatus orchestra.EPNStatus) {
-	numActors := len(epnStatus.Body.Actors)
+func (nodes *NodesTableWidget) update(actors []orchestra.Actor) {
+	numActors := len(actors)
+	nodes.Rows = make([][]string, numActors)
+	sort.Slice(actors, func(i, j int) bool {
+		return actors[i].Node.Name < actors[j].Node.Name
+	})
+
 	if numActors > 0 {
-		nodes.Rows = make([][]string, numActors)
-		for i, actor := range epnStatus.Body.Actors {
+		for i, actor := range actors {
 			nodes.Rows[i] = make([]string, 3)
 			nodes.Rows[i][0] = actor.Node.Name
 			nodes.Rows[i][1] = actor.Node.Type
@@ -80,7 +97,7 @@ func (nodes *NodesTableWidget) update(epnStatus orchestra.EPNStatus) {
 				nodes.Rows[i][2] = "-"
 			}
 		}
-		log.Logger.Debugf("node.Table.Rows: %v", nodes.Rows)
-		ui.Render(nodes)
 	}
+	ui.Render(nodes)
+	log.Logger.Debugf("node.Table.Rows: %v, SelectedRow: %d", nodes.Rows, nodes.SelectedRow)
 }
