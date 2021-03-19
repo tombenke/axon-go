@@ -11,6 +11,8 @@ type NodesGridWidget struct {
 	Control
 	nodesTable  *NodesTableWidget
 	nodeDetails *NodeDetailsWidget
+	nodeInputs  *NodeInputsWidget
+	nodeOutputs *NodeOutputsWidget
 	epnStatusCh chan orchestra.EPNStatus
 	eventsCh    chan ui.Event
 	Height      int
@@ -21,6 +23,8 @@ func NewNodesGridWidget(width, height, headerHeight int, epnStatus *epn.Status, 
 	nodesGrid := &NodesGridWidget{
 		Grid:        ui.NewGrid(),
 		nodesTable:  NewNodesTableWidget(eventsHub),
+		nodeInputs:  NewNodeInputsWidget(eventsHub),
+		nodeOutputs: NewNodeOutputsWidget(eventsHub),
 		nodeDetails: NewNodeDetailsWidget(),
 		epnStatusCh: epnStatusCh,
 		eventsCh:    eventsHub.Subscribe(),
@@ -32,7 +36,11 @@ func NewNodesGridWidget(width, height, headerHeight int, epnStatus *epn.Status, 
 	nodesGrid.Set(
 		ui.NewRow(1.0,
 			ui.NewCol(1.0/2, nodesGrid.nodesTable),
-			ui.NewCol(1.0/2, nodesGrid.nodeDetails),
+			ui.NewCol(1.0/2,
+				ui.NewRow(0.2, nodesGrid.nodeDetails),
+				ui.NewRow(0.4, nodesGrid.nodeInputs),
+				ui.NewRow(0.4, nodesGrid.nodeOutputs),
+			),
 		),
 	)
 
@@ -45,15 +53,19 @@ func NewNodesGridWidget(width, height, headerHeight int, epnStatus *epn.Status, 
 func (n *NodesGridWidget) Draw(buf *ui.Buffer) {
 	if n.Visible {
 		n.nodesTable.Visible = true
-		//n.nodeDetails.Visible = true
 		n.nodesTable.UseEvents = true
-		//n.nodeDetails.UseEvents = true
+		n.nodeInputs.Visible = true
+		n.nodeInputs.UseEvents = false
+		n.nodeOutputs.Visible = true
+		n.nodeOutputs.UseEvents = false
 
 	} else {
 		n.nodesTable.Visible = false
-		//n.nodeDetails.Visible = false
 		n.nodesTable.UseEvents = false
-		//n.nodeDetails.UseEvents = false
+		n.nodeInputs.Visible = false
+		n.nodeInputs.UseEvents = false
+		n.nodeOutputs.Visible = false
+		n.nodeOutputs.UseEvents = false
 	}
 	n.Grid.Draw(buf)
 }
@@ -71,6 +83,8 @@ func (n *NodesGridWidget) controller() {
 			if selectedRow >= 0 && numActors > 0 {
 				n.nodeDetails.Visible = true
 				n.nodeDetails.update(epnStatus.Body.Actors[selectedRow])
+				n.nodeInputs.update(epnStatus.Body.Actors[selectedRow].Node.Ports.Inputs)
+				n.nodeOutputs.update(epnStatus.Body.Actors[selectedRow].Node.Ports.Outputs)
 			} else {
 				n.nodeDetails.Visible = false
 			}
