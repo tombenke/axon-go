@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	. "github.com/gizak/termui/v3"
+	ui "github.com/gizak/termui/v3"
 )
 
 // Table Represents a table base widget that also acts as a select list
@@ -61,6 +62,7 @@ func NewTable() *Table {
 		TopRow:      0,
 		UniqueCol:   0,
 		ColResizer:  func() {},
+		CursorColor: ui.Color(colorSchema.Cursor),
 	}
 }
 

@@ -25,7 +25,7 @@ func NewNodesTableWidget(eventsHub *EventsHub) *NodesTableWidget {
 	nodes.PadLeft = 1
 	nodes.ShowCursor = true
 	nodes.ShowLocation = true
-	nodes.CursorColor = ui.ColorBlue
+	nodes.CursorColor = ui.Color(colorSchema.Cursor)
 	nodes.UniqueCol = 0
 	nodes.ColResizer = func() {
 		tableWidth := nodes.Table.Inner.Dx()
