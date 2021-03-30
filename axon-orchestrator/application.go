@@ -58,7 +58,7 @@ func NewApplication(args []string) Application {
 	config.Messenger.Logger = log.Logger
 	config.Messenger.ClientID = appName
 	config.Messenger.ClientName = appName
-	config.Messenger.ClusterID = "test-cluster"
+	config.Messenger.ClusterID = ""
 	messenger := messengerImpl.NewMessenger(config.Messenger)
 
 	// Create the Heartbeat Generator
