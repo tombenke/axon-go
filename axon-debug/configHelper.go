@@ -21,15 +21,18 @@ func GetConfig(appName string, args []string) Config {
 
 	// Get config file name from CLI parameter, or use the default one
 	configFileName := getConfigFileName(appName, defaultConfig, args)
+	log.Logger.Debugf("defaultConfig: %v", defaultConfig)
 
 	// Read the configuration from config file, if it is found
 	configFileContent, errLoadConfigfile := readConfigFromFile(defaultConfig, configFileName)
 	if errLoadConfigfile != nil {
 		log.Logger.Warning(errLoadConfigfile)
 	}
+	log.Logger.Debugf("configFileContent: %v", configFileContent)
 
 	// Parse the CLI config parameters on top of the config-file content
 	cliConfigContent := parseCliArgs(configFileContent, appName, args)
+	log.Logger.Debugf("cliConfigContent: %v", cliConfigContent)
 
 	// Merges the configurations into a resulting one
 	resultingConfig := mergeConfigs(builtInConfig(), cliConfigContent)

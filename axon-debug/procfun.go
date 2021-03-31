@@ -28,26 +28,36 @@ func getProcessorFun(config Config) func(ctx processor.Context) error {
 	}
 
 	return func(ctx processor.Context) error {
-		msg := ctx.GetInputMessage("input").(*base.Any)
-		var msgStr []byte
-		var err error
-		switch format {
-		case "yaml":
-			fallthrough
-		case "yml":
-			msgStr, err = yaml.Marshal(msg)
-			fmt.Printf("---\n%s", msgStr)
-		case "json":
-			msgStr, err = json.Marshal(msg)
-			fmt.Printf("%s\n", msgStr)
-		case "json-indent":
-			fallthrough
-		default:
-			msgStr, err = json.MarshalIndent(msg, "", "  ")
-			fmt.Printf("\n%s\n", msgStr)
-		}
-		if err != nil {
-			panic(err)
+
+		input := ctx.GetInputMessage("input")
+		switch input.(type) {
+		case *base.Bytes:
+			msg := input.(*base.Bytes)
+			fmt.Printf("%s\n", string(*msg))
+			//fmt.Printf("%v\n", ctx)
+
+		case *base.Any:
+			msg := input.(*base.Any)
+			var msgStr []byte
+			var err error
+			switch format {
+			case "yaml":
+				fallthrough
+			case "yml":
+				msgStr, err = yaml.Marshal(msg)
+				fmt.Printf("---\n%s", msgStr)
+			case "json":
+				msgStr, err = json.Marshal(msg)
+				fmt.Printf("%s\n", msgStr)
+			case "json-indent":
+				fallthrough
+			default:
+				msgStr, err = json.MarshalIndent(msg, "", "  ")
+				fmt.Printf("\n%s\n", msgStr)
+			}
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		return nil
