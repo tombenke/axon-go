@@ -30,14 +30,11 @@ func getProcessorFun(config Config) func(ctx processor.Context) error {
 	return func(ctx processor.Context) error {
 
 		input := ctx.GetInputMessage("input")
-		switch input.(type) {
+		switch msg := input.(type) {
 		case *base.Bytes:
-			msg := input.(*base.Bytes)
 			fmt.Printf("%s\n", string(*msg))
-			//fmt.Printf("%v\n", ctx)
 
 		case *base.Any:
-			msg := input.(*base.Any)
 			var msgStr []byte
 			var err error
 			switch format {
