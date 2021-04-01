@@ -36,7 +36,6 @@ func getProcessorFun(config Config) func(ctx processor.Context) error {
 			fmt.Printf("---\n%s\n", string(*msg))
 
 		case *base.Any:
-			inputs := ctx.Inputs
 			var msgStr []byte
 			var err error
 			switch format {
@@ -46,13 +45,8 @@ func getProcessorFun(config Config) func(ctx processor.Context) error {
 				msgStr, err = yaml.Marshal(msg)
 				fmt.Printf("---\n%s", msgStr)
 			case "json":
-				(*inputs).RW.Lock()
-				fmt.Printf("procFun Lock %v ==============\n", (*inputs).RW)
 				msgStr, err = json.Marshal(msg)
 				fmt.Printf("%s\n", msgStr)
-				(*inputs).RW.Unlock()
-				fmt.Printf("procFun Unlock %v ============\n", (*inputs).RW)
-				//fmt.Printf("procFun called ===================================\n")
 			case "json-indent":
 				fallthrough
 			default:

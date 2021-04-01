@@ -11,4 +11,4 @@ sensor_simulator_42: axon-function-js -n simu42 -u $NATS_URL -in "input|${AXON_I
 # sensor_simulator_21: axon-function-js -n simu12 -u $NATS_URL -in "input|${AXON_ID}.measure" -in "max||base/Any|application/json|{\"value\":12}" -out "output|${AXON_ID}.sensors" -scriptfile ./axon-sensor-th-simulator.js -scriptfile axon-sensor-th-simulator.js
 
 # Send a base/Empty type message incl. timestamp to the `<AXON_ID>.measure` subject in every 1 seconds with nanoseconds precision
-cron: axon-cron -u $NATS_URL -out "output|${AXON_ID}.measure" -cron "@every 1s" -p ns
+cron: axon-cron -u $NATS_URL -out "output|${AXON_ID}.measure|base/Empty|application/json" -cron "@every 1s" -p ns
