@@ -13,4 +13,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-//replace github.com/tombenke/axon-go-common => ../axon-go-common
+replace github.com/tombenke/axon-go-common => ../axon-go-common

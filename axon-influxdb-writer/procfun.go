@@ -10,7 +10,11 @@ import (
 func getProcessorFun(config Config, influxDb InfluxDb) func(ctx processor.Context) error {
 
 	return func(ctx processor.Context) error {
-		for inputName := range ctx.Inputs {
+		inputs := ctx.Inputs
+		(*inputs).RW.Lock()
+		defer (*inputs).RW.Unlock()
+
+		for inputName := range (*inputs).Map {
 			fmt.Printf("INPUT: %v\n", inputName)
 			data := ctx.GetInputMessage(inputName).(*base.Float64).Body.Data
 			influxDb.WritePoint(inputName, "data", data)

@@ -59,7 +59,7 @@ tasks:
   install:
     desc: Install the binary on local machine
     cmds:
-      - go install
+      - go install -race
 
   clean:
     desc: Clean temporary files and folders
