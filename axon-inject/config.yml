@@ -1,0 +1,35 @@
+message: "A plain text message"
+precision: ns
+#file-name: logs.ndjson
+#file-type: text # text | yaml | json | ndjson | axon-replay
+repeat: 1
+#delay: 0ms
+node:
+  name: axon-inject
+  logLevel: debug
+  logFormat: json
+  configFileName: config.yml
+  ports:
+    configure:
+      extend: false # Can NOT add new I/O port
+      modify: true # Can configure the existing I/O port parameters
+    inputs:
+      - name: inject
+        type: base/Bytes
+        representation: text/plain
+        channel: ""
+        default: ""
+    outputs:
+      - name: output
+        type: base/Bytes
+        representation: text/plain
+        channel: axon-inject.output
+  orchestration:
+    presence: true # Use the presence channels, must be `true` if `synchronization` is enabled
+    synchronization: false # The processing and message passing is NOT synchronized by the orchestrator
+    statusRequest: status-request
+    statusReport: status-report
+  messenger:
+    urls: "localhost:4222"
+    credentials: ""
+    clusterID: ""
