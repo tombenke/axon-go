@@ -99,6 +99,8 @@ tasks:
       - cd axon-debug && task clean
       - cd axon-function-js && task clean
       - cd axon-influxdb-writer && task clean
+      - cd axon-orchestrator && task clean
+      - cd axon-tui && task clean
 
   dc-up:
     desc: Start OOM containers

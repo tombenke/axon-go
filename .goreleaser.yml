@@ -67,6 +67,51 @@ builds:
     goarm:
       - 5
 
+  - id: axon-inject
+    dir: ./axon-inject/
+    main: .
+    binary: axon-inject
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-orchestrator
+    dir: ./axon-orchestrator/
+    main: .
+    binary: axon-orchestrator
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
+  - id: axon-tui
+    dir: ./axon-tui/
+    main: .
+    binary: axon-tui
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - 386
+      - amd64
+      - arm
+    goarm:
+      - 5
+
 archives:
   - replacements:
       darwin: Darwin
