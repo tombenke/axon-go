@@ -84,13 +84,13 @@ func NewApplication(args []string) Application {
 func (a Application) Start() {
 
 	// Register the graceful shutdown
-	gsd.Register(a.wg, func(s os.Signal) {
+	sigsCh := gsd.Register(a.wg, func(s os.Signal) {
 		a.Shutdown()
 	})
 
 	// Start the internal processes of the application
 	go a.epnStatus.Start(a.wg)
-	go a.ui.Start(a.wg)
+	go a.ui.Start(a.wg, sigsCh)
 
 	// Let the application running
 	a.wg.Add(1)

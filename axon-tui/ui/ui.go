@@ -4,6 +4,7 @@ import (
 	ui "github.com/gizak/termui/v3"
 	"github.com/tombenke/axon-go-common/log"
 	"github.com/tombenke/axon-go/axon-tui/epn"
+	"os"
 	"sync"
 )
 
@@ -94,12 +95,13 @@ func New(epnStatus *epn.Status) UI {
 }
 
 // Start create the main widget and start the UI part of the application
-func (u *UI) Start(appWg *sync.WaitGroup) {
+func (u *UI) Start(appWg *sync.WaitGroup, sigsCh chan os.Signal) {
 	u.eventsHub.Start()
 
 	// Make the main widget visible, and start processing the UI event
 	u.main.Visible = true
 	u.main.UseEvents = true
+	u.main.SigsCh = sigsCh
 
 	ui.Clear()
 	ui.Render(u.main)

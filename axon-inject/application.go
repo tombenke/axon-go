@@ -54,7 +54,7 @@ func NewApplication(args []string) Application {
 func (a Application) Start() {
 
 	// Register the graceful shutdown
-	gsd.Register(a.wg, func(s os.Signal) {
+	sigsCh := gsd.Register(a.wg, func(s os.Signal) {
 		a.Shutdown()
 	})
 
@@ -80,7 +80,7 @@ func (a Application) Start() {
 
 	// Start the injector only when the application is ready to handle shut down signal
 	<-waitForShutdownCh
-	startInjector(a.Node, a.config, a.wg, injectDoneCh)
+	startInjector(a.Node, a.config, a.wg, injectDoneCh, sigsCh)
 }
 
 // Shutdown stops the application process

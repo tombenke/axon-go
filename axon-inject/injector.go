@@ -4,12 +4,13 @@ import (
 	"github.com/tombenke/axon-go-common/actor/node"
 	"github.com/tombenke/axon-go-common/log"
 	"github.com/tombenke/axon-go-common/msgs/base"
+	"os"
 	"sync"
 	"syscall"
 	"time"
 )
 
-func startInjector(n node.Node, config Config, appWg *sync.WaitGroup, injectDoneCh chan interface{}) {
+func startInjector(n node.Node, config Config, appWg *sync.WaitGroup, injectDoneCh chan interface{}, sigsCh chan os.Signal) {
 
 	inputs := n.NewInputs()
 
@@ -35,11 +36,7 @@ func startInjector(n node.Node, config Config, appWg *sync.WaitGroup, injectDone
 			}
 		}
 
-		err = syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
-		if err != nil {
-			panic(err)
-		}
-
+		sigsCh <- syscall.SIGTERM
 		<-injectDoneCh
 		log.Logger.Debugf("Injector is shutting down")
 	}()

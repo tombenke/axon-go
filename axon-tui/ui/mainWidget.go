@@ -3,6 +3,7 @@ package ui
 import (
 	ui "github.com/gizak/termui/v3"
 	"github.com/tombenke/axon-go/axon-tui/epn"
+	"os"
 	"syscall"
 )
 
@@ -10,6 +11,7 @@ import (
 type MainWidget struct {
 	*ui.Block
 	Control
+	SigsCh    chan os.Signal
 	header    *HeaderWidget
 	nodesGrid *NodesGridWidget
 	eventsCh  chan ui.Event
@@ -54,9 +56,12 @@ func (m *MainWidget) controller() {
 		if m.UseEvents {
 			switch e.ID {
 			case "q", "<Escape>", "<C-c>":
-				if err := syscall.Kill(syscall.Getpid(), syscall.SIGTERM); err != nil {
-					panic(err)
-				}
+				/*
+					if err := syscall.Kill(syscall.Getpid(), syscall.SIGTERM); err != nil {
+						panic(err)
+					}
+				*/
+				m.SigsCh <- syscall.SIGTERM
 				return
 
 			case "<Resize>":
